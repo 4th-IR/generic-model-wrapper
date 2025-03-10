@@ -1,0 +1,6 @@
+env 
+mlruns
+wasbs 
+.env 
+wasbs:/
+__pycache__/
