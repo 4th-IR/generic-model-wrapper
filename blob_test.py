@@ -79,6 +79,9 @@ def test_save_and_load():
         # 2. Load model from Azure using MLflow
         model_uri = f"wasbs://{container_name}@{account_name}.blob.core.windows.net/{unique_path}"
         logger.info(f"Loading model from: {model_uri}")
+
+        ## save model URI and Model Config to MIS database 
+        ## in inference service, fetch model URI and pass to the mlflow.pyfunc.load_model(model_uri)
         
         loaded_model = mlflow.pyfunc.load_model(model_uri)
         logger.info("Model loaded successfully from Azure")
