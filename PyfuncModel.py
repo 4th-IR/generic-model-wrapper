@@ -9,6 +9,7 @@ import json
 import tempfile
 import logging
 from pathlib import Path
+from azure.storage.blob import BlobServiceClient
 
 # Configure logging
 logging.basicConfig(
