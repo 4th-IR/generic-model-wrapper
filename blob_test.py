@@ -83,6 +83,7 @@ def test_save_and_load():
         ## save model URI and Model Config to MIS database 
         ## in inference service, fetch model URI and pass to the mlflow.pyfunc.load_model(model_uri)
         
+        print(model_uri)
         loaded_model = mlflow.pyfunc.load_model(model_uri)
         logger.info("Model loaded successfully from Azure")
 
