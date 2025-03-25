@@ -21402,3 +21402,511 @@ Response headers:
 2025-03-12 09:09:00,112 - __main__ - INFO - Input: This product is terrible.
 2025-03-12 09:09:00,113 - __main__ - INFO - Prediction: {'label': 'LABEL_1', 'score': 0.5778416991233826}
 
+2025-03-25 07:05:24,136 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files?restype=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '85d825a8-0947-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-03-25 07:05:26,730 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Content-Length': '0'
+    'Last-Modified': 'Tue, 25 Feb 2025 11:58:38 GMT'
+    'ETag': '"0x8DD5593BD9E3040"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'a700701c-d01e-003f-7154-9dca49000000'
+    'x-ms-client-request-id': '85d825a8-0947-11f0-86b7-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'x-ms-lease-status': 'REDACTED'
+    'x-ms-lease-state': 'REDACTED'
+    'x-ms-has-immutability-policy': 'REDACTED'
+    'x-ms-has-legal-hold': 'REDACTED'
+    'x-ms-immutable-storage-with-versioning-enabled': 'REDACTED'
+    'x-ms-default-encryption-scope': 'REDACTED'
+    'x-ms-deny-encryption-scope-override': 'REDACTED'
+    'Date': 'Tue, 25 Mar 2025 07:05:26 GMT'
+2025-03-25 07:05:26,732 - __main__ - INFO - Container model-files exists
+2025-03-25 07:05:26,733 - __main__ - INFO - Saving model Intel/dynamic_tinybert to Azure...
+2025-03-25 07:05:26,733 - BlobModelWrapper - INFO - Loading model 'Intel/dynamic_tinybert' from provider 'huggingface'
+2025-03-25 07:05:30,397 - BlobModelWrapper - INFO - Saving model Intel/dynamic_tinybert to temporary directory...
+2025-03-25 07:05:30,782 - huggingface_hub.repocard_data - WARNING - Invalid model-index. Not loading eval results into CardData.
+2025-03-25 07:05:30,834 - BlobModelWrapper - INFO - Saving MLflow model with local artifacts...
+2025-03-25 07:05:32,403 - BlobModelWrapper - INFO - Uploading files to Azure...
+2025-03-25 07:05:32,404 - BlobModelWrapper - INFO - Initializing Azure BlobServiceClient with account: questaistorageaccount
+2025-03-25 07:05:32,405 - BlobModelWrapper - INFO - Azure BlobServiceClient initialized successfully
+2025-03-25 07:05:32,406 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files?restype=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '8ac64ad6-0947-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-03-25 07:05:33,722 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 409
+Response headers:
+    'Content-Length': '230'
+    'Content-Type': 'application/xml'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'd82e4f1e-901e-0063-6954-9d9f11000000'
+    'x-ms-client-request-id': '8ac64ad6-0947-11f0-86b7-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'ContainerAlreadyExists'
+    'Date': 'Tue, 25 Mar 2025 07:05:33 GMT'
+2025-03-25 07:05:33,730 - BlobModelWrapper - INFO - Using existing container: model-files
+2025-03-25 07:05:33,730 - BlobModelWrapper - INFO - Uploading directory /var/folders/ch/bbgk8vxn5nj22fhbt1wttjwm0000gn/T/tmppzl0oivr/model_files to container with prefix 'dynamic_tinybert-1742886326/model-files'
+2025-03-25 07:05:33,731 - BlobModelWrapper - INFO - Uploading large file model.safetensors (267838384 bytes) to dynamic_tinybert-1742886326/model-files/model.safetensors in chunks
+2025-03-25 07:05:33,738 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '8b916c20-0947-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:06:09,666 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'a0fb7344-0947-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:06:52,703 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'baa2a4e8-0947-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:08:02,407 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'e42e733c-0947-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:08:28,689 - BlobModelWrapper - WARNING - Block upload retry 1/3: ('Connection aborted.', TimeoutError('The write operation timed out')). Waiting 2s
+2025-03-25 07:08:30,698 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'f50b51fc-0947-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:09:11,720 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '0d7ed2cc-0948-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:10:01,487 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '2b289cae-0948-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:11:13,023 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '55cc1364-0948-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:11:34,073 - BlobModelWrapper - WARNING - Block upload retry 2/3: ('Connection aborted.', TimeoutError('The write operation timed out')). Waiting 4s
+2025-03-25 07:11:38,084 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '64bc2d78-0948-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:12:20,266 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '7de08f7e-0948-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:13:11,770 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '9c936b12-0948-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:13:32,084 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '5a36b4c0-701e-0026-2c55-9d4af2000000'
+    'x-ms-client-request-id': '9c936b12-0948-11f0-86b7-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Tue, 25 Mar 2025 07:13:31 GMT'
+2025-03-25 07:13:32,086 - BlobModelWrapper - INFO - Uploaded block 1, 1.6% complete
+2025-03-25 07:13:32,093 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'a8b0aad6-0948-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:14:11,114 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'bff2a654-0948-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:15:11,829 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'e42302da-0948-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:16:19,696 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '0c96b806-0949-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:16:53,429 - BlobModelWrapper - WARNING - Block upload retry 1/3: ('Connection aborted.', TimeoutError('The write operation timed out')). Waiting 2s
+2025-03-25 07:16:55,438 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '21e49ade-0949-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:17:10,581 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '203ed6e0-b01e-0016-5b55-9df43d000000'
+    'x-ms-client-request-id': '21e49ade-0949-11f0-86b7-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Tue, 25 Mar 2025 07:17:10 GMT'
+2025-03-25 07:17:10,582 - BlobModelWrapper - INFO - Uploaded block 2, 3.1% complete
+2025-03-25 07:17:10,591 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '2aecc458-0949-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:17:46,600 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '40633b28-0949-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:18:30,534 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '5a93096a-0949-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:19:37,581 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '82899182-0949-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:20:02,053 - BlobModelWrapper - WARNING - Block upload retry 1/3: HTTPSConnectionPool(host='questaistorageaccount.blob.core.windows.net', port=443): Read timed out. (read timeout=20). Waiting 2s
+2025-03-25 07:20:04,063 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '92526af8-0949-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:20:50,333 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'ade684ac-0949-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:21:23,940 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '5de5b04c-a01e-0025-3356-9dab96000000'
+    'x-ms-client-request-id': 'ade684ac-0949-11f0-86b7-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Tue, 25 Mar 2025 07:21:23 GMT'
+2025-03-25 07:21:23,942 - BlobModelWrapper - INFO - Uploaded block 3, 4.7% complete
+2025-03-25 07:21:23,945 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'c1ef8e08-0949-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:22:00,774 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'd7e2f9ac-0949-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:22:50,819 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'f5b7550e-0949-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:23:58,078 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '1dce31e8-094a-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:24:28,071 - BlobModelWrapper - WARNING - Block upload retry 1/3: ('Connection aborted.', TimeoutError('The write operation timed out')). Waiting 2s
+2025-03-25 07:24:30,082 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '30e1b520-094a-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:25:06,924 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '46d744f8-094a-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:25:57,312 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '64dfed06-094a-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:27:05,911 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '8dc33016-094a-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:27:33,629 - BlobModelWrapper - WARNING - Block upload retry 2/3: ('Connection aborted.', TimeoutError('The write operation timed out')). Waiting 4s
+2025-03-25 07:27:37,642 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'a0ad1f66-094a-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:28:15,425 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'b7326228-094a-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:29:09,965 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'd7b499f8-094a-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:30:20,265 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/dynamic_tinybert-1742886326/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.24.1 Python/3.11.6 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '019b7cdc-094b-11f0-86b7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-03-25 07:30:47,961 - BlobModelWrapper - ERROR - Failed to upload block after 3 retries: ('Connection aborted.', TimeoutError('The write operation timed out'))
+2025-03-25 07:30:48,040 - __main__ - ERROR - Test failed: ('Connection aborted.', TimeoutError('The write operation timed out'))

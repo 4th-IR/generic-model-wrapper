@@ -54,9 +54,9 @@ def test_save_and_load():
     setup_azure_container(connection_string)
     
     # Test parameters
-    model_name = "prajjwal1/bert-tiny"  # Small model for testing
+    model_name = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"  # Small model for testing
     container_name = "model-files"
-    test_texts = ["This movie was great!", "This product is terrible."]
+    test_texts = ["Hello, how are you?"]
 
     try:
         # 1. Save model to Azure using proper staging

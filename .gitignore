@@ -4,3 +4,4 @@ wasbs
 .env 
 wasbs:/
 __pycache__/
+*.log
