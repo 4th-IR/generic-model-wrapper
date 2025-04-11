@@ -1,0 +1,137 @@
+2025-04-09 11:41:24,071 - INFO - Checking Azure Storage for model...
+2025-04-09 11:41:24,072 - INFO - Request URL: 'https://blobquickstartll246.blob.core.windows.net/datasetsfromhgf/resnet18'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.10 (Windows-10-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '9088585f-1537-11f0-9042-64bc589c25c4'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-09 11:42:00,415 - INFO - Request URL: 'https://blobquickstartll246.blob.core.windows.net/datasetsfromhgf/resnet18'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.10 (Windows-10-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'a631ed32-1537-11f0-98d3-64bc589c25c4'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-09 11:42:06,057 - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'e0432bd5-c01e-001e-2844-a9d365000000'
+    'x-ms-client-request-id': 'a631ed32-1537-11f0-98d3-64bc589c25c4'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Wed, 09 Apr 2025 11:42:05 GMT'
+2025-04-09 11:42:06,059 - WARNING - Model blob does not exist
+2025-04-09 11:42:06,060 - INFO - Downloading model from tensorflow...
+2025-04-09 11:42:06,061 - INFO - Loading TensorFlow model from resnet18
+2025-04-09 11:44:36,493 - INFO - Checking Azure Storage for model...
+2025-04-09 11:44:36,494 - INFO - Request URL: 'https://blobquickstartll246.blob.core.windows.net/datasetsfromhgf/bert_base_en'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.10 (Windows-10-10.0.22631-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '03399900-1538-11f0-9a9f-64bc589c25c4'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-09 11:44:37,494 - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '0a267595-b01e-0049-5944-a97d56000000'
+    'x-ms-client-request-id': '03399900-1538-11f0-9a9f-64bc589c25c4'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Wed, 09 Apr 2025 11:44:37 GMT'
+2025-04-09 11:44:37,496 - WARNING - Model blob does not exist
+2025-04-09 11:44:37,497 - INFO - Downloading model from tensorflow...
+2025-04-09 11:44:37,497 - INFO - Loading TensorFlow model from bert_base_en
+2025-04-09 11:48:00,412 - ERROR - Error loading model: <class 'keras_hub.src.models.bert.bert_tokenizer.BertTokenizer'> could not be deserialized properly. Please ensure that components that are Python object instances (layers, models, etc.) returned by `get_config()` are explicitly deserialized in the model's `from_config()` method.
+
+config={'module': 'keras_hub.src.models.bert.bert_tokenizer', 'class_name': 'BertTokenizer', 'config': {'name': 'bert_tokenizer', 'trainable': True, 'dtype': {'module': 'keras', 'class_name': 'DTypePolicy', 'config': {'name': 'int32'}, 'registered_name': None}, 'config_file': 'tokenizer.json', 'vocabulary': None, 'sequence_length': None, 'lowercase': False, 'strip_accents': False, 'split': True, 'suffix_indicator': '##', 'oov_token': '[UNK]', 'special_tokens': None, 'special_tokens_in_strings': False}, 'registered_name': 'keras_hub>BertTokenizer'}.
+
+Exception encountered: Error when deserializing class 'BertTokenizer' using config={'name': 'bert_tokenizer', 'trainable': True, 'dtype': 'int32', 'config_file': 'tokenizer.json', 'vocabulary': None, 'sequence_length': None, 'lowercase': False, 'strip_accents': False, 'split': True, 'suffix_indicator': '##', 'oov_token': '[UNK]', 'special_tokens': None, 'special_tokens_in_strings': False}.
+
+Exception encountered: BertTokenizer requires `tensorflow` and `tensorflow-text` for text processing. Run `pip install tensorflow-text` to install both packages or visit https://www.tensorflow.org/install
+
+If `tensorflow-text` is already installed, try importing it in a clean python session. Your installation may have errors.
+
+KerasHub uses `tf.data` and `tensorflow-text` to preprocess text on all Keras backends. If you are running on Jax or Torch, this installation does not need GPU support.
+Traceback (most recent call last):
+  File "C:\Users\4TH_IR_DS_TEAM\Desktop\laylow-wrapper\load_torch\.venv\lib\site-packages\keras\src\ops\operation.py", line 256, in from_config
+    return cls(**config)
+  File "C:\Users\4TH_IR_DS_TEAM\Desktop\laylow-wrapper\load_torch\.venv\lib\site-packages\keras_hub\src\models\bert\bert_tokenizer.py", line 76, in __init__
+    super().__init__(
+  File "C:\Users\4TH_IR_DS_TEAM\Desktop\laylow-wrapper\load_torch\.venv\lib\site-packages\keras_hub\src\tokenizers\word_piece_tokenizer.py", line 342, in __init__
+    super().__init__(dtype=dtype, **kwargs)
+  File "C:\Users\4TH_IR_DS_TEAM\Desktop\laylow-wrapper\load_torch\.venv\lib\site-packages\keras_hub\src\tokenizers\tokenizer.py", line 70, in __init__
+    super().__init__(*args, **kwargs)
+  File "C:\Users\4TH_IR_DS_TEAM\Desktop\laylow-wrapper\load_torch\.venv\lib\site-packages\keras_hub\src\layers\preprocessing\preprocessing_layer.py", line 10, in __init__
+    assert_tf_libs_installed(self.__class__.__name__)
+  File "C:\Users\4TH_IR_DS_TEAM\Desktop\laylow-wrapper\load_torch\.venv\lib\site-packages\keras_hub\src\utils\tensor_utils.py", line 260, in assert_tf_libs_installed
+    raise ImportError(
+ImportError: BertTokenizer requires `tensorflow` and `tensorflow-text` for text processing. Run `pip install tensorflow-text` to install both packages or visit https://www.tensorflow.org/install
+
+If `tensorflow-text` is already installed, try importing it in a clean python session. Your installation may have errors.
+
+KerasHub uses `tf.data` and `tensorflow-text` to preprocess text on all Keras backends. If you are running on Jax or Torch, this installation does not need GPU support.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\4TH_IR_DS_TEAM\Desktop\laylow-wrapper\load_torch\.venv\lib\site-packages\keras\src\saving\serialization_lib.py", line 718, in deserialize_keras_object
+    instance = cls.from_config(inner_config)
+  File "C:\Users\4TH_IR_DS_TEAM\Desktop\laylow-wrapper\load_torch\.venv\lib\site-packages\keras\src\ops\operation.py", line 258, in from_config
+    raise TypeError(
+TypeError: Error when deserializing class 'BertTokenizer' using config={'name': 'bert_tokenizer', 'trainable': True, 'dtype': 'int32', 'config_file': 'tokenizer.json', 'vocabulary': None, 'sequence_length': None, 'lowercase': False, 'strip_accents': False, 'split': True, 'suffix_indicator': '##', 'oov_token': '[UNK]', 'special_tokens': None, 'special_tokens_in_strings': False}.
+
+Exception encountered: BertTokenizer requires `tensorflow` and `tensorflow-text` for text processing. Run `pip install tensorflow-text` to install both packages or visit https://www.tensorflow.org/install
+
+If `tensorflow-text` is already installed, try importing it in a clean python session. Your installation may have errors.
+
+KerasHub uses `tf.data` and `tensorflow-text` to preprocess text on all Keras backends. If you are running on Jax or Torch, this installation does not need GPU support.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\Users\4TH_IR_DS_TEAM\Desktop\laylow-wrapper\load_torch\main.py", line 163, in load_model
+    self.model = from_tensorflow(self.model_name, self.saved_path)
+  File "c:\Users\4TH_IR_DS_TEAM\Desktop\laylow-wrapper\load_torch\tensorflow_route.py", line 47, in from_tensorflow
+    text_classifier = keras_hub.models.TextClassifier.from_preset(preset_name, num_classes=num_classes)
+  File "C:\Users\4TH_IR_DS_TEAM\Desktop\laylow-wrapper\load_torch\.venv\lib\site-packages\keras_hub\src\models\task.py", line 198, in from_preset
+    return loader.load_task(cls, load_weights, load_task_weights, **kwargs)
+  File "C:\Users\4TH_IR_DS_TEAM\Desktop\laylow-wrapper\load_torch\.venv\lib\site-packages\keras_hub\src\utils\preset_utils.py", line 672, in load_task
+    return super().load_task(
+  File "C:\Users\4TH_IR_DS_TEAM\Desktop\laylow-wrapper\load_torch\.venv\lib\site-packages\keras_hub\src\utils\preset_utils.py", line 623, in load_task
+    kwargs["preprocessor"] = self.load_preprocessor(
+  File "C:\Users\4TH_IR_DS_TEAM\Desktop\laylow-wrapper\load_torch\.venv\lib\site-packages\keras_hub\src\utils\preset_utils.py", line 710, in load_preprocessor
+    return super().load_preprocessor(cls, **kwargs)
+  File "C:\Users\4TH_IR_DS_TEAM\Desktop\laylow-wrapper\load_torch\.venv\lib\site-packages\keras_hub\src\utils\preset_utils.py", line 638, in load_preprocessor
+    kwargs = cls._add_missing_kwargs(self, kwargs)
+  File "C:\Users\4TH_IR_DS_TEAM\Desktop\laylow-wrapper\load_torch\.venv\lib\site-packages\keras_hub\src\models\preprocessor.py", line 201, in _add_missing_kwargs
+    kwargs["tokenizer"] = loader.load_tokenizer(cls.tokenizer_cls)
+  File "C:\Users\4TH_IR_DS_TEAM\Desktop\laylow-wrapper\load_torch\.venv\lib\site-packages\keras_hub\src\utils\preset_utils.py", line 655, in load_tokenizer
+    tokenizer = self._load_serialized_object(tokenizer_config, **kwargs)
+  File "C:\Users\4TH_IR_DS_TEAM\Desktop\laylow-wrapper\load_torch\.venv\lib\site-packages\keras_hub\src\utils\preset_utils.py", line 727, in _load_serialized_object
+    return keras.saving.deserialize_keras_object(config)
+  File "C:\Users\4TH_IR_DS_TEAM\Desktop\laylow-wrapper\load_torch\.venv\lib\site-packages\keras\src\saving\serialization_lib.py", line 720, in deserialize_keras_object
+    raise TypeError(
+TypeError: <class 'keras_hub.src.models.bert.bert_tokenizer.BertTokenizer'> could not be deserialized properly. Please ensure that components that are Python object instances (layers, models, etc.) returned by `get_config()` are explicitly deserialized in the model's `from_config()` method.
+
+config={'module': 'keras_hub.src.models.bert.bert_tokenizer', 'class_name': 'BertTokenizer', 'config': {'name': 'bert_tokenizer', 'trainable': True, 'dtype': {'module': 'keras', 'class_name': 'DTypePolicy', 'config': {'name': 'int32'}, 'registered_name': None}, 'config_file': 'tokenizer.json', 'vocabulary': None, 'sequence_length': None, 'lowercase': False, 'strip_accents': False, 'split': True, 'suffix_indicator': '##', 'oov_token': '[UNK]', 'special_tokens': None, 'special_tokens_in_strings': False}, 'registered_name': 'keras_hub>BertTokenizer'}.
+
+Exception encountered: Error when deserializing class 'BertTokenizer' using config={'name': 'bert_tokenizer', 'trainable': True, 'dtype': 'int32', 'config_file': 'tokenizer.json', 'vocabulary': None, 'sequence_length': None, 'lowercase': False, 'strip_accents': False, 'split': True, 'suffix_indicator': '##', 'oov_token': '[UNK]', 'special_tokens': None, 'special_tokens_in_strings': False}.
+
+Exception encountered: BertTokenizer requires `tensorflow` and `tensorflow-text` for text processing. Run `pip install tensorflow-text` to install both packages or visit https://www.tensorflow.org/install
+
+If `tensorflow-text` is already installed, try importing it in a clean python session. Your installation may have errors.
+
+KerasHub uses `tf.data` and `tensorflow-text` to preprocess text on all Keras backends. If you are running on Jax or Torch, this installation does not need GPU support.
