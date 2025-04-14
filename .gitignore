@@ -1,2 +1,8 @@
 .env
 my_venv/
+my_second_venv
+data_manipulation
+models_saved/
+data_manipulation.ipynb
+__pycache__/
+

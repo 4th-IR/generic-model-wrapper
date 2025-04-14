@@ -33,13 +33,56 @@ This project provides a unified solution to load, convert, and save machine lear
 
 ---
 
+**Unified Inference Function: inference_model(model_provider, model_name, model_category)**
+
+-TorchVision 
+
+-Torchaudio 
+
+-Keras Hub Models:
+
+  <!-- Image Classification
+
+  Text Classification
+
+  Seq2Seq Language Models
+
+  Causal Language Models
+
+  Text-to-Image Generation
+
+  Image-to-Image Generation -->
+  
+
+**How to Use**
+Call the function with appropriate parameters:
+
+inference_model(
+    model_provider="tensorflow", 
+    model_name="efficientnetv2_b0_imagenet1k", 
+    model_category="image_classifier"
+)
+
+---
+
+***File Requirements***
+Ensure the following directories and files exist:
+
+*./animal_pctures/* with test images like dog1.jpg
+
+*./audios/* with audio test files like audio2.wav
+
+*./models_saved/* for model storage
+
+---
+
 ## Prerequisites
 
 - **Python 3.10 (depending on your TensorFlow variant requirements)**
-- **PyTorch & Torchvision:** For handling PyTorch models.
+- **PyTorch, Torchaudio, & Torchvision:** For handling PyTorch models.
 - **TensorFlow & Keras & Kaggle :** For handling TensorFlow models.
 - **Transformers:** For Hugging Face models and pipelines.
 - **Azure Storage Blob SDK:** For saving and retrieving models to/from Azure.
-- **Additional Libraries:** `torchaudio`, `tfimm`, `kagglehub`, `keras_hub`, `python-dotenv`, etc.
+- **Additional Libraries:** tfimm, kagglehub, keras_hub, python-dotenv, torchaudio, soundfile, pandas, psutil, matplotlib etc.
 
 Make sure to install the required packages by using a package manager like pip from the `requirements.txt`.

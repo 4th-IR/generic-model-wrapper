@@ -135,3 +135,646 @@ Exception encountered: BertTokenizer requires `tensorflow` and `tensorflow-text`
 If `tensorflow-text` is already installed, try importing it in a clean python session. Your installation may have errors.
 
 KerasHub uses `tf.data` and `tensorflow-text` to preprocess text on all Keras backends. If you are running on Jax or Torch, this installation does not need GPU support.
+2025-04-11 15:06:07,966 - INFO - Checking Azure Storage for model...
+2025-04-11 15:06:07,969 - INFO - Request URL: 'https://blobquickstartll246.blob.core.windows.net/datasetsfromhgf/efficientnet_b0'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.11 (Windows-10-10.0.26100-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '7f2197ad-16e6-11f0-9cb1-e9c9db82e6f4'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-11 15:06:09,446 - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '95d09e98-901e-0085-07f3-aa1260000000'
+    'x-ms-client-request-id': '7f2197ad-16e6-11f0-9cb1-e9c9db82e6f4'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Fri, 11 Apr 2025 15:06:06 GMT'
+2025-04-11 15:06:09,446 - WARNING - Model blob does not exist
+2025-04-11 15:06:09,446 - INFO - Downloading model from pytorch...
+2025-04-11 15:06:09,453 - INFO - Loading PyTorch model from efficientnet_b0
+2025-04-11 15:08:22,499 - INFO - Model loaded successfully.
+2025-04-11 15:08:22,499 - INFO - Saving model to Azure...
+2025-04-11 15:08:22,545 - INFO - Request URL: 'https://blobquickstartll246.blob.core.windows.net/datasetsfromhgf/efficientnet_b0'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '21655435'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.11 (Windows-10-10.0.26100-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'cf587dc1-16e6-11f0-9a44-e9c9db82e6f4'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-11 15:08:46,397 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 11 Apr 2025 15:08:44 GMT'
+    'ETag': '"0x8DD790AC061815A"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '95d18de4-901e-0085-71f3-aa1260000000'
+    'x-ms-client-request-id': 'cf587dc1-16e6-11f0-9a44-e9c9db82e6f4'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 11 Apr 2025 15:08:43 GMT'
+2025-04-11 15:08:46,406 - INFO - efficientnet_b0 saved to Azure Blob Storage
+2025-04-11 20:24:53,369 - INFO - Checking Azure Storage for model...
+2025-04-11 20:24:53,371 - INFO - Request URL: 'https://blobquickstartll246.blob.core.windows.net/datasetsfromhgf/CONVTASNET_BASE_LIBRI2MIX'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.11 (Windows-10-10.0.26100-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '06c29147-1713-11f0-9b37-e9c9db82e6f4'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-11 20:24:58,816 - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'ccad05a4-a01e-0027-581f-ab2879000000'
+    'x-ms-client-request-id': '06c29147-1713-11f0-9b37-e9c9db82e6f4'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Fri, 11 Apr 2025 20:24:54 GMT'
+2025-04-11 20:24:58,817 - WARNING - Model blob does not exist
+2025-04-11 20:24:58,817 - INFO - Downloading model from pytorch...
+2025-04-11 20:24:58,818 - INFO - Loading PyTorch model from CONVTASNET_BASE_LIBRI2MIX
+2025-04-11 20:24:58,881 - INFO - Downloading models/conv_tasnet_base_libri2mix.pt to C:\Users\DeLL\.cache\torch\hub\torchaudio\models\conv_tasnet_base_libri2mix.pt
+2025-04-11 20:27:06,398 - INFO - Model loaded successfully.
+2025-04-11 20:27:06,398 - INFO - Saving model to Azure...
+2025-04-11 20:27:06,431 - INFO - Request URL: 'https://blobquickstartll246.blob.core.windows.net/datasetsfromhgf/CONVTASNET_BASE_LIBRI2MIX'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '20100929'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.11 (Windows-10-10.0.26100-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '5611dad3-1713-11f0-8a5d-e9c9db82e6f4'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-11 20:27:42,127 - INFO - Request URL: 'https://blobquickstartll246.blob.core.windows.net/datasetsfromhgf/CONVTASNET_BASE_LIBRI2MIX'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '20100929'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.11 (Windows-10-10.0.26100-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '6b58a5cd-1713-11f0-85e7-e9c9db82e6f4'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-11 20:27:53,779 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 11 Apr 2025 20:27:49 GMT'
+    'ETag': '"0x8DD7937541800DB"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'a9524a36-301e-0035-3b20-ab53a9000000'
+    'x-ms-client-request-id': '6b58a5cd-1713-11f0-85e7-e9c9db82e6f4'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 11 Apr 2025 20:27:49 GMT'
+2025-04-11 20:27:53,779 - INFO - CONVTASNET_BASE_LIBRI2MIX saved to Azure Blob Storage
+2025-04-11 23:30:09,888 - INFO - Checking Azure Storage for model...
+2025-04-11 23:30:09,904 - INFO - Request URL: 'https://blobquickstartll246.blob.core.windows.net/datasetsfromhgf/ResNet50'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.11 (Windows-10-10.0.26100-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'e8bac7ca-172c-11f0-aad7-e9c9db82e6f4'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-11 23:30:11,200 - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'b2137efa-401e-003f-7539-abf71e000000'
+    'x-ms-client-request-id': 'e8bac7ca-172c-11f0-aad7-e9c9db82e6f4'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Fri, 11 Apr 2025 23:30:07 GMT'
+2025-04-11 23:30:11,211 - WARNING - Model blob does not exist
+2025-04-11 23:30:11,211 - INFO - Downloading model from tensorflow...
+2025-04-11 23:30:11,213 - INFO - Loading TensorFlow model from ResNet50
+2025-04-11 23:30:15,461 - INFO - Model loaded successfully.
+2025-04-11 23:30:15,464 - INFO - Saving model to Azure...
+2025-04-11 23:30:15,464 - INFO - ResNet50 saved to Azure Blob Storage
+2025-04-12 00:16:23,624 - INFO - Checking Azure Storage for model...
+2025-04-12 00:16:23,630 - INFO - Request URL: 'https://blobquickstartll246.blob.core.windows.net/datasetsfromhgf/MobileNetV3'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.11 (Windows-10-10.0.26100-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '5dff94b5-1733-11f0-8bd2-e9c9db82e6f4'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-12 00:16:27,578 - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '31d9a5e2-201e-0080-7d40-abc0bb000000'
+    'x-ms-client-request-id': '5dff94b5-1733-11f0-8bd2-e9c9db82e6f4'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Sat, 12 Apr 2025 00:16:21 GMT'
+2025-04-12 00:16:27,578 - WARNING - Model blob does not exist
+2025-04-12 00:16:27,578 - INFO - Downloading model from tensorflow...
+2025-04-12 00:16:27,578 - INFO - Loading TensorFlow model from MobileNetV3
+2025-04-12 00:16:50,433 - ERROR - Error loading model: Unknown preset identifier. A preset must be a one of:
+1) a built-in preset identifier like `'bert_base_en'`
+2) a Kaggle Models handle like `'kaggle://keras/bert/keras/bert_base_en'`
+3) a Hugging Face handle like `'hf://username/bert_base_en'`
+4) a Modelscope handle like `'modelscope://username/bert_base_en'`
+5) a path to a local preset directory like `'./bert_base_en'`
+Use `print(cls.presets.keys())` to view all built-in presets for API symbol `cls`.
+Received: preset='MobileNetV3'
+Traceback (most recent call last):
+  File "c:\Users\DeLL\Desktop\4TH-IR\model-wrapper\main.py", line 161, in load_model
+    self.model = from_tensorflow(self.model_name, self.saved_path)
+  File "c:\Users\DeLL\Desktop\4TH-IR\model-wrapper\tensorflow_route.py", line 56, in from_tensorflow
+    image_classifier = keras_hub.models.ImageClassifier.from_preset(preset_name)
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\my_venv\lib\site-packages\keras_hub\src\models\task.py", line 185, in from_preset
+    loader = get_preset_loader(preset)
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\my_venv\lib\site-packages\keras_hub\src\utils\preset_utils.py", line 528, in get_preset_loader
+    if not check_file_exists(preset, CONFIG_FILE):
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\my_venv\lib\site-packages\keras_hub\src\utils\preset_utils.py", line 295, in check_file_exists
+    get_file(preset, path)
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\my_venv\lib\site-packages\keras_hub\src\utils\preset_utils.py", line 235, in get_file
+    raise ValueError(
+ValueError: Unknown preset identifier. A preset must be a one of:
+1) a built-in preset identifier like `'bert_base_en'`
+2) a Kaggle Models handle like `'kaggle://keras/bert/keras/bert_base_en'`
+3) a Hugging Face handle like `'hf://username/bert_base_en'`
+4) a Modelscope handle like `'modelscope://username/bert_base_en'`
+5) a path to a local preset directory like `'./bert_base_en'`
+Use `print(cls.presets.keys())` to view all built-in presets for API symbol `cls`.
+Received: preset='MobileNetV3'
+2025-04-12 00:18:20,154 - INFO - Checking Azure Storage for model...
+2025-04-12 00:18:20,154 - INFO - Request URL: 'https://blobquickstartll246.blob.core.windows.net/datasetsfromhgf/EfficientNetV2-B0%20'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.11 (Windows-10-10.0.26100-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'a374122d-1733-11f0-97a2-e9c9db82e6f4'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-12 00:18:21,330 - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '7c9a7e9a-f01e-0015-1f40-ab280e000000'
+    'x-ms-client-request-id': 'a374122d-1733-11f0-97a2-e9c9db82e6f4'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Sat, 12 Apr 2025 00:18:17 GMT'
+2025-04-12 00:18:21,330 - WARNING - Model blob does not exist
+2025-04-12 00:18:21,330 - INFO - Downloading model from tensorflow...
+2025-04-12 00:18:21,330 - INFO - Loading TensorFlow model from EfficientNetV2-B0 
+2025-04-12 00:20:53,822 - INFO - Checking Azure Storage for model...
+2025-04-12 00:20:53,822 - INFO - Request URL: 'https://blobquickstartll246.blob.core.windows.net/datasetsfromhgf/EfficientNetB0%20'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.11 (Windows-10-10.0.26100-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'ff0bd1ea-1733-11f0-ba52-e9c9db82e6f4'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-12 00:20:56,463 - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '88043b54-801e-007d-0b40-ab4e9e000000'
+    'x-ms-client-request-id': 'ff0bd1ea-1733-11f0-ba52-e9c9db82e6f4'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Sat, 12 Apr 2025 00:20:51 GMT'
+2025-04-12 00:20:56,463 - WARNING - Model blob does not exist
+2025-04-12 00:20:56,463 - INFO - Downloading model from tensorflow...
+2025-04-12 00:20:56,463 - INFO - Loading TensorFlow model from EfficientNetB0 
+2025-04-12 00:22:21,917 - INFO - Checking Azure Storage for model...
+2025-04-12 00:22:21,919 - INFO - Request URL: 'https://blobquickstartll246.blob.core.windows.net/datasetsfromhgf/NASNetMobile%20'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.11 (Windows-10-10.0.26100-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '338e7bfe-1734-11f0-ad6f-e9c9db82e6f4'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-12 00:22:23,304 - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '37e93ebf-501e-0041-7940-ab6759000000'
+    'x-ms-client-request-id': '338e7bfe-1734-11f0-ad6f-e9c9db82e6f4'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Sat, 12 Apr 2025 00:22:18 GMT'
+2025-04-12 00:22:23,304 - WARNING - Model blob does not exist
+2025-04-12 00:22:23,304 - INFO - Downloading model from tensorflow...
+2025-04-12 00:22:23,308 - INFO - Loading TensorFlow model from NASNetMobile 
+2025-04-12 00:22:37,884 - ERROR - Error loading model: Unknown preset identifier. A preset must be a one of:
+1) a built-in preset identifier like `'bert_base_en'`
+2) a Kaggle Models handle like `'kaggle://keras/bert/keras/bert_base_en'`
+3) a Hugging Face handle like `'hf://username/bert_base_en'`
+4) a Modelscope handle like `'modelscope://username/bert_base_en'`
+5) a path to a local preset directory like `'./bert_base_en'`
+Use `print(cls.presets.keys())` to view all built-in presets for API symbol `cls`.
+Received: preset='NASNetMobile '
+Traceback (most recent call last):
+  File "c:\Users\DeLL\Desktop\4TH-IR\model-wrapper\main.py", line 161, in load_model
+    self.model = from_tensorflow(self.model_name, self.saved_path)
+  File "c:\Users\DeLL\Desktop\4TH-IR\model-wrapper\tensorflow_route.py", line 56, in from_tensorflow
+    image_classifier = keras_hub.models.ImageClassifier.from_preset(preset_name)
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\my_venv\lib\site-packages\keras_hub\src\models\task.py", line 185, in from_preset
+    loader = get_preset_loader(preset)
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\my_venv\lib\site-packages\keras_hub\src\utils\preset_utils.py", line 528, in get_preset_loader
+    if not check_file_exists(preset, CONFIG_FILE):
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\my_venv\lib\site-packages\keras_hub\src\utils\preset_utils.py", line 295, in check_file_exists
+    get_file(preset, path)
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\my_venv\lib\site-packages\keras_hub\src\utils\preset_utils.py", line 235, in get_file
+    raise ValueError(
+ValueError: Unknown preset identifier. A preset must be a one of:
+1) a built-in preset identifier like `'bert_base_en'`
+2) a Kaggle Models handle like `'kaggle://keras/bert/keras/bert_base_en'`
+3) a Hugging Face handle like `'hf://username/bert_base_en'`
+4) a Modelscope handle like `'modelscope://username/bert_base_en'`
+5) a path to a local preset directory like `'./bert_base_en'`
+Use `print(cls.presets.keys())` to view all built-in presets for API symbol `cls`.
+Received: preset='NASNetMobile '
+2025-04-14 02:55:25,722 - INFO - Checking Azure Storage for model...
+2025-04-14 02:55:25,728 - INFO - Request URL: 'https://blobquickstartll246.blob.core.windows.net/datasetsfromhgf/deepseek-ai/DeepSeek-R1-Distill-Qwen-7B'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.11 (Windows-10-10.0.26100-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'ea5ba58c-18db-11f0-a62e-aca5341b54f6'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-14 02:55:27,272 - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '27fbc985-401e-004d-55e8-acf051000000'
+    'x-ms-client-request-id': 'ea5ba58c-18db-11f0-a62e-aca5341b54f6'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Mon, 14 Apr 2025 02:55:26 GMT'
+2025-04-14 02:55:27,276 - WARNING - Model blob does not exist
+2025-04-14 02:55:27,276 - INFO - Downloading model from huggingface...
+2025-04-14 02:55:27,278 - INFO - Loading Hugging Face model: deepseek-ai/DeepSeek-R1-Distill-Qwen-7B
+2025-04-14 02:56:48,289 - WARNING - Error while downloading from https://cdn-lfs-us-1.hf.co/repos/e4/5a/e45a14e07b22b4350ac8a49a28975e1003fc0cf125bd48861865ec4b58441dcf/8b27be8d43b81d0cd19b3113ef88caf1a61c2fc602de77e3cce97aedcec184b4?response-content-disposition=inline%3B+filename*%3DUTF-8%27%27model-00001-of-000002.safetensors%3B+filename%3D%22model-00001-of-000002.safetensors%22%3B&Expires=1744602937&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTc0NDYwMjkzN319LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy11cy0xLmhmLmNvL3JlcG9zL2U0LzVhL2U0NWExNGUwN2IyMmI0MzUwYWM4YTQ5YTI4OTc1ZTEwMDNmYzBjZjEyNWJkNDg4NjE4NjVlYzRiNTg0NDFkY2YvOGIyN2JlOGQ0M2I4MWQwY2QxOWIzMTEzZWY4OGNhZjFhNjFjMmZjNjAyZGU3N2UzY2NlOTdhZWRjZWMxODRiND9yZXNwb25zZS1jb250ZW50LWRpc3Bvc2l0aW9uPSoifV19&Signature=NDACp5MBy%7EA0aesg118OKMaoGCmksiSw2hFTfHDFrlo6t48vp3-r7vghKpXMHNm9y3Tk7iJBMZLtmSVeQq4QkMSuSw8ZPoagftYE%7Enwh8jpHt%7Epz837x7yGPJXBX5JUdxeTItMAIl%7Em4GelA7OdfHcIn%7E0yQqfIbBBwDTrUQ1Sj-c3WdDtOm85-HipUd51iNHuJ4OcrGyILx9dswi67U1nAnApq%7E8dETQpqzmWDyALg7VX3a-tiOR-SpByRlb-mSroobnMT3HkbbQ7fuAJvTC1KKYsUzYZxTMMhFMhkr89PlvqSAduSU0veLUPJTZSuGuaDTgK6CMjMsyDzVzaarrQ__&Key-Pair-Id=K24J24Z295AEI9: HTTPSConnectionPool(host='cdn-lfs-us-1.hf.co', port=443): Read timed out.
+Trying to resume download...
+2025-04-14 03:06:18,358 - ERROR - Error loading model: deepseek-ai/DeepSeek-R1-Distill-Qwen-7B does not appear to have files named ('model-00001-of-000002.safetensors', 'model-00002-of-000002.safetensors'). Checkout 'https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-7B/tree/main'for available files.
+Traceback (most recent call last):
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\main.py", line 151, in load_model
+    self.model = AutoModelForCausalLM.from_pretrained(self.model_name)
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\my_venv\lib\site-packages\transformers\models\auto\auto_factory.py", line 571, in from_pretrained
+    return model_class.from_pretrained(
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\my_venv\lib\site-packages\transformers\modeling_utils.py", line 279, in _wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\my_venv\lib\site-packages\transformers\modeling_utils.py", line 4260, in from_pretrained
+    checkpoint_files, sharded_metadata = _get_resolved_checkpoint_files(
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\my_venv\lib\site-packages\transformers\modeling_utils.py", line 1152, in _get_resolved_checkpoint_files
+    checkpoint_files, sharded_metadata = get_checkpoint_shard_files(
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\my_venv\lib\site-packages\transformers\utils\hub.py", line 1115, in get_checkpoint_shard_files
+    cached_filenames = cached_files(
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\my_venv\lib\site-packages\transformers\utils\hub.py", line 517, in cached_files
+    raise EnvironmentError(
+OSError: deepseek-ai/DeepSeek-R1-Distill-Qwen-7B does not appear to have files named ('model-00001-of-000002.safetensors', 'model-00002-of-000002.safetensors'). Checkout 'https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-7B/tree/main'for available files.
+2025-04-14 03:35:47,448 - INFO - Checking Azure Storage for model...
+2025-04-14 03:35:47,458 - INFO - Request URL: 'https://blobquickstartll246.blob.core.windows.net/datasetsfromhgf/microsoft/Phi-3.5-mini-instruct'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.11.2 (Windows-10-10.0.26100-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '8dd223da-18e1-11f0-a7f0-aca5341b54f6'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-14 03:35:49,027 - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '1192601c-f01e-0005-4bee-aced66000000'
+    'x-ms-client-request-id': '8dd223da-18e1-11f0-a7f0-aca5341b54f6'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Mon, 14 Apr 2025 03:35:48 GMT'
+2025-04-14 03:35:49,028 - WARNING - Model blob does not exist
+2025-04-14 03:35:49,028 - INFO - Downloading model from huggingface...
+2025-04-14 03:35:49,032 - INFO - Loading Hugging Face model: microsoft/Phi-3.5-mini-instruct
+2025-04-14 03:42:48,890 - ERROR - Error loading model: microsoft/Phi-3.5-mini-instruct does not appear to have files named ('model-00001-of-00002.safetensors', 'model-00002-of-00002.safetensors'). Checkout 'https://huggingface.co/microsoft/Phi-3.5-mini-instruct/tree/main'for available files.
+Traceback (most recent call last):
+  File "c:\Users\DeLL\Desktop\4TH-IR\model-wrapper\main.py", line 155, in load_model
+    self.model = AutoModelForCausalLM.from_pretrained(self.model_name)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\my_second_venv\Lib\site-packages\transformers\models\auto\auto_factory.py", line 571, in from_pretrained
+    return model_class.from_pretrained(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\my_second_venv\Lib\site-packages\transformers\modeling_utils.py", line 279, in _wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\my_second_venv\Lib\site-packages\transformers\modeling_utils.py", line 4260, in from_pretrained
+    checkpoint_files, sharded_metadata = _get_resolved_checkpoint_files(
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\my_second_venv\Lib\site-packages\transformers\modeling_utils.py", line 1152, in _get_resolved_checkpoint_files
+    checkpoint_files, sharded_metadata = get_checkpoint_shard_files(
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\my_second_venv\Lib\site-packages\transformers\utils\hub.py", line 1115, in get_checkpoint_shard_files
+    cached_filenames = cached_files(
+                       ^^^^^^^^^^^^^
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\my_second_venv\Lib\site-packages\transformers\utils\hub.py", line 517, in cached_files
+    raise EnvironmentError(
+OSError: microsoft/Phi-3.5-mini-instruct does not appear to have files named ('model-00001-of-00002.safetensors', 'model-00002-of-00002.safetensors'). Checkout 'https://huggingface.co/microsoft/Phi-3.5-mini-instruct/tree/main'for available files.
+2025-04-14 11:16:53,718 - INFO - Checking Azure Storage for model...
+2025-04-14 11:16:53,724 - INFO - Request URL: 'https://blobquickstartll246.blob.core.windows.net/datasetsfromhgf/WAV2VEC2_BASE'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.11.2 (Windows-10-10.0.26100-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'f83393c4-1921-11f0-b046-d4dc37d6da5b'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-14 11:16:55,537 - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '85aa8600-801e-0052-452e-ad4355000000'
+    'x-ms-client-request-id': 'f83393c4-1921-11f0-b046-d4dc37d6da5b'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Mon, 14 Apr 2025 11:16:53 GMT'
+2025-04-14 11:16:55,537 - WARNING - Model blob does not exist
+2025-04-14 11:16:55,537 - INFO - Downloading model from pytorch...
+2025-04-14 11:16:55,537 - ERROR - Unknown model provider: pytorch
+2025-04-14 11:16:55,537 - ERROR - Error loading model: Unsupported model provider: pytorch
+Traceback (most recent call last):
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\main.py", line 170, in load_model
+    raise ValueError(f"Unsupported model provider: {self.model_provider}")
+ValueError: Unsupported model provider: pytorch
+2025-04-14 11:28:16,816 - INFO - Checking Azure Storage for model...
+2025-04-14 11:28:16,817 - INFO - Request URL: 'https://blobquickstartll246.blob.core.windows.net/datasetsfromhgf/WAV2VEC2_BASE'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.11.2 (Windows-10-10.0.26100-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '8f5b8e46-1923-11f0-8f98-d4dc37d6da5b'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-14 11:28:18,136 - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '4fd2b285-101e-0050-3130-adfded000000'
+    'x-ms-client-request-id': '8f5b8e46-1923-11f0-8f98-d4dc37d6da5b'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Mon, 14 Apr 2025 11:28:16 GMT'
+2025-04-14 11:28:18,138 - WARNING - Model blob does not exist
+2025-04-14 11:28:18,141 - INFO - Downloading model from pytorch...
+2025-04-14 11:28:18,142 - ERROR - Unknown model provider: pytorch
+2025-04-14 11:28:18,143 - ERROR - Error loading model: Unsupported model provider: pytorch
+Traceback (most recent call last):
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\main.py", line 170, in load_model
+    raise ValueError(f"Unsupported model provider: {self.model_provider}")
+ValueError: Unsupported model provider: pytorch
+2025-04-14 11:30:31,294 - INFO - Checking Azure Storage for model...
+2025-04-14 11:30:31,294 - INFO - Request URL: 'https://blobquickstartll246.blob.core.windows.net/datasetsfromhgf/WAV2VEC2_BASE'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.11.2 (Windows-10-10.0.26100-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'df83202a-1923-11f0-8b82-d4dc37d6da5b'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-14 11:30:32,992 - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '11d0d0f4-c01e-006c-6e30-add42a000000'
+    'x-ms-client-request-id': 'df83202a-1923-11f0-8b82-d4dc37d6da5b'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Mon, 14 Apr 2025 11:30:30 GMT'
+2025-04-14 11:30:32,992 - WARNING - Model blob does not exist
+2025-04-14 11:30:32,992 - INFO - Downloading model from pytorch...
+2025-04-14 11:30:32,992 - ERROR - Unknown model provider: pytorch
+2025-04-14 11:30:32,992 - ERROR - Error loading model: Unsupported model provider: pytorch
+Traceback (most recent call last):
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\main.py", line 170, in load_model
+    raise ValueError(f"Unsupported model provider: {self.model_provider}")
+ValueError: Unsupported model provider: pytorch
+2025-04-14 11:44:35,520 - INFO - Checking Azure Storage for model...
+2025-04-14 11:44:35,526 - INFO - Request URL: 'https://blobquickstartll246.blob.core.windows.net/datasetsfromhgf/EMFORMER_RNNT_BASE_LIBRISPEECH'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.11.2 (Windows-10-10.0.26100-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'd6b64a01-1925-11f0-ace5-d4dc37d6da5b'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-14 11:44:36,974 - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '4fd79c61-101e-0050-1d32-adfded000000'
+    'x-ms-client-request-id': 'd6b64a01-1925-11f0-ace5-d4dc37d6da5b'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Mon, 14 Apr 2025 11:44:35 GMT'
+2025-04-14 11:44:36,974 - WARNING - Model blob does not exist
+2025-04-14 11:44:36,974 - INFO - Downloading model from pytorch...
+2025-04-14 11:44:36,974 - INFO - Loading PyTorch model from EMFORMER_RNNT_BASE_LIBRISPEECH
+2025-04-14 11:44:36,982 - ERROR - Error loading model: Model 'EMFORMER_RNNT_BASE_LIBRISPEECH' not found in Torch Hub, torchvision.models, torchaudio.models, or torchaudio.pipelines.
+Traceback (most recent call last):
+  File "c:\Users\DeLL\Desktop\4TH-IR\model-wrapper\main.py", line 161, in load_model
+    self.model = from_torch(self.model_name, self.saved_path)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\DeLL\Desktop\4TH-IR\model-wrapper\torch_route.py", line 48, in from_torch
+    raise ValueError(f"Model '{model_name}' not found in Torch Hub, torchvision.models, torchaudio.models, or torchaudio.pipelines.")
+ValueError: Model 'EMFORMER_RNNT_BASE_LIBRISPEECH' not found in Torch Hub, torchvision.models, torchaudio.models, or torchaudio.pipelines.
+2025-04-14 11:44:46,963 - INFO - Checking Azure Storage for model...
+2025-04-14 11:44:46,967 - INFO - Request URL: 'https://blobquickstartll246.blob.core.windows.net/datasetsfromhgf/EMFORMER_RNNT_BASE_LIBRISPEECH'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.11.2 (Windows-10-10.0.26100-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'dd884da4-1925-11f0-98ce-d4dc37d6da5b'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-14 11:44:47,936 - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'bd3e2346-801e-000f-3232-ad49d1000000'
+    'x-ms-client-request-id': 'dd884da4-1925-11f0-98ce-d4dc37d6da5b'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Mon, 14 Apr 2025 11:44:45 GMT'
+2025-04-14 11:44:47,936 - WARNING - Model blob does not exist
+2025-04-14 11:44:47,943 - INFO - Downloading model from pytorch...
+2025-04-14 11:44:47,946 - INFO - Loading PyTorch model from EMFORMER_RNNT_BASE_LIBRISPEECH
+2025-04-14 11:44:47,950 - ERROR - Error loading model: Model 'EMFORMER_RNNT_BASE_LIBRISPEECH' not found in Torch Hub, torchvision.models, torchaudio.models, or torchaudio.pipelines.
+Traceback (most recent call last):
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\main.py", line 161, in load_model
+    self.model = from_torch(self.model_name, self.saved_path)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\torch_route.py", line 48, in from_torch
+    raise ValueError(f"Model '{model_name}' not found in Torch Hub, torchvision.models, torchaudio.models, or torchaudio.pipelines.")
+ValueError: Model 'EMFORMER_RNNT_BASE_LIBRISPEECH' not found in Torch Hub, torchvision.models, torchaudio.models, or torchaudio.pipelines.
+2025-04-14 13:06:52,535 - INFO - Checking Azure Storage for model...
+2025-04-14 13:06:52,537 - INFO - Request URL: 'https://blobquickstartll246.blob.core.windows.net/datasetsfromhgf/EMFORMER_RNNT_BASE_LIBRISPEECH'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.11.2 (Windows-10-10.0.26100-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '5566d3b9-1931-11f0-b290-d4dc37d6da5b'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-14 13:06:54,075 - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'ca741340-d01e-0060-633e-ad4322000000'
+    'x-ms-client-request-id': '5566d3b9-1931-11f0-b290-d4dc37d6da5b'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Mon, 14 Apr 2025 13:06:52 GMT'
+2025-04-14 13:06:54,075 - WARNING - Model blob does not exist
+2025-04-14 13:06:54,075 - INFO - Downloading model from pytorch...
+2025-04-14 13:06:54,078 - INFO - Loading PyTorch model from EMFORMER_RNNT_BASE_LIBRISPEECH
+2025-04-14 13:06:54,078 - ERROR - Error loading model: Model 'EMFORMER_RNNT_BASE_LIBRISPEECH' not found in Torch Hub, torchvision.models, torchaudio.models, or torchaudio.pipelines.
+Traceback (most recent call last):
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\main.py", line 161, in load_model
+    self.model = from_torch(self.model_name, self.saved_path)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\torch_route.py", line 48, in from_torch
+    raise ValueError(f"Model '{model_name}' not found in Torch Hub, torchvision.models, torchaudio.models, or torchaudio.pipelines.")
+ValueError: Model 'EMFORMER_RNNT_BASE_LIBRISPEECH' not found in Torch Hub, torchvision.models, torchaudio.models, or torchaudio.pipelines.
+2025-04-14 13:07:50,302 - INFO - Checking Azure Storage for model...
+2025-04-14 13:07:50,305 - INFO - Request URL: 'https://blobquickstartll246.blob.core.windows.net/datasetsfromhgf/EMFORMER_RNNT_BASE_LIBRISPEECH'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.11.2 (Windows-10-10.0.26100-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '77d504d0-1931-11f0-80a1-d4dc37d6da5b'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-14 13:07:51,120 - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'f4b0a765-501e-008a-743e-ad640c000000'
+    'x-ms-client-request-id': '77d504d0-1931-11f0-80a1-d4dc37d6da5b'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Mon, 14 Apr 2025 13:07:49 GMT'
+2025-04-14 13:07:51,123 - WARNING - Model blob does not exist
+2025-04-14 13:07:51,123 - INFO - Downloading model from pytorch...
+2025-04-14 13:07:51,123 - INFO - Loading PyTorch model from EMFORMER_RNNT_BASE_LIBRISPEECH
+2025-04-14 13:07:51,123 - ERROR - Error loading model: Model 'EMFORMER_RNNT_BASE_LIBRISPEECH' not found in Torch Hub, torchvision.models, torchaudio.models, or torchaudio.pipelines.
+Traceback (most recent call last):
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\main.py", line 161, in load_model
+    self.model = from_torch(self.model_name, self.saved_path)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\torch_route.py", line 48, in from_torch
+    raise ValueError(f"Model '{model_name}' not found in Torch Hub, torchvision.models, torchaudio.models, or torchaudio.pipelines.")
+ValueError: Model 'EMFORMER_RNNT_BASE_LIBRISPEECH' not found in Torch Hub, torchvision.models, torchaudio.models, or torchaudio.pipelines.
+2025-04-14 19:17:25,158 - INFO - Checking Azure Storage for model...
+2025-04-14 19:17:25,166 - INFO - Request URL: 'https://blobquickstartll246.blob.core.windows.net/datasetsfromhgf/WAV2VEC2_BASE'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.11 (Windows-10-10.0.26100-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '19137dd6-1965-11f0-bc0a-d4dc37d6da5b'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-14 19:17:26,324 - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '48ad79e8-e01e-0026-4e71-ad77a5000000'
+    'x-ms-client-request-id': '19137dd6-1965-11f0-bc0a-d4dc37d6da5b'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Mon, 14 Apr 2025 19:17:24 GMT'
+2025-04-14 19:17:26,324 - WARNING - Model blob does not exist
+2025-04-14 19:17:26,324 - INFO - Downloading model from pytorch...
+2025-04-14 19:17:26,324 - INFO - Loading PyTorch model from WAV2VEC2_BASE
+2025-04-14 19:38:30,718 - INFO - Checking Azure Storage for model...
+2025-04-14 19:38:30,722 - INFO - Request URL: 'https://blobquickstartll246.blob.core.windows.net/datasetsfromhgf/WAV2VEC2_BASE'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.11 (Windows-10-10.0.26100-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '0b68abfe-1968-11f0-811e-d4dc37d6da5b'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-14 19:38:31,959 - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'ed4f4a8f-001e-0087-4a74-adacd8000000'
+    'x-ms-client-request-id': '0b68abfe-1968-11f0-811e-d4dc37d6da5b'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Mon, 14 Apr 2025 19:38:30 GMT'
+2025-04-14 19:38:31,959 - WARNING - Model blob does not exist
+2025-04-14 19:38:31,959 - INFO - Downloading model from pytorch...
+2025-04-14 19:38:31,959 - INFO - Loading PyTorch model from WAV2VEC2_BASE
+2025-04-14 19:46:24,947 - ERROR - Error loading model: Model 'WAV2VEC2_BASE' not found in Torch Hub, torchvision.models, torchaudio.models, or torchaudio.pipelines.
+Traceback (most recent call last):
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\main.py", line 161, in load_model
+    self.model = from_torch(self.model_name, self.saved_path)
+  File "C:\Users\DeLL\Desktop\4TH-IR\model-wrapper\torch_route.py", line 48, in from_torch
+    raise ValueError(f"Model '{model_name}' not found in Torch Hub, torchvision.models, torchaudio.models, or torchaudio.pipelines.")
+ValueError: Model 'WAV2VEC2_BASE' not found in Torch Hub, torchvision.models, torchaudio.models, or torchaudio.pipelines.

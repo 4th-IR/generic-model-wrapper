@@ -8,6 +8,11 @@ from torch_route import from_torch
 from tensorflow_route import from_tensorflow
 from dotenv import load_dotenv
 import tensorflow as tf
+import time
+from huggingface_hub import login
+
+HGF_TOKEN = os.getenv("HUGGINGFACE ")
+login(HGF_TOKEN)
 
 
 load_dotenv()
@@ -124,6 +129,7 @@ class ModelWrapper:
         return True
 
     def load_model(self):
+
         """Loads models from Azure Storage if available; otherwise, downloads from a repository."""
         # since we are using a local directory, we will check it before 
 
@@ -165,15 +171,88 @@ class ModelWrapper:
 
             logging.info("Model loaded successfully.")
 
-            if self.azure_config:
-                logging.info("Saving model to Azure...")
-                self.save_to_azure()
+            # if self.azure_config:
+            #     logging.info("Saving model to Azure...")
+            #     self.save_to_azure()
         except Exception as e:
             logging.error(f"Error loading model: {e}", exc_info=True)
             raise HTTPException(status_code=500, detail=f"Model loading failed: {str(e)}")
 
 
 if __name__ == "__main__":
-    model_wrapper = ModelWrapper("tensorflow", "bert_base_en", "vision")
-    model_wrapper.load_model()
-    # model_wrapper.save_to_azure()
+   
+    """
+    I wil be testing these models tomorrow and updating the sheet. 
+    """
+
+
+
+    from inferencing import inference_model
+    import pandas as pd
+    import openpyxl
+    import psutil
+    
+    models_dict = {
+    "model_1": {"model_provider": "pytorch", "model_category": "torch_audio", "model_name": "WAV2VEC2_BASE"},
+    "model_2": {"model_provider": "pytorch", "model_category": "torch_audio", "model_name": "EMFORMER_RNNT_BASE_LIBRISPEECH"},
+    "model_3": {"model_provider": "pytorch", "model_category": "torch_vision", "model_name": "ResNet50"},
+    "model_4": {"model_provider": "pytorch", "model_category": "torch_audio", "model_name": "Wav2Vec2Bundle"},
+    "model_5": {"model_provider": "pytorch", "model_category": "torch_vision", "model_name": "inception_v3"},
+    "model_6": {"model_provider": "pytorch", "model_category": "torch_audio", "model_name": "EMFORMER_RNNT_BASE_LIBRISPEECH"},
+    "model_7": {"model_provider": "pytorch", "model_category": "torch_vision", "model_name": "shufflenet_v2_x1_5"},
+    "model_8": {"model_provider": "pytorch", "model_category": "torch_audio", "model_name": "TACOTRON2_WAVERNN_CHAR_LJSPEECH"},
+        }
+
+    excel_file = 'torch_model_metrics.xlsx'
+
+    model_inference_metrics = []
+
+    for model in models_dict.values():
+
+        model_name = model["model_name"]
+        model_provider = model["model_provider"]
+        model_category = model["model_category"]
+
+
+        start_inference_time = time.time()
+        process = psutil.Process(os.getpid())
+
+        mem_before = process.memory_info().rss / (1024 ** 2)
+
+        model_wrapper = ModelWrapper(model_provider, model_name, model_category)
+        model_wrapper.load_model()
+
+        print("/nDownload completed")
+
+        inference_model(model_provider, model_name, model_category)
+
+        end_inference_time = time.time()
+
+        mem_after = process.memory_info().rss / (1024 ** 2)
+
+        mem_used = mem_after - mem_before
+
+
+        TOTAL_TIME_TAKEN = round((end_inference_time - start_inference_time)/60, 2)
+        model_data = {'model_name': model_name,
+                        'model_provider': model_provider,
+                        "model_category": model_category,
+                        "total_time_taken(mins)": TOTAL_TIME_TAKEN,
+                        "memory_used": mem_used}
+                                
+        model_inference_metrics.append(model_data)
+        print("/n Metrics obtained", model_inference_metrics)
+
+    df = pd.DataFrame(model_inference_metrics)
+
+    if os.path.exists(excel_file):
+        existing_df = pd.read_excel(excel_file)
+        updated_df = pd.concat([existing_df, df], ignore_index=True)
+    else:
+        updated_df = df
+
+    updated_df.to_excel(excel_file, index=False)
+
+    print(f"Saved {len(df)} model entries to {excel_file}")
+
+
