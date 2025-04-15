@@ -1183,3 +1183,678 @@ Traceback (most recent call last):
   File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/transport/_requests_basic.py", line 409, in send
     raise error
 azure.core.exceptions.ServiceResponseError: ('Connection aborted.', TimeoutError('The write operation timed out'))
+2025-04-15 09:52:20,604 - model - INFO - Checking Azure Storage for model...
+2025-04-15 09:52:20,607 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '52cd2b38-19df-11f0-85d3-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-15 09:52:23,326 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '7f617201-c01e-000c-5eec-ad95e2000000'
+    'x-ms-client-request-id': '52cd2b38-19df-11f0-85d3-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Tue, 15 Apr 2025 09:52:23 GMT'
+2025-04-15 09:52:23,327 - model - WARNING - Model blob does not exist
+2025-04-15 09:52:23,327 - time - INFO - load_from_azure took 2.72216796875 seconds to run
+2025-04-15 09:52:23,327 - model - INFO - Downloading model from pytorch...
+2025-04-15 09:52:23,327 - model - INFO - Loading PyTorch model from resnet18
+2025-04-15 09:52:24,160 - model - INFO - Model loaded successfully.
+2025-04-15 09:52:24,160 - model - INFO - Saving model from Provider to Azure...
+2025-04-15 09:52:24,244 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18?timeout=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '46886368'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '54f805fe-19df-11f0-85d3-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-15 09:53:02,135 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18?timeout=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '46886368'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '6b8de69e-19df-11f0-85d3-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-15 09:53:46,244 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18?timeout=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '46886368'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '85d8706e-19df-11f0-85d3-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-15 09:54:46,503 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18?timeout=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '46886368'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'a9c3357c-19df-11f0-85d3-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-15 09:55:07,617 - model - ERROR - Error loading model: ('Connection aborted.', TimeoutError('The write operation timed out'))
+Traceback (most recent call last):
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/model/main.py", line 197, in load_model
+    self.save_to_azure()
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/utils/resource_manager.py", line 24, in wrapper
+    func(*args, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/model/main.py", line 73, in save_to_azure
+    blob_client.upload_blob(data, overwrite=True, progress_hook=progress_callback, timeout=600)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/tracing/decorator.py", line 119, in wrapper_use_tracer
+    return func(*args, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_blob_client.py", line 605, in upload_blob
+    return upload_block_blob(**options)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_upload_helpers.py", line 105, in upload_block_blob
+    response = client.upload(
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/tracing/decorator.py", line 119, in wrapper_use_tracer
+    return func(*args, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_generated/operations/_block_blob_operations.py", line 878, in upload
+    pipeline_response: PipelineResponse = self._client._pipeline.run(  # pylint: disable=protected-access
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 242, in run
+    return first_node.send(pipeline_request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  [Previous line repeated 2 more times]
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/policies/_redirect.py", line 205, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/policies.py", line 555, in send
+    raise err
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/policies.py", line 527, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  [Previous line repeated 1 more time]
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/policies.py", line 301, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 130, in send
+    self._sender.send(request.http_request, **request.context.options),
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/base_client.py", line 353, in send
+    return self._transport.send(request, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/base_client.py", line 353, in send
+    return self._transport.send(request, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/transport/_requests_basic.py", line 409, in send
+    raise error
+azure.core.exceptions.ServiceResponseError: ('Connection aborted.', TimeoutError('The write operation timed out'))
+2025-04-15 10:04:56,595 - model - INFO - Checking Azure Storage for model...
+2025-04-15 10:04:56,597 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '15683060-19e1-11f0-af11-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-15 10:04:58,299 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '411282ce-301e-0037-1ded-add046000000'
+    'x-ms-client-request-id': '15683060-19e1-11f0-af11-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Tue, 15 Apr 2025 10:04:58 GMT'
+2025-04-15 10:04:58,301 - model - WARNING - Model blob does not exist
+2025-04-15 10:04:58,301 - time - INFO - load_from_azure took 1.7057061195373535 seconds to run
+2025-04-15 10:04:58,301 - model - INFO - Downloading model from pytorch...
+2025-04-15 10:04:58,302 - model - INFO - Loading PyTorch model from resnet18
+2025-04-15 10:04:59,050 - model - INFO - Model loaded successfully.
+2025-04-15 10:04:59,050 - model - INFO - Saving model from Provider to Azure...
+2025-04-15 10:04:59,116 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18?timeout=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '46886368'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '16e87e7c-19e1-11f0-af11-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-15 10:05:36,314 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18?timeout=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '46886368'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '2d147552-19e1-11f0-af11-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-15 10:06:21,544 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18?timeout=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '46886368'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '480a03ea-19e1-11f0-af11-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-15 10:07:23,726 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18?timeout=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '46886368'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '6d1a237c-19e1-11f0-af11-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-15 10:07:44,749 - model - ERROR - Error loading model: ('Connection aborted.', TimeoutError('The write operation timed out'))
+Traceback (most recent call last):
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/model/main.py", line 197, in load_model
+    self.save_to_azure()
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/utils/resource_manager.py", line 24, in wrapper
+    func(*args, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/model/main.py", line 73, in save_to_azure
+    blob_client.upload_blob(data, overwrite=True, progress_hook=progress_callback, timeout=600, max_concurrency=2)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/tracing/decorator.py", line 119, in wrapper_use_tracer
+    return func(*args, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_blob_client.py", line 605, in upload_blob
+    return upload_block_blob(**options)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_upload_helpers.py", line 105, in upload_block_blob
+    response = client.upload(
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/tracing/decorator.py", line 119, in wrapper_use_tracer
+    return func(*args, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_generated/operations/_block_blob_operations.py", line 878, in upload
+    pipeline_response: PipelineResponse = self._client._pipeline.run(  # pylint: disable=protected-access
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 242, in run
+    return first_node.send(pipeline_request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  [Previous line repeated 2 more times]
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/policies/_redirect.py", line 205, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/policies.py", line 555, in send
+    raise err
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/policies.py", line 527, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  [Previous line repeated 1 more time]
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/policies.py", line 301, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 130, in send
+    self._sender.send(request.http_request, **request.context.options),
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/base_client.py", line 353, in send
+    return self._transport.send(request, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/base_client.py", line 353, in send
+    return self._transport.send(request, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/transport/_requests_basic.py", line 409, in send
+    raise error
+azure.core.exceptions.ServiceResponseError: ('Connection aborted.', TimeoutError('The write operation timed out'))
+2025-04-15 10:51:28,659 - model - INFO - Checking Azure Storage for model...
+2025-04-15 10:51:28,662 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '959b6cd8-19e7-11f0-8cf9-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-15 10:51:29,970 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'f4c5d474-801e-0032-59f4-ad029d000000'
+    'x-ms-client-request-id': '959b6cd8-19e7-11f0-8cf9-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Tue, 15 Apr 2025 10:51:29 GMT'
+2025-04-15 10:51:29,971 - model - WARNING - Model blob does not exist
+2025-04-15 10:51:29,972 - time - INFO - load_from_azure took 1.3115079402923584 seconds to run
+2025-04-15 10:51:29,972 - model - INFO - Downloading model from pytorch...
+2025-04-15 10:51:29,972 - model - INFO - Loading PyTorch model from resnet18
+2025-04-15 10:51:30,763 - model - INFO - Model loaded successfully.
+2025-04-15 10:51:30,763 - model - INFO - Saving model from Provider to Azure...
+2025-04-15 10:51:30,797 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18?timeout=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '46886368'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '96e14c16-19e7-11f0-8cf9-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-15 10:52:05,807 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18?timeout=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '46886368'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'abbf5236-19e7-11f0-8cf9-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-15 10:52:51,451 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18?timeout=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '46886368'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'c6f40a4c-19e7-11f0-8cf9-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-15 10:53:54,999 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18?timeout=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '46886368'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'ecd4a49c-19e7-11f0-8cf9-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-15 10:54:16,044 - model - ERROR - Error loading model: ('Connection aborted.', TimeoutError('The write operation timed out'))
+Traceback (most recent call last):
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/model/main.py", line 197, in load_model
+    self.save_to_azure()
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/utils/resource_manager.py", line 24, in wrapper
+    func(*args, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/model/main.py", line 73, in save_to_azure
+    blob_client.upload_blob(data, overwrite=True, timeout=600, max_concurrency=2)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/tracing/decorator.py", line 119, in wrapper_use_tracer
+    return func(*args, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_blob_client.py", line 605, in upload_blob
+    return upload_block_blob(**options)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_upload_helpers.py", line 105, in upload_block_blob
+    response = client.upload(
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/tracing/decorator.py", line 119, in wrapper_use_tracer
+    return func(*args, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_generated/operations/_block_blob_operations.py", line 878, in upload
+    pipeline_response: PipelineResponse = self._client._pipeline.run(  # pylint: disable=protected-access
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 242, in run
+    return first_node.send(pipeline_request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  [Previous line repeated 2 more times]
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/policies/_redirect.py", line 205, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/policies.py", line 555, in send
+    raise err
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/policies.py", line 527, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  [Previous line repeated 1 more time]
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/policies.py", line 301, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 130, in send
+    self._sender.send(request.http_request, **request.context.options),
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/base_client.py", line 353, in send
+    return self._transport.send(request, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/base_client.py", line 353, in send
+    return self._transport.send(request, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/transport/_requests_basic.py", line 409, in send
+    raise error
+azure.core.exceptions.ServiceResponseError: ('Connection aborted.', TimeoutError('The write operation timed out'))
+2025-04-15 11:06:50,462 - model - INFO - Checking Azure Storage for model...
+2025-04-15 11:06:50,465 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'bb0b74ca-19e9-11f0-998a-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-15 11:06:51,869 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '59a953bd-001e-0061-80f6-ad21a9000000'
+    'x-ms-client-request-id': 'bb0b74ca-19e9-11f0-998a-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Tue, 15 Apr 2025 11:06:51 GMT'
+2025-04-15 11:06:51,870 - model - WARNING - Model blob does not exist
+2025-04-15 11:06:51,870 - time - INFO - load_from_azure took 1.4066998958587646 seconds to run
+2025-04-15 11:06:51,870 - model - INFO - Downloading model from pytorch...
+2025-04-15 11:06:51,870 - model - INFO - Loading PyTorch model from resnet18
+2025-04-15 11:06:52,694 - model - INFO - Model loaded successfully.
+2025-04-15 11:06:52,694 - model - INFO - Saving model from Provider to Azure...
+2025-04-15 11:06:52,720 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18?timeout=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '46886368'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'bc63a19e-19e9-11f0-998a-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-15 11:07:33,221 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18?timeout=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '46886368'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'd4876c38-19e9-11f0-998a-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-15 11:08:19,525 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18?timeout=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '46886368'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'f020d6d2-19e9-11f0-998a-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-15 11:09:25,118 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18?timeout=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '46886368'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '173991b4-19ea-11f0-998a-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-15 11:09:46,029 - model - ERROR - Error loading model: ('Connection aborted.', TimeoutError('The write operation timed out'))
+Traceback (most recent call last):
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/model/main.py", line 197, in load_model
+    self.save_to_azure()
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/utils/resource_manager.py", line 24, in wrapper
+    func(*args, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/model/main.py", line 73, in save_to_azure
+    blob_client.upload_blob(data, overwrite=True, timeout=600, max_concurrency=2)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/tracing/decorator.py", line 119, in wrapper_use_tracer
+    return func(*args, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_blob_client.py", line 605, in upload_blob
+    return upload_block_blob(**options)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_upload_helpers.py", line 105, in upload_block_blob
+    response = client.upload(
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/tracing/decorator.py", line 119, in wrapper_use_tracer
+    return func(*args, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_generated/operations/_block_blob_operations.py", line 878, in upload
+    pipeline_response: PipelineResponse = self._client._pipeline.run(  # pylint: disable=protected-access
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 242, in run
+    return first_node.send(pipeline_request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  [Previous line repeated 2 more times]
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/policies/_redirect.py", line 205, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/policies.py", line 555, in send
+    raise err
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/policies.py", line 527, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  [Previous line repeated 1 more time]
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/policies.py", line 301, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 130, in send
+    self._sender.send(request.http_request, **request.context.options),
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/base_client.py", line 353, in send
+    return self._transport.send(request, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/base_client.py", line 353, in send
+    return self._transport.send(request, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/transport/_requests_basic.py", line 409, in send
+    raise error
+azure.core.exceptions.ServiceResponseError: ('Connection aborted.', TimeoutError('The write operation timed out'))
+2025-04-15 11:31:58,342 - model - INFO - Checking Azure Storage for model...
+2025-04-15 11:31:58,344 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '3dcf852e-19ed-11f0-a738-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-15 11:31:59,589 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'ee895779-601e-002a-41fa-adddfa000000'
+    'x-ms-client-request-id': '3dcf852e-19ed-11f0-a738-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Tue, 15 Apr 2025 11:32:00 GMT'
+2025-04-15 11:31:59,590 - model - WARNING - Model blob does not exist
+2025-04-15 11:31:59,590 - time - INFO - load_from_azure took 1.2476649284362793 seconds to run
+2025-04-15 11:31:59,590 - model - INFO - Downloading model from pytorch...
+2025-04-15 11:31:59,590 - model - INFO - Loading PyTorch model from resnet18
+2025-04-15 11:32:00,463 - model - INFO - Model loaded successfully.
+2025-04-15 11:32:00,464 - model - INFO - Saving model from Provider to Azure...
+2025-04-15 11:32:00,495 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18?timeout=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '46886368'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '3f17b8f2-19ed-11f0-a738-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-15 11:32:38,188 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18?timeout=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '46886368'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '558f28a4-19ed-11f0-a738-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-15 11:33:20,949 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18?timeout=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '46886368'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '6f0c1e40-19ed-11f0-a738-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-15 11:34:21,699 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18?timeout=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '46886368'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '9341c0f8-19ed-11f0-a738-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-15 11:34:44,510 - model - ERROR - Error loading model: ('Connection aborted.', TimeoutError('The write operation timed out'))
+Traceback (most recent call last):
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/model/main.py", line 197, in load_model
+    self.save_to_azure()
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/utils/resource_manager.py", line 24, in wrapper
+    func(*args, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/model/main.py", line 73, in save_to_azure
+    blob_client.upload_blob(data, overwrite=True, timeout=600, max_concurrency=2)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/tracing/decorator.py", line 119, in wrapper_use_tracer
+    return func(*args, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_blob_client.py", line 605, in upload_blob
+    return upload_block_blob(**options)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_upload_helpers.py", line 105, in upload_block_blob
+    response = client.upload(
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/tracing/decorator.py", line 119, in wrapper_use_tracer
+    return func(*args, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_generated/operations/_block_blob_operations.py", line 878, in upload
+    pipeline_response: PipelineResponse = self._client._pipeline.run(  # pylint: disable=protected-access
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 242, in run
+    return first_node.send(pipeline_request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  [Previous line repeated 2 more times]
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/policies/_redirect.py", line 205, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/policies.py", line 555, in send
+    raise err
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/policies.py", line 527, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  [Previous line repeated 1 more time]
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/policies.py", line 301, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 130, in send
+    self._sender.send(request.http_request, **request.context.options),
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/base_client.py", line 353, in send
+    return self._transport.send(request, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/base_client.py", line 353, in send
+    return self._transport.send(request, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/transport/_requests_basic.py", line 409, in send
+    raise error
+azure.core.exceptions.ServiceResponseError: ('Connection aborted.', TimeoutError('The write operation timed out'))

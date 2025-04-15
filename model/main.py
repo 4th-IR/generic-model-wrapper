@@ -63,14 +63,14 @@ class ModelWrapper:
         file_size = os.stat(self.model_save_path).st_size
         blob_client = self.container_client.get_blob_client(blob=self.model_name)
         
-        with tqdm(total=file_size, unit="B", unit_scale=True, desc="Upload Progress") as progress_bar:
-            def progress_callback(bytes_uploaded):
-                # Update progress_bar: calculate the difference between the current uploaded bytes
-                # and the last reported amount (progress_bar.n).
-                progress_bar.update(bytes_uploaded - progress_bar.n)
+        # with tqdm(total=file_size, unit="B", unit_scale=True, desc="Upload Progress") as progress_bar:
+        #     def progress_callback(bytes_uploaded):
+        #         # Update progress_bar: calculate the difference between the current uploaded bytes
+        #         # and the last reported amount (progress_bar.n).
+        #         progress_bar.update(bytes_uploaded - progress_bar.n)
 
-            with open(self.model_save_path, "rb") as data:
-                blob_client.upload_blob(data, overwrite=True, progress_hook=progress_callback, timeout=600)
+        with open(self.model_save_path, "rb") as data:
+            blob_client.upload_blob(data, overwrite=True, timeout=600, max_concurrency=2)
 
         LOG.info(f"{self.model_name} saved to Azure Blob Storage")
 
