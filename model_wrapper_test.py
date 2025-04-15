@@ -7,26 +7,20 @@ from PIL import Image
 from configs.model_test_config import models_dict
 from model.main import ModelWrapper
 from utils.env_manager import *
+from pipeline.model_loading_pipeline import load_model
+from pipeline.model_inference import model_inference
 
 
-def main():
-    test_model = models_dict['model_3']
-    model_provider = test_model['model_provider']
-    model_category = test_model['model_category']
-    model_name = test_model['model_name']
+def test_model_loading():
+    for id, model in models_dict.items():
+        load_model(model)
 
-    model_wrapper = ModelWrapper(model_provider, model_name, model_category)
 
-    model_wrapper.load_model() 
-
-    #perform inference 
-    image_path = '../assets/images/animal/animal_pictures/cat1.jpg'
-    image = Image.open(image_path)
-
-    preds = model_wrapper.run_inference(image)
-    print(preds)
-
+def test_inference():
+    for id, model in models_dict.items():
+        model_inference(model)
 
 if __name__ == '__main__':
-    main()
+    test_model_loading()
 
+    test_inference()

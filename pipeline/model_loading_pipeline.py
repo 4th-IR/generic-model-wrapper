@@ -3,7 +3,7 @@
 #internal 
 from model.main import ModelWrapper
 
-def main(model_details):
+def load_model(model_details):
     model_name = model_details['model_name']
     model_provider = model_details['model_provider']
     model_category = model_details['model_category']
@@ -19,6 +19,3 @@ def main(model_details):
     except Exception as e:
         pass 
 
-
-if __name__ == '__main__':
-    main()
