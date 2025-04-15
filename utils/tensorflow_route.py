@@ -1,13 +1,16 @@
+""" A Model Utility Script to Load Tensorflow Models from Online Providers """
+
 import tensorflow as tf
 import os
 import kagglehub
 import keras_hub
 import tfimm
+import tempfile
 
 
-def from_tensorflow(model_name: str, save_path: str = "saved_models", **kwargs):
+def from_tensorflow(model_name: str, **kwargs):
     # Create the save directory if it doesn't exist
-    os.makedirs(save_path, exist_ok=True)
+    save_path = tempfile.gettempdir()
     os.environ['KAGGLEHUB_CACHE'] = save_path
 
     # First, check if the model exists in tf.keras.applications
@@ -98,8 +101,3 @@ def from_tensorflow(model_name: str, save_path: str = "saved_models", **kwargs):
             print(f"KaggleHub model downloaded to: {model_path}")
             return model_path
 
-# # Example usage
-# if __name__ == "__main__":
-#     model_name = "gemma_2b_en"  # Change this to any available model in tf.keras.applications or preset name
-#     save_directory = "models"  # Define the directory where the model will be saved
-#     from_tensorflow(model_name, save_directory

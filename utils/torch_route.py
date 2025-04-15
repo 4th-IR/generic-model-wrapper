@@ -1,15 +1,19 @@
+""" A model utility script to load pytorch models from online providers """
+
 import torch
 import torchvision.models as models
 import torchaudio.models as audio_models
 import torchaudio.pipelines
 from torchvision.models import get_model_weights
 import os
+import tempfile
 
 
-def from_torch(model_name: str, save_path: str, hub_repo: str = None):
+def from_torch(model_name: str, hub_repo: str = None):
     model = None
+    save_path = tempfile.gettempdir()
 
-    # Load model from Torch Hub
+    # Load model from Torch Hub 
     if hub_repo:
         try:
             model = torch.hub.load(hub_repo, model_name, pretrained=True)  # Fix
