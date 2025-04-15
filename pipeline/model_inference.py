@@ -1,9 +1,13 @@
 """A script to load models from Azure and Perform Inference """
 
 #internal
+from model.main import ModelWrapper
 
-def main():
-    pass 
+def main(model_id):
+    # fetch model details from MIS
+
+    model_wrapper = ModelWrapper()
+
 
 
 if __name__ == '__main__':
