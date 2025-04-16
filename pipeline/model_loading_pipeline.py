@@ -2,6 +2,7 @@
 
 #internal 
 from model.main import ModelWrapper
+from utils.api_interceptor import create_model
 
 def load_model(model_details):
     model_name = model_details['model_name']
@@ -15,7 +16,17 @@ def load_model(model_details):
         model_wrapper.load_model() 
 
         # if model saves to Azure - update MIS 
+        model_details = {
+            "model_identifier": model_name,
+            "version": 0,
+            "created_at": None, 
+            "last_modified": None,
+            "framework": model_provider
+        }
+
+        return create_model(model_details)
+
 
     except Exception as e:
-        pass 
+        raise RuntimeError(f'Model loading Failed: ... {e}') 
 
