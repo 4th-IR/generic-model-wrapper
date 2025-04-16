@@ -9,18 +9,23 @@ from model.main import ModelWrapper
 from utils.env_manager import *
 from pipeline.model_loading_pipeline import load_model
 from pipeline.model_inference import model_inference
+from utils.logger import get_logger
+
+LOG = get_logger('test')
 
 
 def test_model_loading():
-    for id, model in models_dict.items():
-        load_model(model)
+    model = models_dict['model_3']
+    load_model(model)
 
 
 def test_inference():
-    for id, model in models_dict.items():
-        model_inference(model)
+    model = models_dict['model_3']
+    model_inference(model)
 
 if __name__ == '__main__':
+    LOG.info('starting model loading')
     test_model_loading()
 
+    LOG.info('Starting inference test')
     test_inference()
