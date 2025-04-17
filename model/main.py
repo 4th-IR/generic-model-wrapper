@@ -67,8 +67,8 @@ class ModelWrapper:
             LOG.error("Attempted to save a model that is not loaded.")
             raise ValueError("Model is not loaded and saved")
         
-        file_size = os.stat(self.model_save_path).st_size
-        blob_client = self.container_client.get_blob_client(blob=self.model_name)
+        #file_size = os.stat(self.model_save_path).st_size
+        #blob_client = self.container_client.get_blob_client(blob=self.model_name)
         
         # with tqdm(total=file_size, unit="B", unit_scale=True, desc="Upload Progress") as progress_bar:
         #     def progress_callback(bytes_uploaded):
@@ -76,8 +76,15 @@ class ModelWrapper:
         #         # and the last reported amount (progress_bar.n).
         #         progress_bar.update(bytes_uploaded - progress_bar.n)
 
-        with open(self.model_save_path, "rb") as data:
-            blob_client.upload_blob(data, overwrite=True)
+        # with open(self.model_save_path, "rb") as data:
+        #     blob_client.upload_blob(data, overwrite=True)
+
+        try:
+            self.upload_directory_to_azure(
+                self.model_save_path
+            )
+        except Exception as e:
+            LOG.warn(f'Failed to save with error {e}')
 
         LOG.info(f"{self.model_name} saved to Azure Blob Storage")
 
@@ -326,6 +333,18 @@ class ModelWrapper:
             waveform, sample_rate = torchaudio.load(input_data)
             return waveform.numpy()
         return input_data
+    
+    def upload_directory_to_azure(self, local_dir, blob_prefix=""):
+        for root, _, files in os.walk(local_dir):
+            for file in files:
+                local_path = os.path.join(root, file)
+                blob_name = os.path.relpath(local_path, local_dir)
+                if blob_prefix:
+                    blob_name = f"{blob_prefix}/{blob_name}"
+                
+                blob_client = self.container_client.get_blob_client(blob_name)
+                with open(local_path, "rb") as data:
+                    blob_client.upload_blob(data, overwrite=True)
 
 # if __name__ == "__main__":
    
