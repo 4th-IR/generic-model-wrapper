@@ -1,3 +1,7 @@
+""" A Generic Model Wrapper Class to Standardize Framework Agnostic Model Loading and Inference """
+
+
+#external 
 import os
 import keras 
 import torch
@@ -12,14 +16,16 @@ from fastapi import HTTPException
 from huggingface_hub import login
 from azure.storage.blob import BlobServiceClient
 from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer, AutoModelForImageClassification
-from utils.torch_route import from_torch
-from utils.tensorflow_route import from_tensorflow
+import torchaudio
+
 
 
 #internal 
 from utils.logger import get_logger
 from utils.env_manager import AZURE_BLOB_URI, AZURE_CONNECTION_STRING, AZURE_CONTAINER_NAME, AZURE_STORAGE_ACCOUNT
 from utils.resource_manager import timer
+from utils.torch_route import from_torch
+from utils.tensorflow_route import from_tensorflow
 
 HGF_TOKEN = os.environ.get("HUGGINGFACE_TOKEN")
 login(HGF_TOKEN)
@@ -202,82 +208,121 @@ class ModelWrapper:
         
 
     @timer
-    def run_inference(self, input_data: Any, **kwargs: Any):
-        """Runs inference using the loaded model 
-        Args:
-            input 
-        """
-        if self.pipeline:
-            LOG.info("Using Hugging Face pipeline for inference.")
-            try:
+    def run_inference(self, input_data: Any, task: str = None, **kwargs: Any):
+        """Runs inference with enhanced multi-modal support"""
+        try:
+            # Common preprocessing for all frameworks
+            def _convert_to_tensor(data):
+                if isinstance(data, np.ndarray):
+                    return torch.from_numpy(data) if self.provider == "pytorch" else tf.convert_to_tensor(data)
+                return data
+
+            # Hugging Face Pipeline First (now with audio support)
+            if self.pipeline:
+                LOG.info(f"Using HF pipeline for {task or 'auto'} task")
+                # Handle audio inputs specifically
+                if task in ["automatic-speech-recognition", "audio-classification"]:
+                    if isinstance(input_data, (str, bytes, np.ndarray)):
+                        return self.pipeline(input_data, task=task, **kwargs)
                 return self.pipeline(input_data, **kwargs)
-            except Exception as e:
-                LOG.error(f"Hugging Face pipeline inference failed: {e}")
+            
+            # Hugging Face Direct Execution
+            if self.provider == "huggingface" and self.model:
+                LOG.info(f"Direct HF {task} inference")
+                
+                # Audio Processing
+                if task in ["audio-classification", "automatic-speech-recognition"]:
+                    audio = self._load_audio(input_data)
+                    inputs = self.feature_extractor(
+                        audio, 
+                        sampling_rate=16000, 
+                        return_tensors="pt" if self.device == "cpu" else "tf"
+                    )
+                    outputs = self.model(**inputs)
+                    return self._postprocess_audio(outputs, task)
 
-        elif self.provider == "huggingface" and self.model is not None:
-            LOG.info("Attempting direct Hugging Face model inference.")
-            try:
-                if isinstance(input_data, str) and self.tokenizer:
-                    inputs = self.tokenizer(input_data, return_tensors="pt", truncation=True, padding=True)
+                # Text Generation & Seq2Seq
+                if task in ["text-generation", "text2text-generation"]:
+                    inputs = self.tokenizer(input_data, return_tensors="pt" if self.device == "cpu" else "tf")
+                    outputs = self.model.generate(
+                        **inputs,
+                        max_length=kwargs.get("max_length", 512),
+                        num_beams=kwargs.get("num_beams", 5)
+                    )
+                    return self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+                # Object Detection & Segmentation
+                if task in ["object-detection", "image-segmentation"]:
+                    image = self._load_image(input_data)
+                    inputs = self.image_processor(images=image, return_tensors="pt" if self.device == "cpu" else "tf")
+                    outputs = self.model(**inputs)
+                    return self.image_processor.post_process_object_detection(
+                        outputs, 
+                        threshold=kwargs.get("threshold", 0.9)
+                    ) if task == "object-detection" else \
+                    self.image_processor.post_process_semantic_segmentation(outputs)
+
+                # Sequence Classification Fallback
+                if isinstance(input_data, str):
+                    inputs = self.tokenizer(input_data, return_tensors="pt" if self.device == "cpu" else "tf")
+                    return self.model(**inputs).logits
+
+            # PyTorch Specific Processing
+            if self.provider == "pytorch" and isinstance(self.model, torch.nn.Module):
+                # Audio Processing
+                if task == "audio-classification":
+                    waveform = _convert_to_tensor(input_data).float()
+                    mel_spec = torchaudio.transforms.MelSpectrogram()(waveform)
+                    return self.model(mel_spec.unsqueeze(0))
+                
+                # Object Detection
+                if task == "object-detection":
+                    from torchvision import transforms
+                    preprocess = transforms.Compose([
+                        transforms.Resize(800),
+                        transforms.ToTensor(),
+                        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+                    ])
+                    img_tensor = preprocess(input_data).unsqueeze(0)
                     with torch.no_grad():
-                        outputs = self.model(**inputs)
-                    return outputs
-                elif isinstance(input_data, (Image.Image, str)) and self.feature_extractor and isinstance(self.model, AutoModelForImageClassification):
-                    try:
-                        if isinstance(input_data, str):
-                            image = Image.open(input_data).convert("RGB")
-                        else:
-                            image = input_data.convert("RGB")
-                        inputs = self.feature_extractor(images=[image], return_tensors="pt")
-                        with torch.no_grad():
-                            outputs = self.model(**inputs)
-                        return torch.nn.functional.softmax(outputs.logits, dim=1).cpu().numpy()
-                    except Exception as e:
-                        LOG.warning(f"Image classification inference failed: {e}")
-                else:
-                    LOG.warning("Could not automatically determine Hugging Face inference method based on input.")
-                    return None
-            except Exception as e:
-                LOG.error(f"Direct Hugging Face inference failed: {e}")
-                return None
+                        outputs = self.model(img_tensor)
+                    return [{k: v.cpu() for k, v in t.items()} for t in outputs]
 
-        elif self.provider == "pytorch" and isinstance(self.model, torch.nn.Module):
-            LOG.info("Attempting direct PyTorch model inference.")
-            try:
-                self.model.eval()
-                with torch.no_grad():
-                    if isinstance(input_data, np.ndarray):
-                        input_tensor = torch.from_numpy(input_data).float()
-                        if len(input_tensor.shape) == 3:
-                            input_tensor = input_tensor.unsqueeze(0).permute(0, 3, 1, 2)
-                        elif len(input_tensor.shape) == 2:
-                            input_tensor = input_tensor.unsqueeze(0)
-                    elif isinstance(input_data, torch.Tensor):
-                        input_tensor = input_data
-                        if len(input_tensor.shape) == 3:
-                            input_tensor = input_tensor.unsqueeze(0).permute(0, 3, 1, 2)
-                        elif len(input_tensor.shape) == 2:
-                            input_tensor = input_tensor.unsqueeze(0)
-                    else:
-                        LOG.warning(f"Unsupported input type for PyTorch inference: {type(input_data)}")
-                        return None
-                    return self.model(input_tensor)
-            except Exception as e:
-                LOG.error(f"PyTorch inference failed: {e}")
-                return None
+            # TensorFlow Specific Processing  
+            if self.provider == "tensorflow" and isinstance(self.model, tf.keras.Model):
+                # Audio Processing
+                if task == "audio-classification":
+                    spec = tf.signal.stft(_convert_to_tensor(input_data), frame_length=255, frame_step=128)
+                    spec = tf.abs(spec)[..., tf.newaxis]
+                    return self.model.predict(spec[tf.newaxis, ...])
+                
+                # Image Segmentation
+                if task == "image-segmentation":
+                    img = tf.image.resize(input_data, (256, 256))
+                    img = tf.cast(img, tf.float32) / 255.0
+                    return self.model.predict(img[tf.newaxis, ...])[0]
 
-        elif self.provider == "tensorflow" and isinstance(self.model, keras.Model):
-            LOG.info("Attempting direct TensorFlow model inference.")
-            try:
-                return self.model.predict(input_data, **kwargs)
-            except Exception as e:
-                LOG.error(f"TensorFlow inference failed: {e}")
-                return None
+            # Common Postprocessing
+            def _postprocess_audio(outputs, task):
+                if task == "audio-classification":
+                    return torch.nn.functional.softmax(outputs.logits, dim=-1)
+                return outputs.logits  # For speech recognition
 
-        LOG.error("Could not automatically determine inference method.")
-        raise RuntimeError("Could not automatically determine inference method.")
+        except Exception as e:
+            LOG.error(f"Inference failed: {str(e)}")
+            raise RuntimeError(f"Inference error: {str(e)}") from e
 
 
+    def _load_image(self, input_data):
+        if isinstance(input_data, str):
+            return Image.open(input_data).convert("RGB")
+        return input_data
+
+    def _load_audio(self, input_data):
+        if isinstance(input_data, str):
+            waveform, sample_rate = torchaudio.load(input_data)
+            return waveform.numpy()
+        return input_data
 
 # if __name__ == "__main__":
    
