@@ -2262,3 +2262,178 @@ Traceback (most recent call last):
   File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/transport/_requests_basic.py", line 409, in send
     raise error
 azure.core.exceptions.ServiceResponseError: ('Connection aborted.', TimeoutError('The write operation timed out'))
+2025-04-17 14:38:22,019 - test - INFO - Starting inference test
+2025-04-17 14:38:22,089 - model - INFO - Checking Azure Storage for model...
+2025-04-17 14:38:22,092 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/gpt2'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '9cab7082-1b99-11f0-ba12-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-17 14:38:23,786 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '5bee3156-601e-0058-01a6-afdab5000000'
+    'x-ms-client-request-id': '9cab7082-1b99-11f0-ba12-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Thu, 17 Apr 2025 14:38:22 GMT'
+2025-04-17 14:38:23,787 - model - WARNING - Model blob does not exist
+2025-04-17 14:38:23,787 - model - INFO - Downloading model from huggingface...
+2025-04-17 14:38:23,787 - model - INFO - Loading Hugging Face model: gpt2
+2025-04-17 14:39:35,385 - model - ERROR - Error loading model: gpt2 does not appear to have a file named pytorch_model.bin, model.safetensors, tf_model.h5, model.ckpt or flax_model.msgpack.
+Traceback (most recent call last):
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/model/main.py", line 180, in load_model
+    self.model = AutoModelForCausalLM.from_pretrained(self.model_name)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/transformers/models/auto/auto_factory.py", line 571, in from_pretrained
+    return model_class.from_pretrained(
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/transformers/modeling_utils.py", line 279, in _wrapper
+    return func(*args, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/transformers/modeling_utils.py", line 4260, in from_pretrained
+    checkpoint_files, sharded_metadata = _get_resolved_checkpoint_files(
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/transformers/modeling_utils.py", line 1100, in _get_resolved_checkpoint_files
+    raise EnvironmentError(
+OSError: gpt2 does not appear to have a file named pytorch_model.bin, model.safetensors, tf_model.h5, model.ckpt or flax_model.msgpack.
+2025-04-17 14:43:40,882 - test - INFO - starting model loading
+2025-04-17 14:43:40,922 - model - INFO - Checking Azure Storage for model...
+2025-04-17 14:43:40,924 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/gpt2'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '5ab57032-1b9a-11f0-bc97-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-17 14:43:42,042 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'e2779639-b01e-0039-39a7-aff9f6000000'
+    'x-ms-client-request-id': '5ab57032-1b9a-11f0-bc97-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Thu, 17 Apr 2025 14:43:41 GMT'
+2025-04-17 14:43:42,043 - model - WARNING - Model blob does not exist
+2025-04-17 14:43:42,043 - model - INFO - Downloading model from huggingface...
+2025-04-17 14:43:42,043 - model - INFO - Loading Hugging Face model: gpt2
+2025-04-17 14:53:25,643 - model - ERROR - Error loading model: gpt2 does not appear to have a file named pytorch_model.bin, model.safetensors, tf_model.h5, model.ckpt or flax_model.msgpack.
+Traceback (most recent call last):
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/model/main.py", line 180, in load_model
+    self.model = AutoModelForCausalLM.from_pretrained(self.model_name)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/transformers/models/auto/auto_factory.py", line 571, in from_pretrained
+    return model_class.from_pretrained(
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/transformers/modeling_utils.py", line 279, in _wrapper
+    return func(*args, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/transformers/modeling_utils.py", line 4260, in from_pretrained
+    checkpoint_files, sharded_metadata = _get_resolved_checkpoint_files(
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/transformers/modeling_utils.py", line 1100, in _get_resolved_checkpoint_files
+    raise EnvironmentError(
+OSError: gpt2 does not appear to have a file named pytorch_model.bin, model.safetensors, tf_model.h5, model.ckpt or flax_model.msgpack.
+2025-04-17 14:56:21,820 - test - INFO - starting model loading
+2025-04-17 14:56:21,881 - model - INFO - Checking Azure Storage for model...
+2025-04-17 14:56:21,884 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/gpt2'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '20469da2-1b9c-11f0-a254-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-17 14:56:23,023 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '9c6df939-701e-0044-22a8-af88d5000000'
+    'x-ms-client-request-id': '20469da2-1b9c-11f0-a254-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Thu, 17 Apr 2025 14:56:22 GMT'
+2025-04-17 14:56:23,024 - model - WARNING - Model blob does not exist
+2025-04-17 14:56:23,024 - model - INFO - Downloading model from huggingface...
+2025-04-17 14:56:23,024 - model - INFO - Loading Hugging Face model: gpt2
+2025-04-17 15:01:43,929 - model - ERROR - Error loading model: "Unknown task text, available tasks are ['audio-classification', 'automatic-speech-recognition', 'depth-estimation', 'document-question-answering', 'feature-extraction', 'fill-mask', 'image-classification', 'image-feature-extraction', 'image-segmentation', 'image-text-to-text', 'image-to-image', 'image-to-text', 'mask-generation', 'ner', 'object-detection', 'question-answering', 'sentiment-analysis', 'summarization', 'table-question-answering', 'text-classification', 'text-generation', 'text-to-audio', 'text-to-speech', 'text2text-generation', 'token-classification', 'translation', 'video-classification', 'visual-question-answering', 'vqa', 'zero-shot-audio-classification', 'zero-shot-classification', 'zero-shot-image-classification', 'zero-shot-object-detection', 'translation_XX_to_YY']"
+Traceback (most recent call last):
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/model/main.py", line 181, in load_model
+    self.pipeline = pipeline(self.task, model=self.model, tokenizer=self.tokenizer)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/transformers/pipelines/__init__.py", line 895, in pipeline
+    normalized_task, targeted_task, task_options = check_task(task)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/transformers/pipelines/__init__.py", line 548, in check_task
+    return PIPELINE_REGISTRY.check_task(task)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/transformers/pipelines/base.py", line 1461, in check_task
+    raise KeyError(
+KeyError: "Unknown task text, available tasks are ['audio-classification', 'automatic-speech-recognition', 'depth-estimation', 'document-question-answering', 'feature-extraction', 'fill-mask', 'image-classification', 'image-feature-extraction', 'image-segmentation', 'image-text-to-text', 'image-to-image', 'image-to-text', 'mask-generation', 'ner', 'object-detection', 'question-answering', 'sentiment-analysis', 'summarization', 'table-question-answering', 'text-classification', 'text-generation', 'text-to-audio', 'text-to-speech', 'text2text-generation', 'token-classification', 'translation', 'video-classification', 'visual-question-answering', 'vqa', 'zero-shot-audio-classification', 'zero-shot-classification', 'zero-shot-image-classification', 'zero-shot-object-detection', 'translation_XX_to_YY']"
+2025-04-17 15:11:00,404 - test - INFO - starting model loading
+2025-04-17 15:11:00,445 - model - INFO - Checking Azure Storage for model...
+2025-04-17 15:11:00,447 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/gpt2'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '2bf0daa8-1b9e-11f0-8f17-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-17 15:11:02,104 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '9b2aee35-d01e-0000-5baa-af02ea000000'
+    'x-ms-client-request-id': '2bf0daa8-1b9e-11f0-8f17-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Thu, 17 Apr 2025 15:11:01 GMT'
+2025-04-17 15:11:02,105 - model - WARNING - Model blob does not exist
+2025-04-17 15:11:02,105 - model - INFO - Downloading model from huggingface...
+2025-04-17 15:11:02,105 - model - INFO - Loading Hugging Face model: gpt2
+2025-04-17 15:11:05,979 - model - INFO - Model loaded successfully.
+2025-04-17 15:11:05,979 - model - INFO - Saving model from Provider to Azure...
+2025-04-17 15:11:05,980 - model - ERROR - Error loading model: [Errno 21] Is a directory: '/var/folders/ch/bbgk8vxn5nj22fhbt1wttjwm0000gn/T'
+Traceback (most recent call last):
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/model/main.py", line 204, in load_model
+    self.save_to_azure()
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/model/main.py", line 79, in save_to_azure
+    with open(self.model_save_path, "rb") as data:
+IsADirectoryError: [Errno 21] Is a directory: '/var/folders/ch/bbgk8vxn5nj22fhbt1wttjwm0000gn/T'
+2025-04-17 15:18:22,277 - test - INFO - starting model loading
+2025-04-17 15:18:22,311 - model - INFO - Checking Azure Storage for model...
+2025-04-17 15:18:22,313 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/gpt2'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '33503c02-1b9f-11f0-aaa8-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-17 15:18:24,659 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'dc76e05e-d01e-005d-76ab-af086e000000'
+    'x-ms-client-request-id': '33503c02-1b9f-11f0-aaa8-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Thu, 17 Apr 2025 15:18:24 GMT'
+2025-04-17 15:18:24,660 - model - WARNING - Model blob does not exist
+2025-04-17 15:18:24,660 - model - INFO - Downloading model from huggingface...
+2025-04-17 15:18:24,660 - model - INFO - Loading Hugging Face model: gpt2
+2025-04-17 15:18:29,383 - model - INFO - Model loaded successfully.
+2025-04-17 15:18:29,385 - model - INFO - Saving model from Provider to Azure...
+2025-04-17 15:18:29,386 - model - ERROR - Error loading model: [Errno 21] Is a directory: '/var/folders/ch/bbgk8vxn5nj22fhbt1wttjwm0000gn/T/gpt2'
+Traceback (most recent call last):
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/model/main.py", line 205, in load_model
+    self.save_to_azure()
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/model/main.py", line 79, in save_to_azure
+    with open(self.model_save_path, "rb") as data:
+IsADirectoryError: [Errno 21] Is a directory: '/var/folders/ch/bbgk8vxn5nj22fhbt1wttjwm0000gn/T/gpt2'

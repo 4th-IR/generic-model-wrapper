@@ -42,6 +42,7 @@ class ModelWrapper:
         self.task = pipeline_type
         self.model = None
         self.tokenizer = None
+        self.image_processor = None
         self.pipeline = None
         self.saved_path = "models_saved"
         self.model_save_path = None 
@@ -179,8 +180,10 @@ class ModelWrapper:
                         self.model = AutoModelForCausalLM.from_pretrained(self.model_name)
                         self.pipeline = pipeline(self.task, model=self.model, tokenizer=self.tokenizer)
                         temp_dir = tempfile.gettempdir()
-                        self.pipeline.save_pretrained(temp_dir)
-                        self.model_save_path = temp_dir
+                        save_path = os.path.join(temp_dir, self.model_name)
+                        self.model.save_pretrained(save_path)
+                        self.tokenizer.save_pretrained(save_path)
+                        self.model_save_path = save_path
 
                     elif self.model_provider == "pytorch":
                         LOG.info(f"Loading PyTorch model from {self.model_name}")

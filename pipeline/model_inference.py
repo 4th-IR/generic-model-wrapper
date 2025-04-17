@@ -2,14 +2,19 @@
 
 #internal
 from model.main import ModelWrapper
+from utils.logger import get_logger
+
+LOG = get_logger('inference')
 
 def model_inference(model_details):
     # fetch model details from MIS
 
     model_name = model_details['model_name']
     model_provider = model_details['model_provider']
-    model_category = model_details['model_category']
+    model_category = model_details['task']
     model_task = model_details['task']
+
+    LOG.info(f'Task for model: {model_task}')
 
     input_data = model_details['sample_input']
 
