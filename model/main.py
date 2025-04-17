@@ -85,6 +85,7 @@ class ModelWrapper:
             )
         except Exception as e:
             LOG.warn(f'Failed to save with error {e}')
+            raise RuntimeError(f'Model saving failed: Error: {e}')
 
         LOG.info(f"{self.model_name} saved to Azure Blob Storage")
 
