@@ -21,7 +21,7 @@ from utils.logger import get_logger
 from utils.env_manager import AZURE_BLOB_URI, AZURE_CONNECTION_STRING, AZURE_CONTAINER_NAME, AZURE_STORAGE_ACCOUNT
 from utils.resource_manager import timer
 
-HGF_TOKEN = os.getenv("HUGGINGFACE ")
+HGF_TOKEN = os.environ.get("HUGGINGFACE_TOKEN")
 login(HGF_TOKEN)
 
 
@@ -40,7 +40,7 @@ class ModelWrapper:
         self.saved_path = "models_saved"
         self.model_save_path = None 
 
-        os.makedirs(self.saved_path, exist_ok=True)
+        #os.makedirs(self.saved_path, exist_ok=True)
 
         # Azure storage setup        
         if not AZURE_CONNECTION_STRING:
@@ -52,7 +52,7 @@ class ModelWrapper:
         self.container_client = self.blob_service_client.get_container_client(AZURE_CONTAINER_NAME)
         self.azure_config = True  # Enable Azure model loading
 
-    @timer
+    #@timer
     def save_to_azure(self):
         print("<---SAVING TO AZURE--->")
     
@@ -70,11 +70,11 @@ class ModelWrapper:
         #         progress_bar.update(bytes_uploaded - progress_bar.n)
 
         with open(self.model_save_path, "rb") as data:
-            blob_client.upload_blob(data, overwrite=True, timeout=600, max_concurrency=2)
+            blob_client.upload_blob(data, overwrite=True)
 
         LOG.info(f"{self.model_name} saved to Azure Blob Storage")
 
-    @timer
+    #@timer
     def load_from_azure(self):
         print("<---LOADING MODEL--->")
         if not self.azure_config:
