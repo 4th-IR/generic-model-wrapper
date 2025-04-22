@@ -15,17 +15,17 @@ LOG = get_logger('test')
 
 
 def test_model_loading():
-    model = models_dict['model_3']
+    model = models_dict['model_8']
     load_model(model)
 
 
 def test_inference():
-    model = models_dict['model_3']
+    model = models_dict['model_11']
     model_inference(model)
 
 if __name__ == '__main__':
     LOG.info('starting model loading')
     test_model_loading()
 
-    LOG.info('Starting inference test')
-    test_inference()
+    #LOG.info('Starting inference test')
+    #test_inference()

@@ -8,3 +8,4 @@ __pycache__/
 logs.txt
 env
 envv
+temp_models

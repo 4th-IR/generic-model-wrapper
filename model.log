@@ -2437,3 +2437,843 @@ Traceback (most recent call last):
   File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/model/main.py", line 79, in save_to_azure
     with open(self.model_save_path, "rb") as data:
 IsADirectoryError: [Errno 21] Is a directory: '/var/folders/ch/bbgk8vxn5nj22fhbt1wttjwm0000gn/T/gpt2'
+2025-04-17 15:34:15,645 - test - INFO - starting model loading
+2025-04-17 15:34:15,687 - model - INFO - Checking Azure Storage for model...
+2025-04-17 15:34:15,689 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/gpt2'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '6b91d4a2-1ba1-11f0-a824-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-17 15:34:17,516 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'a202bc1d-401e-002d-7eae-afb199000000'
+    'x-ms-client-request-id': '6b91d4a2-1ba1-11f0-a824-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Thu, 17 Apr 2025 15:34:17 GMT'
+2025-04-17 15:34:17,517 - model - WARNING - Model blob does not exist
+2025-04-17 15:34:17,517 - model - INFO - Downloading model from huggingface...
+2025-04-17 15:34:17,517 - model - INFO - Loading Hugging Face model: gpt2
+2025-04-17 15:34:23,552 - model - INFO - Model loaded successfully.
+2025-04-17 15:34:23,553 - model - INFO - Saving model from Provider to Azure...
+2025-04-17 15:34:23,558 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '70426f3e-1ba1-11f0-a824-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-17 15:34:43,382 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'a202c3b1-401e-002d-5eae-afb199000000'
+    'x-ms-client-request-id': '70426f3e-1ba1-11f0-a824-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Thu, 17 Apr 2025 15:34:43 GMT'
+2025-04-17 15:34:43,533 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '7c2596fa-1ba1-11f0-a824-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-17 15:35:18,889 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '913d3b1a-1ba1-11f0-a824-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-17 15:36:03,329 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'abba4ffa-1ba1-11f0-a824-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-17 15:37:08,487 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'd290b614-1ba1-11f0-a824-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-17 15:37:30,040 - model - WARNING - Failed to save with error ('Connection aborted.', TimeoutError('The write operation timed out'))
+2025-04-17 15:37:30,040 - model - INFO - gpt2 saved to Azure Blob Storage
+2025-04-17 15:37:30,040 - time - INFO - load_model took 194.35293698310852 seconds to run
+2025-04-17 15:37:31,268 - test - INFO - Starting inference test
+2025-04-17 15:37:31,269 - inference - INFO - Task for model: text-generation
+2025-04-17 15:37:31,269 - model - INFO - Checking Azure Storage for model...
+2025-04-17 15:37:31,270 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/gpt2'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'e02539e4-1ba1-11f0-a824-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-17 15:37:32,464 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '81876c99-701e-0026-04ae-af4af2000000'
+    'x-ms-client-request-id': 'e02539e4-1ba1-11f0-a824-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Thu, 17 Apr 2025 15:37:32 GMT'
+2025-04-17 15:37:32,464 - model - WARNING - Model blob does not exist
+2025-04-17 15:37:32,464 - model - INFO - Downloading model from huggingface...
+2025-04-17 15:37:32,464 - model - INFO - Loading Hugging Face model: gpt2
+2025-04-17 15:37:35,484 - model - INFO - Model loaded successfully.
+2025-04-17 15:37:35,484 - model - INFO - Saving model from Provider to Azure...
+2025-04-17 15:37:35,488 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'e2a8b7d6-1ba1-11f0-a824-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-17 15:38:15,602 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'fa91abc8-1ba1-11f0-a824-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-17 15:39:31,029 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '27848970-1ba2-11f0-a824-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-17 15:40:34,206 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/model.safetensors?comp=REDACTED&blockid=REDACTED'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '4194304'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '4d2eebc0-1ba2-11f0-a824-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-17 15:40:56,178 - model - WARNING - Failed to save with error ('Connection aborted.', TimeoutError('The write operation timed out'))
+2025-04-17 15:40:56,178 - model - INFO - gpt2 saved to Azure Blob Storage
+2025-04-17 15:40:56,178 - time - INFO - load_model took 204.90900921821594 seconds to run
+2025-04-17 15:40:56,179 - model - INFO - Using HF pipeline for text-generation task
+2025-04-17 15:40:57,556 - time - INFO - run_inference took 1.3772773742675781 seconds to run
+2025-04-17 16:06:56,819 - test - INFO - starting model loading
+2025-04-17 16:06:56,862 - model - INFO - Checking Azure Storage for model...
+2025-04-17 16:06:56,865 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'fc8583b0-1ba5-11f0-88c7-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-17 16:07:03,586 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '306f45de-801e-001d-68b2-af0f56000000'
+    'x-ms-client-request-id': 'fc8583b0-1ba5-11f0-88c7-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Thu, 17 Apr 2025 16:07:01 GMT'
+2025-04-17 16:07:03,587 - model - WARNING - Model blob does not exist
+2025-04-17 16:07:03,587 - model - INFO - Downloading model from pytorch...
+2025-04-17 16:07:03,587 - model - INFO - Loading PyTorch model from resnet18
+2025-04-17 16:07:04,651 - model - INFO - Model loaded successfully.
+2025-04-17 16:07:04,652 - model - INFO - Saving model from Provider to Azure...
+2025-04-17 16:07:04,652 - model - INFO - resnet18 saved to Azure Blob Storage
+2025-04-17 16:07:04,652 - time - INFO - load_model took 7.790167808532715 seconds to run
+2025-04-17 16:07:08,278 - test - INFO - Starting inference test
+2025-04-17 16:07:08,279 - inference - INFO - Task for model: image-classification
+2025-04-17 16:07:08,279 - model - INFO - Checking Azure Storage for model...
+2025-04-17 16:07:08,280 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '03535e6a-1ba6-11f0-88c7-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-17 16:07:13,107 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'b344a4c1-001e-004e-63b2-af2c62000000'
+    'x-ms-client-request-id': '03535e6a-1ba6-11f0-88c7-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Thu, 17 Apr 2025 16:07:13 GMT'
+2025-04-17 16:07:13,107 - model - WARNING - Model blob does not exist
+2025-04-17 16:07:13,107 - model - INFO - Downloading model from pytorch...
+2025-04-17 16:07:13,107 - model - INFO - Loading PyTorch model from resnet18
+2025-04-17 16:07:14,061 - model - INFO - Model loaded successfully.
+2025-04-17 16:07:14,062 - model - INFO - Saving model from Provider to Azure...
+2025-04-17 16:07:14,062 - model - INFO - resnet18 saved to Azure Blob Storage
+2025-04-17 16:07:14,062 - time - INFO - load_model took 5.7832770347595215 seconds to run
+2025-04-17 16:07:14,063 - time - INFO - run_inference took 4.100799560546875e-05 seconds to run
+2025-04-17 16:18:05,246 - test - INFO - starting model loading
+2025-04-17 16:18:05,408 - model - INFO - Checking Azure Storage for model...
+2025-04-17 16:18:05,413 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '8b01d020-1ba7-11f0-86ce-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-17 16:18:13,372 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '08b681a0-b01e-0029-3cb4-af3c9e000000'
+    'x-ms-client-request-id': '8b01d020-1ba7-11f0-86ce-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Thu, 17 Apr 2025 16:18:11 GMT'
+2025-04-17 16:18:13,373 - model - WARNING - Model blob does not exist
+2025-04-17 16:18:13,373 - model - INFO - Downloading model from pytorch...
+2025-04-17 16:18:13,373 - model - INFO - Loading PyTorch model from resnet18
+2025-04-17 16:18:15,823 - model - INFO - Model loaded successfully.
+2025-04-17 16:18:15,824 - model - INFO - Saving model from Provider to Azure...
+2025-04-17 16:18:15,825 - model - INFO - resnet18 saved to Azure Blob Storage
+2025-04-17 16:18:15,825 - time - INFO - load_model took 10.416789054870605 seconds to run
+2025-04-17 16:18:17,387 - test - INFO - Starting inference test
+2025-04-17 16:18:17,388 - inference - INFO - Task for model: image-classification
+2025-04-17 16:18:17,389 - model - INFO - Checking Azure Storage for model...
+2025-04-17 16:18:17,390 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/resnet18'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '922574c4-1ba7-11f0-86ce-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-17 16:18:19,162 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'bfd66f7c-501e-000e-7eb4-af2b5a000000'
+    'x-ms-client-request-id': '922574c4-1ba7-11f0-86ce-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Thu, 17 Apr 2025 16:18:19 GMT'
+2025-04-17 16:18:19,162 - model - WARNING - Model blob does not exist
+2025-04-17 16:18:19,162 - model - INFO - Downloading model from pytorch...
+2025-04-17 16:18:19,163 - model - INFO - Loading PyTorch model from resnet18
+2025-04-17 16:18:20,631 - model - INFO - Model loaded successfully.
+2025-04-17 16:18:20,631 - model - INFO - Saving model from Provider to Azure...
+2025-04-17 16:18:20,632 - model - INFO - resnet18 saved to Azure Blob Storage
+2025-04-17 16:18:20,632 - time - INFO - load_model took 3.2435479164123535 seconds to run
+2025-04-17 16:18:20,633 - time - INFO - run_inference took 3.0994415283203125e-05 seconds to run
+2025-04-17 16:31:47,057 - test - INFO - starting model loading
+2025-04-17 16:31:47,155 - model - INFO - Checking Azure Storage for model...
+2025-04-17 16:31:47,159 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files?restype=REDACTED&comp=REDACTED&prefix=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '74ce3d5a-1ba9-11f0-866c-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-17 16:31:53,742 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Content-Type': 'application/xml'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '1a5a6554-d01e-0010-7fb6-afc782000000'
+    'x-ms-client-request-id': '74ce3d5a-1ba9-11f0-866c-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'Date': 'Thu, 17 Apr 2025 16:31:51 GMT'
+2025-04-17 16:31:53,750 - model - WARNING - No blobs found for model 'resnet18' in Azure.
+2025-04-17 16:31:53,751 - model - INFO - Downloading model from pytorch...
+2025-04-17 16:31:53,751 - model - INFO - Loading PyTorch model from resnet18
+2025-04-17 16:31:56,131 - model - INFO - Model loaded successfully.
+2025-04-17 16:31:56,132 - model - INFO - Saving model from Provider to Azure...
+2025-04-17 16:31:56,132 - model - INFO - resnet18 saved to Azure Blob Storage
+2025-04-17 16:31:56,133 - time - INFO - load_model took 8.977095127105713 seconds to run
+2025-04-17 16:31:59,288 - test - INFO - Starting inference test
+2025-04-17 16:31:59,288 - inference - INFO - Task for model: image-classification
+2025-04-17 16:31:59,289 - model - INFO - Checking Azure Storage for model...
+2025-04-17 16:31:59,291 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files?restype=REDACTED&comp=REDACTED&prefix=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '7c0984b2-1ba9-11f0-866c-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-17 16:32:02,949 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Content-Type': 'application/xml'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '4a196e98-701e-0019-46b6-af8251000000'
+    'x-ms-client-request-id': '7c0984b2-1ba9-11f0-866c-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'Date': 'Thu, 17 Apr 2025 16:32:02 GMT'
+2025-04-17 16:32:02,950 - model - WARNING - No blobs found for model 'resnet18' in Azure.
+2025-04-17 16:32:02,950 - model - INFO - Downloading model from pytorch...
+2025-04-17 16:32:02,951 - model - INFO - Loading PyTorch model from resnet18
+2025-04-17 16:32:04,970 - model - INFO - Model loaded successfully.
+2025-04-17 16:32:04,992 - model - INFO - Saving model from Provider to Azure...
+2025-04-17 16:32:04,993 - model - INFO - resnet18 saved to Azure Blob Storage
+2025-04-17 16:32:05,011 - time - INFO - load_model took 5.721740961074829 seconds to run
+2025-04-17 16:32:05,012 - time - INFO - run_inference took 6.604194641113281e-05 seconds to run
+2025-04-22 07:46:50,139 - test - INFO - starting model loading
+2025-04-22 07:46:50,201 - model - INFO - Checking Azure Storage for model...
+2025-04-22 07:46:50,204 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files?restype=REDACTED&comp=REDACTED&prefix=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'f338f192-1f4d-11f0-9c49-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-22 07:46:51,659 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Content-Type': 'application/xml'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '49e4d52a-c01e-0041-6f5a-b35a0e000000'
+    'x-ms-client-request-id': 'f338f192-1f4d-11f0-9c49-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'Date': 'Tue, 22 Apr 2025 07:46:51 GMT'
+2025-04-22 07:46:51,664 - model - WARNING - No blobs found for model 'resnet18' in Azure.
+2025-04-22 07:46:51,664 - model - INFO - Downloading model from pytorch...
+2025-04-22 07:46:51,664 - model - INFO - Loading PyTorch model from resnet18
+2025-04-22 07:46:52,786 - model - INFO - Model loaded successfully.
+2025-04-22 07:46:52,786 - model - INFO - Saving model from Provider to Azure...
+2025-04-22 07:46:52,787 - model - INFO - resnet18 saved to Azure Blob Storage
+2025-04-22 07:46:52,787 - time - INFO - load_model took 2.586303234100342 seconds to run
+2025-04-22 07:47:00,200 - test - INFO - Starting inference test
+2025-04-22 07:47:00,201 - inference - INFO - Task for model: image-classification
+2025-04-22 07:47:00,202 - model - INFO - Checking Azure Storage for model...
+2025-04-22 07:47:00,204 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files?restype=REDACTED&comp=REDACTED&prefix=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'f92f0fe6-1f4d-11f0-9c49-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-22 07:47:01,390 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Content-Type': 'application/xml'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'b9ca4121-801e-0032-6d5a-b3029d000000'
+    'x-ms-client-request-id': 'f92f0fe6-1f4d-11f0-9c49-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'Date': 'Tue, 22 Apr 2025 07:47:00 GMT'
+2025-04-22 07:47:01,392 - model - WARNING - No blobs found for model 'resnet18' in Azure.
+2025-04-22 07:47:01,392 - model - INFO - Downloading model from pytorch...
+2025-04-22 07:47:01,392 - model - INFO - Loading PyTorch model from resnet18
+2025-04-22 07:47:02,043 - model - INFO - Model loaded successfully.
+2025-04-22 07:47:02,043 - model - INFO - Saving model from Provider to Azure...
+2025-04-22 07:47:02,043 - model - INFO - resnet18 saved to Azure Blob Storage
+2025-04-22 07:47:02,043 - time - INFO - load_model took 1.8411340713500977 seconds to run
+2025-04-22 07:47:02,043 - time - INFO - run_inference took 1.5020370483398438e-05 seconds to run
+2025-04-22 07:49:21,475 - test - INFO - starting model loading
+2025-04-22 07:49:21,524 - model - INFO - Checking Azure Storage for model...
+2025-04-22 07:49:21,526 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files?restype=REDACTED&comp=REDACTED&prefix=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '4d6b1492-1f4e-11f0-a271-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-22 07:49:23,086 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Content-Type': 'application/xml'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '4efa37a8-001e-004e-395b-b32c62000000'
+    'x-ms-client-request-id': '4d6b1492-1f4e-11f0-a271-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'Date': 'Tue, 22 Apr 2025 07:49:22 GMT'
+2025-04-22 07:49:23,089 - model - WARNING - No blobs found for model 'resnet18' in Azure.
+2025-04-22 07:49:23,089 - model - INFO - Downloading model from pytorch...
+2025-04-22 07:49:23,089 - model - INFO - Loading PyTorch model from resnet18
+2025-04-22 07:49:24,127 - model - INFO - Model loaded successfully.
+2025-04-22 07:49:24,128 - model - INFO - Saving model from Provider to Azure...
+2025-04-22 07:49:24,128 - model - INFO - resnet18 saved to Azure Blob Storage
+2025-04-22 07:49:24,128 - time - INFO - load_model took 2.604255199432373 seconds to run
+2025-04-22 07:49:25,299 - test - INFO - Starting inference test
+2025-04-22 07:49:25,299 - inference - INFO - Task for model: image-classification
+2025-04-22 07:49:25,300 - model - INFO - Checking Azure Storage for model...
+2025-04-22 07:49:25,302 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files?restype=REDACTED&comp=REDACTED&prefix=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '4fab3a02-1f4e-11f0-a271-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-22 07:49:26,290 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Content-Type': 'application/xml'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'f07aa321-f01e-0007-3b5b-b36e89000000'
+    'x-ms-client-request-id': '4fab3a02-1f4e-11f0-a271-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'Date': 'Tue, 22 Apr 2025 07:49:26 GMT'
+2025-04-22 07:49:26,292 - model - WARNING - No blobs found for model 'resnet18' in Azure.
+2025-04-22 07:49:26,292 - model - INFO - Downloading model from pytorch...
+2025-04-22 07:49:26,292 - model - INFO - Loading PyTorch model from resnet18
+2025-04-22 07:49:26,950 - model - INFO - Model loaded successfully.
+2025-04-22 07:49:26,951 - model - INFO - Saving model from Provider to Azure...
+2025-04-22 07:49:26,951 - model - INFO - resnet18 saved to Azure Blob Storage
+2025-04-22 07:49:26,951 - time - INFO - load_model took 1.650536060333252 seconds to run
+2025-04-22 07:49:26,951 - time - INFO - run_inference took 1.621246337890625e-05 seconds to run
+2025-04-22 08:00:08,409 - test - INFO - starting model loading
+2025-04-22 08:00:08,456 - model - INFO - Checking Azure Storage for model...
+2025-04-22 08:00:08,458 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files?restype=REDACTED&comp=REDACTED&prefix=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'cf04fe5e-1f4f-11f0-bd3b-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-22 08:00:10,002 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Content-Type': 'application/xml'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '3572d8d6-c01e-0051-5a5c-b39f66000000'
+    'x-ms-client-request-id': 'cf04fe5e-1f4f-11f0-bd3b-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'Date': 'Tue, 22 Apr 2025 08:00:09 GMT'
+2025-04-22 08:00:10,006 - model - WARNING - No blobs found for model 'resnet18' in Azure.
+2025-04-22 08:00:10,006 - model - INFO - Downloading model from pytorch...
+2025-04-22 08:00:10,006 - model - INFO - Loading PyTorch model from resnet18
+2025-04-22 08:00:10,887 - model - INFO - Model loaded successfully.
+2025-04-22 08:00:10,888 - model - INFO - Saving model from Provider to Azure...
+2025-04-22 08:00:10,888 - model - INFO - model is saved at temp_models/resnet18.pt
+2025-04-22 08:00:10,888 - model - INFO - resnet18 saved to Azure Blob Storage
+2025-04-22 08:00:10,888 - time - INFO - load_model took 2.4326047897338867 seconds to run
+2025-04-22 08:02:35,281 - test - INFO - starting model loading
+2025-04-22 08:02:35,340 - model - INFO - Checking Azure Storage for model...
+2025-04-22 08:02:35,342 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files?restype=REDACTED&comp=REDACTED&prefix=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '2691c594-1f50-11f0-9b80-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-22 08:02:36,959 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Content-Type': 'application/xml'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '6e9b87f4-901e-002e-4f5c-b350fd000000'
+    'x-ms-client-request-id': '2691c594-1f50-11f0-9b80-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'Date': 'Tue, 22 Apr 2025 08:02:36 GMT'
+2025-04-22 08:02:36,964 - model - WARNING - No blobs found for model 'MobileNetV2' in Azure.
+2025-04-22 08:02:36,964 - model - INFO - Downloading model from tensorflow...
+2025-04-22 08:02:36,965 - model - INFO - Loading TensorFlow model from MobileNetV2
+2025-04-22 08:03:07,739 - model - INFO - Model loaded successfully.
+2025-04-22 08:03:07,742 - model - INFO - Saving model from Provider to Azure...
+2025-04-22 08:03:07,742 - model - INFO - model is saved at /var/folders/ch/bbgk8vxn5nj22fhbt1wttjwm0000gn/T/MobileNetV2.keras
+2025-04-22 08:03:07,742 - model - INFO - MobileNetV2 saved to Azure Blob Storage
+2025-04-22 08:03:07,742 - time - INFO - load_model took 32.40246796607971 seconds to run
+2025-04-22 08:07:35,332 - test - INFO - starting model loading
+2025-04-22 08:07:35,373 - model - INFO - Checking Azure Storage for model...
+2025-04-22 08:07:35,375 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files?restype=REDACTED&comp=REDACTED&prefix=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'd967281c-1f50-11f0-a8de-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-22 08:07:36,393 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Content-Type': 'application/xml'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'c05c5e2e-001e-003c-3c5d-b32b2d000000'
+    'x-ms-client-request-id': 'd967281c-1f50-11f0-a8de-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'Date': 'Tue, 22 Apr 2025 08:07:35 GMT'
+2025-04-22 08:07:36,396 - model - WARNING - No blobs found for model 'MobileNetV2' in Azure.
+2025-04-22 08:07:36,397 - model - INFO - Downloading model from tensorflow...
+2025-04-22 08:07:36,397 - model - INFO - Loading TensorFlow model from MobileNetV2
+2025-04-22 08:07:38,486 - model - INFO - Model loaded successfully.
+2025-04-22 08:07:38,487 - model - INFO - Saving model from Provider to Azure...
+2025-04-22 08:07:38,487 - model - INFO - model is saved at temp_models/MobileNetV2.keras
+2025-04-22 08:07:38,487 - model - INFO - MobileNetV2 saved to Azure Blob Storage
+2025-04-22 08:07:38,487 - time - INFO - load_model took 3.114567279815674 seconds to run
+2025-04-22 08:13:37,752 - test - INFO - starting model loading
+2025-04-22 08:13:37,802 - model - INFO - Checking Azure Storage for model...
+2025-04-22 08:13:37,805 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files?restype=REDACTED&comp=REDACTED&prefix=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'b16d81fc-1f51-11f0-8973-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-22 08:13:41,115 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Content-Type': 'application/xml'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '150bebbe-e01e-001b-355e-b33ce9000000'
+    'x-ms-client-request-id': 'b16d81fc-1f51-11f0-8973-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'Date': 'Tue, 22 Apr 2025 08:13:41 GMT'
+2025-04-22 08:13:41,119 - model - WARNING - No blobs found for model 'MobileNetV2' in Azure.
+2025-04-22 08:13:41,119 - model - INFO - Downloading model from tensorflow...
+2025-04-22 08:13:41,120 - model - INFO - Loading TensorFlow model from MobileNetV2
+2025-04-22 08:13:43,397 - model - INFO - Model loaded successfully.
+2025-04-22 08:13:43,397 - model - INFO - Saving model from Provider to Azure...
+2025-04-22 08:13:43,397 - model - INFO - model is saved at temp_models/MobileNetV2.keras
+2025-04-22 08:13:43,397 - model - INFO - Uploading Model Dir to Azure
+2025-04-22 08:13:43,398 - model - INFO - MobileNetV2 saved to Azure Blob Storage
+2025-04-22 08:13:43,398 - time - INFO - load_model took 5.595417022705078 seconds to run
+2025-04-22 08:22:41,117 - test - INFO - starting model loading
+2025-04-22 08:22:41,166 - model - INFO - Checking Azure Storage for model...
+2025-04-22 08:22:41,168 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files?restype=REDACTED&comp=REDACTED&prefix=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'f54c31e2-1f52-11f0-ab97-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-22 08:22:43,198 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Content-Type': 'application/xml'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'ce8224b9-801e-0050-4d5f-b3c0ba000000'
+    'x-ms-client-request-id': 'f54c31e2-1f52-11f0-ab97-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'Date': 'Tue, 22 Apr 2025 08:22:42 GMT'
+2025-04-22 08:22:43,202 - model - WARNING - No blobs found for model 'MobileNetV2' in Azure.
+2025-04-22 08:22:43,202 - model - INFO - Downloading model from tensorflow...
+2025-04-22 08:22:43,202 - model - INFO - Loading TensorFlow model from MobileNetV2
+2025-04-22 08:22:45,301 - model - INFO - Model loaded successfully.
+2025-04-22 08:22:45,301 - model - INFO - Saving model from Provider to Azure...
+2025-04-22 08:22:45,301 - model - INFO - model is saved at temp_models/MobileNetV2.keras
+2025-04-22 08:22:45,301 - model - INFO - Attempting to upload path: temp_models/MobileNetV2.keras to Azure with prefix: MobileNetV2
+2025-04-22 08:22:45,302 - model - INFO - Uploading single file: temp_models/MobileNetV2.keras as MobileNetV2/MobileNetV2.keras
+2025-04-22 08:22:45,308 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/MobileNetV2/MobileNetV2.keras'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '14731208'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'f7c3fab8-1f52-11f0-ab97-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-22 08:23:25,633 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/MobileNetV2/MobileNetV2.keras'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '14731208'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '0fcd16bc-1f53-11f0-ab97-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-22 08:24:09,752 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/MobileNetV2/MobileNetV2.keras'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '14731208'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '2a18f860-1f53-11f0-ab97-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-22 08:25:14,429 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/MobileNetV2/MobileNetV2.keras'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '14731208'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '50a5e4e8-1f53-11f0-ab97-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-22 08:25:35,526 - model - ERROR - Saving to Azure failed with error: ('Connection aborted.', TimeoutError('The write operation timed out'))
+2025-04-22 08:25:35,527 - model - WARNING - Failed to save with error Model saving to Azure failed: ('Connection aborted.', TimeoutError('The write operation timed out'))
+2025-04-22 08:25:35,527 - model - ERROR - Error loading model: Model saving failed: Error: Model saving to Azure failed: ('Connection aborted.', TimeoutError('The write operation timed out'))
+Traceback (most recent call last):
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/model/main.py", line 360, in upload_directory_to_azure
+    blob_client.upload_blob(data, overwrite=True)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/tracing/decorator.py", line 119, in wrapper_use_tracer
+    return func(*args, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_blob_client.py", line 605, in upload_blob
+    return upload_block_blob(**options)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_upload_helpers.py", line 105, in upload_block_blob
+    response = client.upload(
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/tracing/decorator.py", line 119, in wrapper_use_tracer
+    return func(*args, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_generated/operations/_block_blob_operations.py", line 878, in upload
+    pipeline_response: PipelineResponse = self._client._pipeline.run(  # pylint: disable=protected-access
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 242, in run
+    return first_node.send(pipeline_request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  [Previous line repeated 2 more times]
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/policies/_redirect.py", line 205, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/policies.py", line 555, in send
+    raise err
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/policies.py", line 527, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  [Previous line repeated 1 more time]
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/policies.py", line 301, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 98, in send
+    response = self.next.send(request)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/_base.py", line 130, in send
+    self._sender.send(request.http_request, **request.context.options),
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/base_client.py", line 353, in send
+    return self._transport.send(request, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/storage/blob/_shared/base_client.py", line 353, in send
+    return self._transport.send(request, **kwargs)
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/envv/lib/python3.10/site-packages/azure/core/pipeline/transport/_requests_basic.py", line 409, in send
+    raise error
+azure.core.exceptions.ServiceResponseError: ('Connection aborted.', TimeoutError('The write operation timed out'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/model/main.py", line 84, in save_to_azure
+    self.upload_directory_to_azure(
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/model/main.py", line 381, in upload_directory_to_azure
+    raise RuntimeError(f'Model saving to Azure failed: {e}')
+RuntimeError: Model saving to Azure failed: ('Connection aborted.', TimeoutError('The write operation timed out'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/model/main.py", line 198, in load_model
+    self.save_to_azure()
+  File "/Users/eliasdzobo/Desktop/VSA/ai-service/tests/model/main.py", line 90, in save_to_azure
+    raise RuntimeError(f'Model saving failed: Error: {e}')
+RuntimeError: Model saving failed: Error: Model saving to Azure failed: ('Connection aborted.', TimeoutError('The write operation timed out'))
+2025-04-22 08:32:08,398 - test - INFO - starting model loading
+2025-04-22 08:32:08,446 - model - INFO - Checking Azure Storage for model...
+2025-04-22 08:32:08,449 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files?restype=REDACTED&comp=REDACTED&prefix=REDACTED'
+Request method: 'GET'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '476c50dc-1f54-11f0-a3a7-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-22 08:32:11,289 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Content-Type': 'application/xml'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '327c7bea-701e-0009-6961-b34739000000'
+    'x-ms-client-request-id': '476c50dc-1f54-11f0-a3a7-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'Date': 'Tue, 22 Apr 2025 08:32:10 GMT'
+2025-04-22 08:32:11,295 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/MobileNetV2'
+Request method: 'HEAD'
+Request headers:
+    'x-ms-version': 'REDACTED'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '491ec2f2-1f54-11f0-a3a7-acde48001122'
+    'Authorization': 'REDACTED'
+No body was attached to the request
+2025-04-22 08:32:12,111 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 404
+Response headers:
+    'Transfer-Encoding': 'chunked'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '327c7d58-701e-0009-1561-b34739000000'
+    'x-ms-client-request-id': '491ec2f2-1f54-11f0-a3a7-acde48001122'
+    'x-ms-version': 'REDACTED'
+    'x-ms-error-code': 'BlobNotFound'
+    'Date': 'Tue, 22 Apr 2025 08:32:11 GMT'
+2025-04-22 08:32:12,112 - model - WARNING - No model found with prefix or name 'MobileNetV2' in Azure.
+2025-04-22 08:32:12,112 - model - INFO - Model not found in Azure. Downloading from tensorflow...
+2025-04-22 08:32:12,112 - model - INFO - Loading TensorFlow model from MobileNetV2
+2025-04-22 08:32:13,900 - model - INFO - Model loaded successfully from provider.
+2025-04-22 08:32:13,900 - model - INFO - Saving model from Provider to Azure...
+2025-04-22 08:32:13,901 - model - INFO - model is saved at temp_models/MobileNetV2.keras
+2025-04-22 08:32:13,901 - model - INFO - Attempting to upload path: temp_models/MobileNetV2.keras to Azure with prefix: MobileNetV2
+2025-04-22 08:32:13,901 - model - INFO - Uploading single file: temp_models/MobileNetV2.keras as MobileNetV2/MobileNetV2.keras
+2025-04-22 08:32:13,907 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/MobileNetV2/MobileNetV2.keras'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '14731208'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '4aad526e-1f54-11f0-a3a7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-22 08:32:50,698 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/MobileNetV2/MobileNetV2.keras'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '14731208'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '609b12a0-1f54-11f0-a3a7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-22 08:33:34,991 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/MobileNetV2/MobileNetV2.keras'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '14731208'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '7b019cd6-1f54-11f0-a3a7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-04-22 08:34:37,773 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://questaistorageaccount.blob.core.windows.net/model-files/MobileNetV2/MobileNetV2.keras'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '14731208'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.25.1 Python/3.10.17 (macOS-15.3-x86_64-i386-64bit)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'a06d5654-1f54-11f0-a3a7-acde48001122'
+    'Authorization': 'REDACTED'
+A body is sent with the request

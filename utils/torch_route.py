@@ -11,7 +11,7 @@ import tempfile
 
 def from_torch(model_name: str, hub_repo: str = None):
     model = None
-    save_path = tempfile.gettempdir()
+    save_path = 'temp_models' 
 
     # Load model from Torch Hub 
     if hub_repo:

@@ -110,5 +110,15 @@ models_dict = {
         "framework_specific": {
             "max_length": 50
         }
-    }
+    },
+    "model_11": {
+        "model_provider": "pytorch",
+        "model_category": "vision",
+        "model_name": "resnet18",
+        "task": "image-classification",
+        "sample_input": "assets/images/animal_pictures/cat2.jpg",  # Supported via image_processor
+        "framework_specific": {
+            "image_processor": "AutoImageProcessor",
+            "requires_feature_extractor": False
+        }}
     }

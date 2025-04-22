@@ -10,7 +10,7 @@ import tempfile
 
 def from_tensorflow(model_name: str, **kwargs):
     # Create the save directory if it doesn't exist
-    save_path = tempfile.gettempdir()
+    save_path = 'temp_models'
     os.environ['KAGGLEHUB_CACHE'] = save_path
 
     # First, check if the model exists in tf.keras.applications

@@ -44,7 +44,7 @@ class ModelWrapper:
         self.tokenizer = None
         self.image_processor = None
         self.pipeline = None
-        self.saved_path = "models_saved"
+        self.saved_path = "temp_models"
         self.model_save_path = None 
 
         #os.makedirs(self.saved_path, exist_ok=True)
@@ -80,8 +80,10 @@ class ModelWrapper:
         #     blob_client.upload_blob(data, overwrite=True)
 
         try:
+            LOG.info(f'model is saved at {self.model_save_path}')
             self.upload_directory_to_azure(
-                self.model_save_path
+                self.model_save_path,
+                blob_prefix=self.model_name
             )
         except Exception as e:
             LOG.warn(f'Failed to save with error {e}')
@@ -91,97 +93,102 @@ class ModelWrapper:
 
     #@timer
     def load_from_azure(self):
-        print("<---LOADING MODEL--->")
+        print("<---LOADING MODEL FROM AZURE--->")
         if not self.azure_config:
             LOG.warning("Azure configuration is disabled.")
             return False
 
-        # Get the blob client for the model and check if it exists.
-        blob_client = self.container_client.get_blob_client(blob=self.model_name)
-        if not blob_client.exists():
-            LOG.warning("Model blob does not exist")
-            print("Model blob does not exist")
-            return False
-
-        # Create a temporary file to hold the downloaded model.
-        # Using delete=False because we need to pass the file path to the loader.
-        with tempfile.NamedTemporaryFile(suffix=".pt", delete=False) as tmp:
-            temp_model_path = tmp.name
-            download_stream = blob_client.download_blob()
-            tmp.write(download_stream.readall())
-
-        LOG.info(f"{self.model_name} downloaded from Azure to temporary file {temp_model_path}")
-
-        # Load the model based on the specified provider.
-        provider = self.model_provider.lower()
-        if provider == "huggingface":
-            try:
-                # For Hugging Face, typically from_pretrained expects a directory.
-                # If your temporary file is a compressed archive, consider extracting it.
-                self.model = AutoModelForCausalLM.from_pretrained(temp_model_path)
-                self.tokenizer = AutoTokenizer.from_pretrained(temp_model_path)
-                self.pipeline = pipeline(self.task, model=self.model, tokenizer=self.tokenizer)
-            except Exception as e:
-                LOG.error(f"Failed to load Hugging Face model: {e}")
-                return False
-
-        elif provider == "pytorch":
-            try:
-                # Try loading as a TorchScript model.
-                self.model = torch.jit.load(temp_model_path, map_location="cpu")
-                self.model.eval()
-            except RuntimeError as e:
-                print(f"torch.jit.load() failed: {e}. Trying torch.load() instead...")
-                try:
-                    # Fallback: load as a full PyTorch model.
-                    self.model = torch.load(temp_model_path, map_location="cpu")
-                    self.model.eval()
-                except Exception as e2:
-                    LOG.error(f"Failed to load PyTorch model: {e2}")
-                    return False
-
-        elif provider == "tensorflow":
-            try:
-                # TensorFlow's load_model expects the SavedModel format. 
-                # Make sure your temporary file is a valid SavedModel.
-                self.model = tf.keras.models.load_model(temp_model_path)
-                print("TensorFlow model successfully loaded.")
-            except Exception as e:
-                LOG.error(f"Failed to load TensorFlow model: {e}")
-                return False
-
+        blob_list = self.container_client.list_blobs(name_starts_with=self.model_name + "/")
+        if any(blob_list):
+            # It's a directory structure
+            return self._load_directory_from_azure(self.model_name)
         else:
-            LOG.warning(f"Unsupported model provider: {self.model_provider}")
+            # It might be a single file
+            blob_client = self.container_client.get_blob_client(self.model_name)
+            if self._check_blob_exists(blob_client):
+                return self._load_single_file_from_azure(self.model_name)
+            else:
+                LOG.warning(f"No model found with prefix or name '{self.model_name}' in Azure.")
+                return False
+            
+    def _check_blob_exists(self, blob_client):
+        try:
+            blob_client.get_blob_properties()
+            return True
+        except Exception as e:
             return False
 
-        LOG.info("Model successfully loaded from Azure and initialized for inference.")
-        return True
+    def _load_single_file_from_azure(self, blob_name):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            local_file_path = os.path.join(tmp_dir, os.path.basename(blob_name))
+            blob_client = self.container_client.get_blob_client(blob_name)
+            try:
+                with open(local_file_path, "wb") as file:
+                    download_stream = blob_client.download_blob()
+                    file.write(download_stream.readall())
+                LOG.info(f"Single file model downloaded from Azure to: {local_file_path}")
+                return self._load_model_from_local_path(local_file_path)
+            except Exception as e:
+                LOG.error(f"Error downloading single file model from Azure: {e}")
+                return False
+
+    def _load_directory_from_azure(self, blob_prefix):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            blobs = self.container_client.list_blobs(name_starts_with=blob_prefix + "/")
+            for blob in blobs:
+                relative_path = os.path.relpath(blob.name, blob_prefix)
+                local_path = os.path.join(tmp_dir, relative_path)
+                os.makedirs(os.path.dirname(local_path), exist_ok=True)
+                blob_client = self.container_client.get_blob_client(blob.name)
+                try:
+                    with open(local_path, "wb") as file:
+                        download_stream = blob_client.download_blob()
+                        file.write(download_stream.readall())
+                except Exception as e:
+                    LOG.error(f"Error downloading blob {blob.name}: {e}")
+                    return False
+            LOG.info(f"Model directory downloaded from Azure to: {tmp_dir}")
+            return self._load_model_from_local_path(tmp_dir)
+
+    def _load_model_from_local_path(self, local_path):
+        try:
+            if self.model_provider.lower() == "huggingface":
+                self.model = AutoModelForCausalLM.from_pretrained(local_path)
+                self.tokenizer = AutoTokenizer.from_pretrained(local_path)
+                self.pipeline = pipeline(self.task, model=self.model, tokenizer=self.tokenizer)
+            elif self.model_provider.lower() == "pytorch":
+                # Assuming the single .pt file is named 'model.pt' in the temp dir
+                pytorch_file = os.path.join(local_path, os.path.basename(self.model_name) + ".pt")
+                if os.path.isfile(pytorch_file):
+                    self.model = torch.jit.load(pytorch_file)
+                    self.model.eval()
+                elif os.path.isfile(local_path): # Handle if local_path is directly the .pt file
+                    self.model = torch.jit.load(local_path)
+                    self.model.eval()
+                else:
+                    LOG.error(f"Could not find PyTorch model file (.pt) in: {local_path}")
+                    return False
+            elif self.model_provider.lower() == "tensorflow":
+                self.model = tf.keras.models.load_model(local_path)
+            LOG.info("Model loaded successfully from local path.")
+            return True
+        except Exception as e:
+            LOG.error(f"Failed to load model from local path {local_path}: {e}")
+            return False
 
     @timer
     def load_model(self):
-
         """Loads models from Azure Storage if available; otherwise, downloads from a repository."""
-        # since we are using a local directory, we will check it before 
-
         try:
-            # for root, _, files in os.walk(self.saved_path):
-            #     if self.model_name in files:
-            #         print("Model found Locally")
-
-            
             if self.azure_config:
                 LOG.info("Checking Azure Storage for model...")
                 print("Checking Azure Storage for model...")
-
                 if self.load_from_azure():
                     LOG.info(f"Loaded model from Azure Storage: {self.model_name}")
                     print(f"Loaded model from Azure Storage: {self.model_name}")
                     return
-                
                 else:
-
-                    LOG.info(f"Downloading model from {self.model_provider}...")
-
+                    LOG.info(f"Model not found in Azure. Downloading from {self.model_provider}...")
                     if self.model_provider == "huggingface":
                         LOG.info(f"Loading Hugging Face model: {self.model_name}")
                         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
@@ -189,26 +196,23 @@ class ModelWrapper:
                         self.pipeline = pipeline(self.task, model=self.model, tokenizer=self.tokenizer)
                         temp_dir = tempfile.gettempdir()
                         save_path = os.path.join(temp_dir, self.model_name)
+                        os.makedirs(save_path, exist_ok=True) # Ensure directory exists
                         self.model.save_pretrained(save_path)
                         self.tokenizer.save_pretrained(save_path)
                         self.model_save_path = save_path
-
                     elif self.model_provider == "pytorch":
                         LOG.info(f"Loading PyTorch model from {self.model_name}")
                         print(f"Loading PyTorch model from {self.model_name}")
-                        self.model_save_path = from_torch(self.model_name) 
-
+                        self.model_save_path = from_torch(self.model_name)
                     elif self.model_provider == "tensorflow":
                         LOG.info(f"Loading TensorFlow model from {self.model_name}")
                         print(f"Loading TensorFlow model from {self.model_name}")
                         self.model_save_path = from_tensorflow(self.model_name)
-
                     else:
                         LOG.error(f"Unknown model provider: {self.model_provider}")
                         raise ValueError(f"Unsupported model provider: {self.model_provider}")
 
-                    LOG.info("Model loaded successfully.")
-
+                    LOG.info("Model loaded successfully from provider.")
                     if self.azure_config:
                         LOG.info("Saving model from Provider to Azure...")
                         self.save_to_azure()
@@ -216,6 +220,7 @@ class ModelWrapper:
         except Exception as e:
             LOG.error(f"Error loading model: {e}", exc_info=True)
             raise HTTPException(status_code=500, detail=f"Model loading failed: {str(e)}")
+
         
 
     @timer
@@ -225,7 +230,7 @@ class ModelWrapper:
             # Common preprocessing for all frameworks
             def _convert_to_tensor(data):
                 if isinstance(data, np.ndarray):
-                    return torch.from_numpy(data) if self.provider == "pytorch" else tf.convert_to_tensor(data)
+                    return torch.from_numpy(data) if self.model_provider == "pytorch" else tf.convert_to_tensor(data)
                 return data
 
             # Hugging Face Pipeline First (now with audio support)
@@ -238,7 +243,7 @@ class ModelWrapper:
                 return self.pipeline(input_data, **kwargs)
             
             # Hugging Face Direct Execution
-            if self.provider == "huggingface" and self.model:
+            if self.model_provider == "huggingface" and self.model:
                 LOG.info(f"Direct HF {task} inference")
                 
                 # Audio Processing
@@ -278,8 +283,38 @@ class ModelWrapper:
                     inputs = self.tokenizer(input_data, return_tensors="pt" if self.device == "cpu" else "tf")
                     return self.model(**inputs).logits
 
-            # PyTorch Specific Processing
-            if self.provider == "pytorch" and isinstance(self.model, torch.nn.Module):
+                # PyTorch Specific Processing
+            if self.model_provider == "pytorch" and isinstance(self.model, torch.nn.Module):
+                if task == "image-classification":
+                    LOG.info("PyTorch image classification")
+                    from torchvision import transforms
+
+                    # Define standard preprocessing pipeline
+                    preprocess = transforms.Compose([
+                        transforms.Resize(256),
+                        transforms.CenterCrop(224),
+                        transforms.ToTensor(),
+                        transforms.Normalize(
+                            mean=[0.485, 0.485, 0.406], 
+                            std=[0.229, 0.224, 0.225]
+                        )
+                    ])
+
+                    # Process input
+                    if isinstance(input_data, str):
+                        image = Image.open(input_data).convert("RGB")
+                    else:
+                        image = input_data
+
+                    input_tensor = preprocess(image).unsqueeze(0)  # Add batch dim
+                    input_tensor = input_tensor.to(self.device)  # Add device management
+
+                    with torch.no_grad():
+                        outputs = self.model(input_tensor)
+                    
+                    print('Model outputs: ', torch.nn.functional.softmax(outputs, dim=1))
+                    return torch.nn.functional.softmax(outputs, dim=1)
+            
                 # Audio Processing
                 if task == "audio-classification":
                     waveform = _convert_to_tensor(input_data).float()
@@ -300,7 +335,7 @@ class ModelWrapper:
                     return [{k: v.cpu() for k, v in t.items()} for t in outputs]
 
             # TensorFlow Specific Processing  
-            if self.provider == "tensorflow" and isinstance(self.model, tf.keras.Model):
+            if self.model_provider == "tensorflow" and isinstance(self.model, tf.keras.Model):
                 # Audio Processing
                 if task == "audio-classification":
                     spec = tf.signal.stft(_convert_to_tensor(input_data), frame_length=255, frame_step=128)
@@ -335,17 +370,36 @@ class ModelWrapper:
             return waveform.numpy()
         return input_data
     
-    def upload_directory_to_azure(self, local_dir, blob_prefix=""):
-        for root, _, files in os.walk(local_dir):
-            for file in files:
-                local_path = os.path.join(root, file)
-                blob_name = os.path.relpath(local_path, local_dir)
-                if blob_prefix:
-                    blob_name = f"{blob_prefix}/{blob_name}"
-                
-                blob_client = self.container_client.get_blob_client(blob_name)
+    def upload_directory_to_azure(self, local_path, blob_prefix=""):
+        LOG.info(f'Attempting to upload path: {local_path} to Azure with prefix: {blob_prefix}')
+        try:
+            blob_client = self.container_client.get_blob_client(os.path.join(blob_prefix, os.path.basename(local_path)))
+
+            if os.path.isfile(local_path):
+                LOG.info(f'Uploading single file: {local_path} as {blob_client.blob_name}')
                 with open(local_path, "rb") as data:
                     blob_client.upload_blob(data, overwrite=True)
+                LOG.info(f'Successfully uploaded file: {local_path} to {blob_client.blob_name}')
+
+            elif os.path.isdir(local_path):
+                LOG.info(f'Uploading directory: {local_path} as prefix: {blob_prefix}')
+                for root, _, files in os.walk(local_path):
+                    for file in files:
+                        local_file_path = os.path.join(root, file)
+                        relative_path = os.path.relpath(local_file_path, local_path)
+                        blob_name = os.path.join(blob_prefix, relative_path)
+                        blob_client = self.container_client.get_blob_client(blob_name)
+                        LOG.info(f'Uploading file: {local_file_path} as {blob_client.blob_name}')
+                        with open(local_file_path, "rb") as data:
+                            blob_client.upload_blob(data, overwrite=True)
+                        LOG.info(f'Successfully uploaded file: {local_file_path} to {blob_client.blob_name}')
+                LOG.info(f'Successfully uploaded directory: {local_path} to prefix: {blob_prefix}')
+            else:
+                LOG.warning(f'Provided local path: {local_path} is neither a file nor a directory. Skipping upload.')
+
+        except Exception as e:
+            LOG.error(f'Saving to Azure failed with error: {e}')
+            raise RuntimeError(f'Model saving to Azure failed: {e}')
 
 # if __name__ == "__main__":
    
