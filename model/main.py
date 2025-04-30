@@ -15,8 +15,51 @@ import tensorflow as tf
 from fastapi import HTTPException
 from huggingface_hub import login
 from azure.storage.blob import BlobServiceClient
-from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer, AutoModelForImageClassification
+import transformers
+from transformers import AutoTokenizer, AutoProcessor, AutoImageProcessor, pipeline 
+from transformers import (
+    AutoModel,
+    AutoModelForAudioClassification,
+    AutoModelForAudioFrameClassification,
+    AutoModelForAudioXVector,
+    AutoModelForCTC,
+    AutoModelForCausalLM,
+    AutoModelForDepthEstimation,
+    AutoModelForDocumentQuestionAnswering,
+    AutoModelForImageClassification,
+    AutoModelForImageSegmentation,
+    AutoModelForImageTextToText,
+    AutoModelForImageToImage,
+    AutoModelForInstanceSegmentation,
+    AutoModelForKeypointDetection,
+    AutoModelForMaskGeneration,
+    AutoModelForMaskedImageModeling,
+    AutoModelForMaskedLM,
+    AutoModelForMultipleChoice,
+    AutoModelForNextSentencePrediction,
+    AutoModelForObjectDetection,
+    AutoModelForPreTraining,
+    AutoModelForQuestionAnswering,
+    AutoModelForSemanticSegmentation,
+    AutoModelForSeq2SeqLM,
+    AutoModelForSequenceClassification,
+    AutoModelForSpeechSeq2Seq,
+    AutoModelForTableQuestionAnswering,
+    AutoModelForTextEncoding,
+    AutoModelForTextToSpectrogram,
+    AutoModelForTextToWaveform,
+    AutoModelForTokenClassification,
+    AutoModelForUniversalSegmentation,
+    AutoModelForVideoClassification,
+    AutoModelForVision2Seq,
+    AutoModelForVisualQuestionAnswering,
+    AutoModelForZeroShotImageClassification,
+    AutoModelForZeroShotObjectDetection,
+    AutoModelWithLMHead
+)
 import torchaudio
+from torchvision.transforms import transforms
+from configs.hf_task_mapping import task_automodel_mapping
 
 
 
@@ -27,8 +70,8 @@ from utils.resource_manager import timer
 from utils.torch_route import from_torch
 from utils.tensorflow_route import from_tensorflow
 
-HGF_TOKEN = os.environ.get("HUGGINGFACE_TOKEN")
-login(HGF_TOKEN)
+# HGF_TOKEN = os.environ.get("HUGGINGFACE_TOKEN")
+# login(HGF_TOKEN)
 
 
 
@@ -36,16 +79,18 @@ LOG = get_logger('model')
 
 
 class ModelWrapper:
-    def __init__(self, provider, model_name, pipeline_type):
+    def __init__(self, provider, model_name, pipeline_type, model_category):
         self.model_provider = provider
         self.model_name = model_name
         self.task = pipeline_type
+        self.model_category = model_category
         self.model = None
         self.tokenizer = None
-        self.image_processor = None
         self.pipeline = None
         self.saved_path = "models_saved"
         self.model_save_path = None 
+        self.image_processor = None
+        self.processor = None
 
         #os.makedirs(self.saved_path, exist_ok=True)
 
@@ -115,15 +160,43 @@ class ModelWrapper:
         # Load the model based on the specified provider.
         provider = self.model_provider.lower()
         if provider == "huggingface":
+            # For Hugging Face, typically from_pretrained expects a directory.
+            # If your temporary file is a compressed archive, consider extracting it.
+            automodel_class_name = task_automodel_mapping.get(self.task)
+            if not automodel_class_name and hasattr(transformers, automodel_class_name):
+                raise ValueError(f"{self.task} not mapped to any automodel class")
+            
+            automodel_class = getattr(transformers, automodel_class_name)
+            self.model = automodel_class.from_pretrained(self.model_name)
+            self.model.save_pretrained(temp_model_path)
+
+            # Try AutoTokenizer
             try:
-                # For Hugging Face, typically from_pretrained expects a directory.
-                # If your temporary file is a compressed archive, consider extracting it.
-                self.model = AutoModelForCausalLM.from_pretrained(temp_model_path)
-                self.tokenizer = AutoTokenizer.from_pretrained(temp_model_path)
-                self.pipeline = pipeline(self.task, model=self.model, tokenizer=self.tokenizer)
+                self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+                self.tokenizer.save_pretrained(temp_model_path)
+                self.pipeline = pipeline(task=self.task, model=self.model, tokenizer=self.tokenizer)
             except Exception as e:
-                LOG.error(f"Failed to load Hugging Face model: {e}")
-                return False
+                print(f"Skipping AutoTokenizer: {e}")
+                self.pipeline = None
+                
+                # Try AutoProcessor (for multimodal models)
+            try:
+                self.processor = AutoProcessor.from_pretrained(self.model_name)
+                self.processor.save_pretrained(temp_model_path)
+                self.pipeline = pipeline(task=self.task, model=self.model, processor=self.processor)
+            except Exception as e:
+                print(f"Skipping AutoProcessor: {e}")
+                self.pipeline = None
+
+            # Try AutoImageProcessor (for vision models)
+            try:
+                self.image_processor = AutoImageProcessor.from_pretrained(self.model_name)
+                self.image_processor.save_pretrained(temp_model_path)
+                self.pipeline = pipeline(task=self.task, model=self.model, image_processor=self.image_processor)
+            except Exception as e:
+                print(f"Skipping AutoImageProcessor: {e}")
+                self.pipeline = None
+
 
         elif provider == "pytorch":
             try:
@@ -184,15 +257,42 @@ class ModelWrapper:
 
                     if self.model_provider == "huggingface":
                         LOG.info(f"Loading Hugging Face model: {self.model_name}")
-                        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-                        self.model = AutoModelForCausalLM.from_pretrained(self.model_name)
-                        self.pipeline = pipeline(self.task, model=self.model, tokenizer=self.tokenizer)
                         temp_dir = tempfile.gettempdir()
                         save_path = os.path.join(temp_dir, self.model_name)
-                        self.model.save_pretrained(save_path)
-                        self.tokenizer.save_pretrained(save_path)
                         self.model_save_path = save_path
 
+                        automodel_class_name = task_automodel_mapping.get(self.task)
+                        if not automodel_class_name and hasattr(transformers, automodel_class_name):
+                            raise ValueError(f"{self.task} not mapped to any automodel class")
+                        
+                        automodel_class = getattr(transformers, automodel_class_name)
+                        self.model = automodel_class.from_pretrained(self.model_name)
+                        self.model.save_pretrained(save_path)
+
+                        # Try AutoTokenizer
+                        try:
+                            self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+                            self.tokenizer.save_pretrained(save_path)
+                        except Exception as e:
+                            print(f"Skipping AutoTokenizer: {e}")
+                            self.tokenizer = None
+
+                            # Try AutoProcessor (for multimodal models)
+                        try:
+                            self.processor = AutoProcessor.from_pretrained(self.model_name)
+                            self.processor.save_pretrained(save_path)
+                        except Exception as e:
+                            print(f"Skipping AutoProcessor: {e}")
+                            self.processor = None
+
+                            # Try AutoImageProcessor (for vision models)
+                        try:
+                            self.image_processor = AutoImageProcessor.from_pretrained(self.model_name)
+                            self.image_processor.save_pretrained(save_path)
+                        except Exception as e:
+                            print(f"Skipping AutoImageProcessor: {e}")
+                            self.image_processor = None
+                        
                     elif self.model_provider == "pytorch":
                         LOG.info(f"Loading PyTorch model from {self.model_name}")
                         print(f"Loading PyTorch model from {self.model_name}")
@@ -238,7 +338,7 @@ class ModelWrapper:
                 return self.pipeline(input_data, **kwargs)
             
             # Hugging Face Direct Execution
-            if self.provider == "huggingface" and self.model:
+            if self.model_provider == "huggingface" and self.model:
                 LOG.info(f"Direct HF {task} inference")
                 
                 # Audio Processing
@@ -279,28 +379,98 @@ class ModelWrapper:
                     return self.model(**inputs).logits
 
             # PyTorch Specific Processing
-            if self.provider == "pytorch" and isinstance(self.model, torch.nn.Module):
+            if self.model_provider == "pytorch" and isinstance(self.model, torch.nn.Module):
                 # Audio Processing
-                if task == "audio-classification":
-                    waveform = _convert_to_tensor(input_data).float()
-                    mel_spec = torchaudio.transforms.MelSpectrogram()(waveform)
-                    return self.model(mel_spec.unsqueeze(0))
+                # if task == "audio-classification":
+                #     waveform = _convert_to_tensor(input_data).float()
+                #     mel_spec = torchaudio.transforms.MelSpectrogram()(waveform)
+                #     return self.model(mel_spec.unsqueeze(0))
+                if self.model_category=="audio":
+                    try:
+                        torchaudio.set_audio_backend("soundfile")
+                        print("== audio model inferencing beginning ==")
+                        # Load the pre-trained ConvTasNet model
+                        # bundle = f"{torchaudio.pipelines}.{model_name}"
+                        model = torch.load(f"{self.model_save_path}/{self.model_name}.pt", weights_only=False)
+                        model.eval()
+
+                        # Load the audio file
+                        
+                        waveform, sample_rate = torchaudio.load(input_data)
+
+                        # Resample if the audio sample rate doesn't match the model's expected sample rate
+                        expected_sampling_rate = 16000
+                        if sample_rate != expected_sampling_rate:
+                            resampler = torchaudio.transforms.Resample(orig_freq=sample_rate, new_freq=expected_sampling_rate)
+                            waveform = resampler(waveform)
+                            sample_rate = expected_sampling_rate
+
+                        # Ensure the waveform is mono
+                        if waveform.shape[0] > 1:
+                            waveform = torch.mean(waveform, dim=0, keepdim=True)
+
+                        waveform = waveform.unsqueeze(0) 
+
+                        # Perform source separation
+                        with torch.no_grad():
+                            separated_sources = model(waveform)
+                        print("Separated sources shape:", separated_sources.shape)
+                    except Exception as e:
+                        print("Error inferencing torch audio model", e)
                 
                 # Object Detection
-                if task == "object-detection":
-                    from torchvision import transforms
-                    preprocess = transforms.Compose([
-                        transforms.Resize(800),
-                        transforms.ToTensor(),
-                        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-                    ])
-                    img_tensor = preprocess(input_data).unsqueeze(0)
-                    with torch.no_grad():
-                        outputs = self.model(img_tensor)
-                    return [{k: v.cpu() for k, v in t.items()} for t in outputs]
+                # if task == "object-detection":
+                #     from torchvision import transforms
+                #     preprocess = transforms.Compose([
+                #         transforms.Resize(800),
+                #         transforms.ToTensor(),
+                #         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+                #     ])
+                #     img_tensor = preprocess(input_data).unsqueeze(0)
+                #     with torch.no_grad():
+                #         outputs = self.model(img_tensor)
+                #     return [{k: v.cpu() for k, v in t.items()} for t in outputs]
+                if self.model_category=="vision":
+                    try:
+                        model = torch.load(f"{self.model_save_path}/{self.model_name}.pt", weights_only=False)
+                        model.eval()
+
+                        preprocess = transforms.Compose([
+                            transforms.Resize(256),
+                            transforms.CenterCrop(224),
+                            transforms.ToTensor(),
+                            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+                        ])
+
+                        # Load the image and apply the preprocessing pipeline.
+                         # Replace with the actual image path
+                        input_image = Image.open(input_data).convert("RGB")
+                        input_tensor = preprocess(input_image)
+                        input_batch = input_tensor.unsqueeze(0)
+
+                        # Move to GPU if available
+                        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+                        model.to(device)
+                        input_batch = input_batch.to(device)
+
+                        # Perform inference.
+                        with torch.no_grad():
+                            output = model(input_batch)
+
+                        # Apply softmax to convert logits to probabilities.
+                        probabilities = torch.nn.functional.softmax(output[0], dim=0)
+                        predicted_prob, predicted_class = torch.max(probabilities, dim=0)
+
+                        print(f"Predicted class: {predicted_class.item()}, Probability: {predicted_prob.item():.4f}")
+
+                        print("== Vision model inferencing successful ==")
+                        # print(F"{TOTAL_TIME_TAKEN} minutes in total")
+
+                    except Exception as e:
+                        print("Error during torch vision model inferencing", e)
 
             # TensorFlow Specific Processing  
-            if self.provider == "tensorflow" and isinstance(self.model, tf.keras.Model):
+            if self.model_provider == "tensorflow" and isinstance(self.model, tf.keras.Model):
                 # Audio Processing
                 if task == "audio-classification":
                     spec = tf.signal.stft(_convert_to_tensor(input_data), frame_length=255, frame_step=128)
@@ -347,80 +517,11 @@ class ModelWrapper:
                 with open(local_path, "rb") as data:
                     blob_client.upload_blob(data, overwrite=True)
 
-# if __name__ == "__main__":
-   
-#     """
-#     I wil be testing these models tomorrow and updating the sheet. 
-#     """
+if __name__ == "__main__":
 
-
-
-#     from tests.inferencing import inference_model
-#     import pandas as pd
-#     import openpyxl
-#     import psutil
+    model_wrapper = ModelWrapper(model_name="MIT/ast-finetuned-audioset-10-10-0.4593", 
+                                provider="huggingface", 
+                                pipeline_type="audio-classification", 
+                                model_category="audio")
     
-#     models_dict = {
-#     "model_1": {"model_provider": "pytorch", "model_category": "torch_audio", "model_name": "WAV2VEC2_BASE"},
-#     "model_2": {"model_provider": "pytorch", "model_category": "torch_audio", "model_name": "EMFORMER_RNNT_BASE_LIBRISPEECH"},
-#     "model_3": {"model_provider": "pytorch", "model_category": "torch_vision", "model_name": "ResNet50"},
-#     "model_4": {"model_provider": "pytorch", "model_category": "torch_audio", "model_name": "Wav2Vec2Bundle"},
-#     "model_5": {"model_provider": "pytorch", "model_category": "torch_vision", "model_name": "inception_v3"},
-#     "model_6": {"model_provider": "pytorch", "model_category": "torch_audio", "model_name": "EMFORMER_RNNT_BASE_LIBRISPEECH"},
-#     "model_7": {"model_provider": "pytorch", "model_category": "torch_vision", "model_name": "shufflenet_v2_x1_5"},
-#     "model_8": {"model_provider": "pytorch", "model_category": "torch_audio", "model_name": "TACOTRON2_WAVERNN_CHAR_LJSPEECH"},
-#         }
-
-#     excel_file = 'torch_model_metrics.xlsx'
-
-#     model_inference_metrics = []
-
-#     for model in models_dict.values():
-
-#         model_name = model["model_name"]
-#         model_provider = model["model_provider"]
-#         model_category = model["model_category"]
-
-
-#         start_inference_time = time.time()
-#         process = psutil.Process(os.getpid())
-
-#         mem_before = process.memory_info().rss / (1024 ** 2)
-
-#         model_wrapper = ModelWrapper(model_provider, model_name, model_category)
-#         model_wrapper.load_model()
-
-#         print("/nDownload completed")
-
-#         inference_model(model_provider, model_name, model_category)
-
-#         end_inference_time = time.time()
-
-#         mem_after = process.memory_info().rss / (1024 ** 2)
-
-#         mem_used = mem_after - mem_before
-
-
-#         TOTAL_TIME_TAKEN = round((end_inference_time - start_inference_time)/60, 2)
-#         model_data = {'model_name': model_name,
-#                         'model_provider': model_provider,
-#                         "model_category": model_category,
-#                         "total_time_taken(mins)": TOTAL_TIME_TAKEN,
-#                         "memory_used": mem_used}
-                                
-#         model_inference_metrics.append(model_data)
-#         print("/n Metrics obtained", model_inference_metrics)
-
-#     df = pd.DataFrame(model_inference_metrics)
-
-#     if os.path.exists(excel_file):
-#         existing_df = pd.read_excel(excel_file)
-#         updated_df = pd.concat([existing_df, df], ignore_index=True)
-#     else:
-#         updated_df = df
-
-#     updated_df.to_excel(excel_file, index=False)
-
-#     print(f"Saved {len(df)} model entries to {excel_file}")
-
-
+    model_wrapper.load_model()

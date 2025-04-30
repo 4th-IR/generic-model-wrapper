@@ -7,11 +7,10 @@ from utils.api_interceptor import create_model
 def load_model(model_details):
     model_name = model_details['model_name']
     model_provider = model_details['model_provider']
-    model_category = model_details['task']
+    model_category = model_details['model_category']
+    model_task = model_details['task']
 
-
-    model_wrapper = ModelWrapper(model_provider, model_name, model_category)
-
+    model_wrapper = ModelWrapper(provider=model_provider, model_name=model_name, model_category=model_category, pipeline_type=model_task)
     try:
         model_wrapper.load_model() 
 

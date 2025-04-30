@@ -3,7 +3,7 @@
 #external 
 import numpy as np 
 import torch 
-import tensorflow as tf
+import tensorflow as tf 
 
 
 models_dict = {
@@ -20,7 +20,7 @@ models_dict = {
     "model_2": {
         "model_provider": "huggingface",
         "model_category": "vision",
-        "model_name": "facebook/detr-resnet-50",
+        "model_name": "nvidia/mit-b0",
         "task": "object-detection",
         "sample_input": "assets/images/animal_pictures/dog1.jpg",  # Handled by image_processor
         "framework_specific": {
@@ -91,20 +91,31 @@ models_dict = {
         }
     },
     "model_9": {
-        "model_provider": "tensorflow",
+        "model_provider": "pytorch",
         "model_category": "audio",
-        "model_name": "YAMNet",
+        "model_name": "CONVTASNET_BASE_LIBRI2MIX",
         "task": "audio-event-classification",
-        "sample_input": np.random.uniform(-1.0, 1.0, 15600),  # STFT processed
+        "sample_input": "./audios/audio2.wav",  # STFT processed
         "framework_specific": {
             "frame_length": 255,
             "frame_step": 128
         }
     },
-    "model_10": {
+     "model_10": {
+        "model_provider": "pytorch",
+        "model_category": "vision",
+        "model_name": "vgg19",
+        "task": "image-classification",
+        "sample_input": "./assets/images/cat1.jpg",  # STFT processed
+        "framework_specific": {
+            "frame_length": 255,
+            "frame_step": 128
+        }
+    },
+    "model_11": {
         "model_provider": "tensorflow",
         "model_category": "text",
-        "model_name": "GPT2",
+        "model_name": "gemma_2b_en",
         "task": "text-generation",
         "sample_input": tf.constant(["The quick brown fox"]),  # Direct model.predict
         "framework_specific": {
