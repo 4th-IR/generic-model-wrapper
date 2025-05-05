@@ -15,7 +15,7 @@ import tensorflow as tf
 from fastapi import HTTPException
 from huggingface_hub import login
 from azure.storage.blob import BlobServiceClient
-from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer, AutoModelForImageClassification
+from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer, AutoProcessor, AutoFeatureExtractor, AutoImageProcessor
 import torchaudio
 
 
@@ -26,6 +26,7 @@ from utils.env_manager import AZURE_BLOB_URI, AZURE_CONNECTION_STRING, AZURE_CON
 from utils.resource_manager import timer
 from utils.torch_route import from_torch
 from utils.tensorflow_route import from_tensorflow
+from utils.preprocessing import prepare_multimodal_input, convert_to_tensor
 
 HGF_TOKEN = os.environ.get("HUGGINGFACE_TOKEN")
 login(HGF_TOKEN)
@@ -42,7 +43,9 @@ class ModelWrapper:
         self.task = pipeline_type
         self.model = None
         self.tokenizer = None
-        self.image_processor = None
+        self.processor = None # For multimodal processors
+        self.image_processor = None # Specific image processor
+        self.feature_extractor = None # Specific audio feature extractor
         self.pipeline = None
         self.saved_path = "temp_models"
         self.model_save_path = None 
@@ -61,55 +64,55 @@ class ModelWrapper:
 
     #@timer
     def save_to_azure(self):
+        """Saves the model directory/files to Azure Blob Storage under a folder named after the model."""
         print("<---SAVING TO AZURE--->")
-    
-        if not self.model and not self.model_save_path:
-            LOG.error("Attempted to save a model that is not loaded.")
-            raise ValueError("Model is not loaded and saved")
-        
-        #file_size = os.stat(self.model_save_path).st_size
-        #blob_client = self.container_client.get_blob_client(blob=self.model_name)
-        
-        # with tqdm(total=file_size, unit="B", unit_scale=True, desc="Upload Progress") as progress_bar:
-        #     def progress_callback(bytes_uploaded):
-        #         # Update progress_bar: calculate the difference between the current uploaded bytes
-        #         # and the last reported amount (progress_bar.n).
-        #         progress_bar.update(bytes_uploaded - progress_bar.n)
+        LOG.info(f"Attempting to save model '{self.model_name}' to Azure container '{AZURE_CONTAINER_NAME}'.")
 
-        # with open(self.model_save_path, "rb") as data:
-        #     blob_client.upload_blob(data, overwrite=True)
+        if not self.model_save_path or not os.path.exists(self.model_save_path):
+            error_msg = f"Model save path '{self.model_save_path}' is not valid or model hasn't been saved locally first."
+            LOG.error(error_msg)
+            raise ValueError(error_msg)
 
         try:
-            LOG.info(f'model is saved at {self.model_save_path}')
+            LOG.info(f'Local model path to upload: {self.model_save_path}')
+            # Use the model_name as the root folder (prefix) in the blob container
             self.upload_directory_to_azure(
-                self.model_save_path,
+                local_path=self.model_save_path,
                 blob_prefix=self.model_name
             )
+            LOG.info(f"Successfully saved '{self.model_name}' to Azure Blob Storage in container '{AZURE_CONTAINER_NAME}' under folder '{self.model_name}'.")
         except Exception as e:
-            LOG.warn(f'Failed to save with error {e}')
-            raise RuntimeError(f'Model saving failed: Error: {e}')
-
-        LOG.info(f"{self.model_name} saved to Azure Blob Storage")
+            LOG.error(f'Failed to save model {self.model_name} to Azure: {e}', exc_info=True)
+            raise RuntimeError(f'Model saving to Azure failed: {e}')
 
     #@timer
     def load_from_azure(self):
+        """Loads the model from Azure Blob Storage, expecting a directory structure named after the model."""
         print("<---LOADING MODEL FROM AZURE--->")
+        LOG.info(f"Attempting to load model '{self.model_name}' from Azure container '{AZURE_CONTAINER_NAME}'.")
         if not self.azure_config:
-            LOG.warning("Azure configuration is disabled.")
+            LOG.warning("Azure configuration is disabled. Cannot load from Azure.")
             return False
 
-        blob_list = self.container_client.list_blobs(name_starts_with=self.model_name + "/")
-        if any(blob_list):
-            # It's a directory structure
-            return self._load_directory_from_azure(self.model_name)
+        # Standard approach: Look for a directory named after the model.
+        # The prefix should be the model name followed by a slash to list contents *within* that directory.
+        blob_prefix = self.model_name + "/"
+        blob_list = list(self.container_client.list_blobs(name_starts_with=blob_prefix))
+
+        if blob_list:
+            # Found blobs under the model_name prefix, indicating a directory structure.
+            LOG.info(f"Found directory structure for '{self.model_name}' in Azure container '{AZURE_CONTAINER_NAME}'. Loading directory.")
+            return self._load_directory_from_azure(self.model_name) # Pass model_name as the prefix
         else:
-            # It might be a single file
-            blob_client = self.container_client.get_blob_client(self.model_name)
-            if self._check_blob_exists(blob_client):
-                return self._load_single_file_from_azure(self.model_name)
-            else:
-                LOG.warning(f"No model found with prefix or name '{self.model_name}' in Azure.")
-                return False
+            # If no directory structure, log a warning and indicate failure.
+            # We no longer support loading single files directly named after the model as the standard.
+            LOG.warning(f"No directory structure found with prefix '{blob_prefix}' in Azure container '{AZURE_CONTAINER_NAME}'. Model not found or not saved in the standard format.")
+            # Optionally, you could check for the single file as a legacy fallback here, but it's discouraged.
+            # blob_client = self.container_client.get_blob_client(self.model_name)
+            # if self._check_blob_exists(blob_client):
+            #     LOG.warning(f"Found single blob '{self.model_name}'. Attempting legacy load. Standard is directory structure.")
+            #     return self._load_single_file_from_azure(self.model_name)
+            return False
             
     def _check_blob_exists(self, blob_client):
         try:
@@ -151,29 +154,113 @@ class ModelWrapper:
             return self._load_model_from_local_path(tmp_dir)
 
     def _load_model_from_local_path(self, local_path):
+        """Loads the model from a local directory path based on the provider."""
+        LOG.info(f"Loading model for provider '{self.model_provider}' from local path: {local_path}")
         try:
-            if self.model_provider.lower() == "huggingface":
+            provider = self.model_provider.lower()
+            if provider == "huggingface":
+                # Hugging Face models: Load model, tokenizer, and potentially processor/feature_extractor/image_processor
                 self.model = AutoModelForCausalLM.from_pretrained(local_path)
-                self.tokenizer = AutoTokenizer.from_pretrained(local_path)
-                self.pipeline = pipeline(self.task, model=self.model, tokenizer=self.tokenizer)
-            elif self.model_provider.lower() == "pytorch":
-                # Assuming the single .pt file is named 'model.pt' in the temp dir
-                pytorch_file = os.path.join(local_path, os.path.basename(self.model_name) + ".pt")
-                if os.path.isfile(pytorch_file):
-                    self.model = torch.jit.load(pytorch_file)
-                    self.model.eval()
-                elif os.path.isfile(local_path): # Handle if local_path is directly the .pt file
-                    self.model = torch.jit.load(local_path)
-                    self.model.eval()
+                try:
+                    self.tokenizer = AutoTokenizer.from_pretrained(local_path)
+                    LOG.info("HF AutoTokenizer loaded.")
+                except Exception:
+                    LOG.warning(f"Could not load AutoTokenizer from {local_path}. Tokenizer might be part of the processor.")
+                    self.tokenizer = None
+                try:
+                    # Attempt to load a general processor first (common for multimodal)
+                    self.processor = AutoProcessor.from_pretrained(local_path)
+                    LOG.info("HF AutoProcessor loaded.")
+                    # If processor exists, it might contain tokenizer/feature_extractor/image_processor
+                    if hasattr(self.processor, 'tokenizer') and self.processor.tokenizer:
+                        self.tokenizer = self.processor.tokenizer
+                    if hasattr(self.processor, 'feature_extractor') and self.processor.feature_extractor:
+                        self.feature_extractor = self.processor.feature_extractor
+                    if hasattr(self.processor, 'image_processor') and self.processor.image_processor:
+                        self.image_processor = self.processor.image_processor
+                except Exception:
+                    LOG.info(f"Could not load AutoProcessor from {local_path}. Attempting individual components.")
+                    self.processor = None
+                    # Load individual components if processor loading failed or they are separate
+                    if not self.image_processor:
+                        try:
+                            self.image_processor = AutoImageProcessor.from_pretrained(local_path)
+                            LOG.info("HF AutoImageProcessor loaded.")
+                        except Exception:
+                            LOG.info(f"Could not load AutoImageProcessor from {local_path}.")
+                    if not self.feature_extractor:
+                         try:
+                            self.feature_extractor = AutoFeatureExtractor.from_pretrained(local_path)
+                            LOG.info("HF AutoFeatureExtractor loaded.")
+                         except Exception:
+                            LOG.info(f"Could not load AutoFeatureExtractor from {local_path}.")
+
+                # Optionally create pipeline if task is suitable and components are available
+                try:
+                    # Pipeline creation might need specific components depending on the task
+                    pipeline_args = {'model': self.model}
+                    if self.tokenizer: pipeline_args['tokenizer'] = self.tokenizer
+                    if self.image_processor: pipeline_args['image_processor'] = self.image_processor
+                    if self.feature_extractor: pipeline_args['feature_extractor'] = self.feature_extractor
+                    # Avoid creating pipeline for base causal LM unless task explicitly needs it
+                    if self.task and self.task not in ["text-generation", "feature-extraction"]: 
+                        self.pipeline = pipeline(self.task, **pipeline_args)
+                        LOG.info(f"Hugging Face pipeline for task '{self.task}' created.")
+                    else:
+                        LOG.info(f"HF components loaded for task '{self.task}'. Pipeline not created by default or task unsuitable.")
+                        self.pipeline = None
+                except Exception as pipe_error:
+                    LOG.warning(f"Could not automatically create HF pipeline for task '{self.task}': {pipe_error}. Components loaded directly.")
+                    self.pipeline = None
+            elif provider == "pytorch":
+                # PyTorch models: Search for the model file within the downloaded directory.
+                found_model_file = None
+                possible_extensions = (".pt", ".pth", ".bin") # Common extensions
+                for filename in os.listdir(local_path):
+                    if filename.endswith(possible_extensions):
+                        # Prioritize standard names if multiple files exist
+                        if filename in ["pytorch_model.bin", "model.pt", "model.pth"]:
+                             found_model_file = os.path.join(local_path, filename)
+                             break # Found a standard name
+                        elif not found_model_file: # Keep the first one found if no standard name
+                             found_model_file = os.path.join(local_path, filename)
+
+                if found_model_file:
+                    LOG.info(f"Found PyTorch model file: {found_model_file}")
+                    # Use torch.load for flexibility (can load state_dict or full model)
+                    # Map location ensures model loads correctly regardless of saving device
+                    self.model = torch.load(found_model_file, map_location=torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
+                    # If it's a state dict, you might need to instantiate the model class first
+                    # This example assumes torch.load loads the whole model object or a JIT model
+                    if isinstance(self.model, dict) and 'state_dict' in self.model:
+                         LOG.warning("Loaded state_dict, model class instantiation might be required.")
+                         # Add logic here to load state_dict into your model class if needed
+                    elif isinstance(self.model, torch.nn.Module):
+                        self.model.eval() # Set to evaluation mode
+                    LOG.info("PyTorch model loaded successfully.")
                 else:
-                    LOG.error(f"Could not find PyTorch model file (.pt) in: {local_path}")
-                    return False
-            elif self.model_provider.lower() == "tensorflow":
+                    # If no single file, maybe it's a torch.jit.load compatible directory?
+                    try:
+                        self.model = torch.jit.load(local_path, map_location=torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
+                        if isinstance(self.model, torch.nn.Module):
+                             self.model.eval()
+                        LOG.info("PyTorch model loaded successfully using torch.jit.load on the directory.")
+                    except Exception as jit_e:
+                        LOG.error(f"Could not find a suitable PyTorch model file ({possible_extensions}) in {local_path}, and torch.jit.load failed: {jit_e}")
+                        return False
+            elif provider == "tensorflow":
+                # TensorFlow/Keras models are typically saved as a directory (SavedModel format)
                 self.model = tf.keras.models.load_model(local_path)
-            LOG.info("Model loaded successfully from local path.")
+                LOG.info("TensorFlow/Keras model loaded successfully.")
+            else:
+                LOG.error(f"Unsupported model provider '{self.model_provider}' for loading from local path.")
+                return False
+
+            LOG.info(f"Model '{self.model_name}' ({self.model_provider}) loaded successfully from local path: {local_path}")
+            self.model_save_path = local_path # Update save path to the loaded path
             return True
         except Exception as e:
-            LOG.error(f"Failed to load model from local path {local_path}: {e}")
+            LOG.error(f"Failed to load model from local path {local_path}: {e}", exc_info=True)
             return False
 
     @timer
@@ -190,15 +277,51 @@ class ModelWrapper:
                 else:
                     LOG.info(f"Model not found in Azure. Downloading from {self.model_provider}...")
                     if self.model_provider == "huggingface":
-                        LOG.info(f"Loading Hugging Face model: {self.model_name}")
-                        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+                        LOG.info(f"Loading Hugging Face model/components: {self.model_name}")
+                        # Load all potential components
                         self.model = AutoModelForCausalLM.from_pretrained(self.model_name)
-                        self.pipeline = pipeline(self.task, model=self.model, tokenizer=self.tokenizer)
+                        try:
+                            self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+                        except Exception: self.tokenizer = None
+                        try:
+                            self.processor = AutoProcessor.from_pretrained(self.model_name)
+                            # If processor loaded, extract sub-components
+                            if hasattr(self.processor, 'tokenizer'): self.tokenizer = self.processor.tokenizer
+                            if hasattr(self.processor, 'feature_extractor'): self.feature_extractor = self.processor.feature_extractor
+                            if hasattr(self.processor, 'image_processor'): self.image_processor = self.processor.image_processor
+                        except Exception: self.processor = None
+                        # Load individual components if processor failed or they are separate
+                        if not self.image_processor:
+                            try: self.image_processor = AutoImageProcessor.from_pretrained(self.model_name)
+                            except Exception: pass
+                        if not self.feature_extractor:
+                            try: self.feature_extractor = AutoFeatureExtractor.from_pretrained(self.model_name)
+                            except Exception: pass
+                        
+                        # Attempt pipeline creation (similar logic to _load_model_from_local_path)
+                        try:
+                            pipeline_args = {'model': self.model}
+                            if self.tokenizer: pipeline_args['tokenizer'] = self.tokenizer
+                            if self.image_processor: pipeline_args['image_processor'] = self.image_processor
+                            if self.feature_extractor: pipeline_args['feature_extractor'] = self.feature_extractor
+                            if self.task and self.task not in ["text-generation", "feature-extraction"]:
+                                self.pipeline = pipeline(self.task, **pipeline_args)
+                                LOG.info(f"HF pipeline for task '{self.task}' created after download.")
+                            else: self.pipeline = None
+                        except Exception as pipe_error:
+                            LOG.warning(f"Could not create HF pipeline after download: {pipe_error}")
+                            self.pipeline = None
+
+                        # Save all loaded components
                         temp_dir = tempfile.gettempdir()
-                        save_path = os.path.join(temp_dir, self.model_name)
-                        os.makedirs(save_path, exist_ok=True) # Ensure directory exists
+                        save_path = os.path.join(temp_dir, self.model_name.replace('/', '_')) # Sanitize name for path
+                        os.makedirs(save_path, exist_ok=True)
                         self.model.save_pretrained(save_path)
-                        self.tokenizer.save_pretrained(save_path)
+                        if self.tokenizer: self.tokenizer.save_pretrained(save_path)
+                        if self.processor: self.processor.save_pretrained(save_path)
+                        # Save individual components only if they weren't part of a processor
+                        if not self.processor and self.image_processor: self.image_processor.save_pretrained(save_path)
+                        if not self.processor and self.feature_extractor: self.feature_extractor.save_pretrained(save_path)
                         self.model_save_path = save_path
                     elif self.model_provider == "pytorch":
                         LOG.info(f"Loading PyTorch model from {self.model_name}")
@@ -225,150 +348,194 @@ class ModelWrapper:
 
     @timer
     def run_inference(self, input_data: Any, task: str = None, **kwargs: Any):
-        """Runs inference with enhanced multi-modal support"""
+        """Runs inference using the loaded model, handling multimodal inputs via preprocessing."""
+        effective_task = task or self.task
+        LOG.info(f"Running inference for task: {effective_task} with provider: {self.model_provider}")
+        
+        if not self.model:
+             error_msg = "Model is not loaded. Cannot run inference."
+             LOG.error(error_msg)
+             raise RuntimeError(error_msg)
+
         try:
-            # Common preprocessing for all frameworks
-            def _convert_to_tensor(data):
-                if isinstance(data, np.ndarray):
-                    return torch.from_numpy(data) if self.model_provider == "pytorch" else tf.convert_to_tensor(data)
-                return data
+            # --- Input Preparation --- 
+            # Use the new preprocessing utility
+            # Pass necessary components (processor, tokenizer, etc.) from self
+            prepared_input = prepare_multimodal_input(
+                input_data=input_data,
+                task=effective_task,
+                provider=self.model_provider.lower(),
+                processor=getattr(self, 'processor', None),
+                tokenizer=getattr(self, 'tokenizer', None),
+                feature_extractor=getattr(self, 'feature_extractor', None),
+                image_processor=getattr(self, 'image_processor', None),
+                # Add target_sr if needed, e.g., from model config
+                # target_sr=self.config.get('target_sample_rate', 16000) 
+            )
+            LOG.debug(f"Prepared input type: {type(prepared_input)}")
 
-            # Hugging Face Pipeline First (now with audio support)
-            if self.pipeline:
-                LOG.info(f"Using HF pipeline for {task or 'auto'} task")
-                # Handle audio inputs specifically
-                if task in ["automatic-speech-recognition", "audio-classification"]:
-                    if isinstance(input_data, (str, bytes, np.ndarray)):
-                        return self.pipeline(input_data, task=task, **kwargs)
-                return self.pipeline(input_data, **kwargs)
+            # --- Inference Execution --- 
             
-            # Hugging Face Direct Execution
-            if self.model_provider == "huggingface" and self.model:
-                LOG.info(f"Direct HF {task} inference")
-                
-                # Audio Processing
-                if task in ["audio-classification", "automatic-speech-recognition"]:
-                    audio = self._load_audio(input_data)
-                    inputs = self.feature_extractor(
-                        audio, 
-                        sampling_rate=16000, 
-                        return_tensors="pt" if self.device == "cpu" else "tf"
-                    )
-                    outputs = self.model(**inputs)
-                    return self._postprocess_audio(outputs, task)
+            # Hugging Face Pipeline (if available and suitable)
+            # Pipelines often handle preprocessing internally, but we prepare input first for consistency
+            # Check if pipeline exists and task matches
+            if self.pipeline and self.pipeline.task == effective_task:
+                LOG.info(f"Using existing HF pipeline for task '{effective_task}'.")
+                # Pipelines might expect raw data or preprocessed data depending on implementation
+                # Passing prepared_input might work for some, raw input_data for others.
+                # Let's try passing the originally provided input_data first, as pipelines often handle loading.
+                try:
+                    # Special handling for audio pipelines that might expect paths/bytes
+                    if effective_task in ["automatic-speech-recognition", "audio-classification"] and isinstance(input_data, (str, bytes)):
+                         return self.pipeline(input_data, **kwargs)
+                    # For other pipelines, try with the original input data
+                    return self.pipeline(input_data, **kwargs)
+                except Exception as pipe_exec_err:
+                     LOG.warning(f"HF pipeline execution failed with raw input: {pipe_exec_err}. Trying with prepared input.")
+                     # Fallback: Try passing the dictionary from prepare_multimodal_input if it returned one
+                     if isinstance(prepared_input, dict):
+                          # Need to ensure keys match what the pipeline expects internally
+                          return self.pipeline(**prepared_input, **kwargs)
+                     else:
+                          # If prepared_input isn't a dict, pass it directly
+                          return self.pipeline(prepared_input, **kwargs)
 
-                # Text Generation & Seq2Seq
-                if task in ["text-generation", "text2text-generation"]:
-                    inputs = self.tokenizer(input_data, return_tensors="pt" if self.device == "cpu" else "tf")
-                    outputs = self.model.generate(
-                        **inputs,
-                        max_length=kwargs.get("max_length", 512),
-                        num_beams=kwargs.get("num_beams", 5)
-                    )
-                    return self.tokenizer.decode(outputs[0], skip_special_tokens=True)
-
-                # Object Detection & Segmentation
-                if task in ["object-detection", "image-segmentation"]:
-                    image = self._load_image(input_data)
-                    inputs = self.image_processor(images=image, return_tensors="pt" if self.device == "cpu" else "tf")
-                    outputs = self.model(**inputs)
-                    return self.image_processor.post_process_object_detection(
-                        outputs, 
-                        threshold=kwargs.get("threshold", 0.9)
-                    ) if task == "object-detection" else \
-                    self.image_processor.post_process_semantic_segmentation(outputs)
-
-                # Sequence Classification Fallback
-                if isinstance(input_data, str):
-                    inputs = self.tokenizer(input_data, return_tensors="pt" if self.device == "cpu" else "tf")
-                    return self.model(**inputs).logits
-
-                # PyTorch Specific Processing
-            if self.model_provider == "pytorch" and isinstance(self.model, torch.nn.Module):
-                if task == "image-classification":
-                    LOG.info("PyTorch image classification")
-                    from torchvision import transforms
-
-                    # Define standard preprocessing pipeline
-                    preprocess = transforms.Compose([
-                        transforms.Resize(256),
-                        transforms.CenterCrop(224),
-                        transforms.ToTensor(),
-                        transforms.Normalize(
-                            mean=[0.485, 0.485, 0.406], 
-                            std=[0.229, 0.224, 0.225]
-                        )
-                    ])
-
-                    # Process input
-                    if isinstance(input_data, str):
-                        image = Image.open(input_data).convert("RGB")
-                    else:
-                        image = input_data
-
-                    input_tensor = preprocess(image).unsqueeze(0)  # Add batch dim
-                    input_tensor = input_tensor.to(self.device)  # Add device management
-
-                    with torch.no_grad():
-                        outputs = self.model(input_tensor)
-                    
-                    print('Model outputs: ', torch.nn.functional.softmax(outputs, dim=1))
-                    return torch.nn.functional.softmax(outputs, dim=1)
+            # Direct Model Execution (if no suitable pipeline)
+            LOG.info(f"No suitable pipeline found or used. Running direct model inference for task '{effective_task}'.")
             
-                # Audio Processing
-                if task == "audio-classification":
-                    waveform = _convert_to_tensor(input_data).float()
-                    mel_spec = torchaudio.transforms.MelSpectrogram()(waveform)
-                    return self.model(mel_spec.unsqueeze(0))
-                
-                # Object Detection
-                if task == "object-detection":
-                    from torchvision import transforms
-                    preprocess = transforms.Compose([
-                        transforms.Resize(800),
-                        transforms.ToTensor(),
-                        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-                    ])
-                    img_tensor = preprocess(input_data).unsqueeze(0)
-                    with torch.no_grad():
-                        outputs = self.model(img_tensor)
-                    return [{k: v.cpu() for k, v in t.items()} for t in outputs]
+            # Ensure inputs are tensors for PyTorch/TensorFlow if needed
+            # Note: prepared_input might already be tensors if HF processor was used
+            if self.model_provider.lower() in ["pytorch", "tensorflow"]:
+                 # Convert numpy arrays within the prepared input (if it's a dict or single array)
+                 if isinstance(prepared_input, dict):
+                      tensor_input = {k: convert_to_tensor(v, self.model_provider.lower()) for k, v in prepared_input.items()}
+                 else:
+                      tensor_input = convert_to_tensor(prepared_input, self.model_provider.lower())
+            else:
+                 # For HF, prepared_input should already be in the correct format (usually dict of tensors)
+                 tensor_input = prepared_input
 
-            # TensorFlow Specific Processing  
-            if self.model_provider == "tensorflow" and isinstance(self.model, tf.keras.Model):
-                # Audio Processing
-                if task == "audio-classification":
-                    spec = tf.signal.stft(_convert_to_tensor(input_data), frame_length=255, frame_step=128)
-                    spec = tf.abs(spec)[..., tf.newaxis]
-                    return self.model.predict(spec[tf.newaxis, ...])
+            # --- Framework-Specific Inference Logic --- 
+            if self.model_provider.lower() == "huggingface":
+                # Input should be a dictionary ready for model(**input)
+                if not isinstance(tensor_input, dict):
+                     error_msg = f"Hugging Face direct inference expects a dictionary of inputs, but got {type(tensor_input)}."
+                     LOG.error(error_msg)
+                     raise TypeError(error_msg)
                 
-                # Image Segmentation
-                if task == "image-segmentation":
-                    img = tf.image.resize(input_data, (256, 256))
-                    img = tf.cast(img, tf.float32) / 255.0
-                    return self.model.predict(img[tf.newaxis, ...])[0]
+                # Move tensors to the correct device (assuming self.device is set)
+                device = getattr(self, 'device', 'cpu') # Default to CPU if not set
+                tensor_input = {k: v.to(device) if isinstance(v, torch.Tensor) else v for k, v in tensor_input.items()}
+                
+                LOG.debug(f"Running HF model.forward with input keys: {list(tensor_input.keys())}")
+                with torch.no_grad() if device == 'cpu' else tf.device(device): # Context manager might vary
+                     outputs = self.model(**tensor_input)
+                LOG.debug("HF model.forward completed.")
+                
+                # --- Post-processing (Example for HF, needs task-specific logic) --- 
+                if effective_task in ["text-generation", "text2text-generation"] and self.tokenizer:
+                     # Model might return logits, need generate for sequence
+                     # Re-run with generate if needed, or process logits
+                     LOG.warning("Direct HF text-generation might require model.generate(). Processing raw logits.")
+                     # This part needs refinement based on the specific model's output structure
+                     if hasattr(outputs, 'logits'):
+                          # Simple argmax for classification-like tasks from logits
+                          predicted_ids = torch.argmax(outputs.logits, dim=-1)
+                          return self.tokenizer.decode(predicted_ids[0], skip_special_tokens=True)
+                     else:
+                          return outputs # Return raw output
+                elif effective_task == "image-classification":
+                     return torch.nn.functional.softmax(outputs.logits, dim=-1)
+                elif effective_task == "audio-classification":
+                     return torch.nn.functional.softmax(outputs.logits, dim=-1)
+                elif effective_task == "automatic-speech-recognition":
+                     # Process logits to text (example using argmax, real decoding is more complex)
+                     predicted_ids = torch.argmax(outputs.logits, dim=-1)
+                     return self.tokenizer.batch_decode(predicted_ids)[0]
+                elif effective_task in ["object-detection", "image-segmentation"] and self.image_processor:
+                     # Use processor's post-processing if available
+                     if effective_task == "object-detection" and hasattr(self.image_processor, 'post_process_object_detection'):
+                          return self.image_processor.post_process_object_detection(outputs, threshold=kwargs.get("threshold", 0.9))
+                     elif effective_task == "image-segmentation" and hasattr(self.image_processor, 'post_process_semantic_segmentation'):
+                          return self.image_processor.post_process_semantic_segmentation(outputs)
+                     else:
+                          LOG.warning(f"No specific HF post-processing found for {effective_task}. Returning raw outputs.")
+                          return outputs
+                else:
+                     # Default: return raw outputs (often logits or a model-specific object)
+                     LOG.debug(f"Returning raw model outputs for task {effective_task}.")
+                     return outputs
 
-            # Common Postprocessing
-            def _postprocess_audio(outputs, task):
-                if task == "audio-classification":
-                    return torch.nn.functional.softmax(outputs.logits, dim=-1)
-                return outputs.logits  # For speech recognition
+            elif self.model_provider.lower() == "pytorch":
+                # PyTorch model expects specific tensor inputs
+                # This part requires knowledge of the specific PyTorch model's forward method
+                LOG.warning("Direct PyTorch inference requires model-specific input handling.")
+                # Example: Assume model takes a single tensor input
+                if isinstance(tensor_input, dict):
+                     # Try to find the primary input tensor if dict was prepared
+                     input_key = next((k for k in ['pixel_values', 'input_values', 'input_ids'] if k in tensor_input), None)
+                     if input_key:
+                          model_input = tensor_input[input_key]
+                     else:
+                          raise ValueError("Could not determine primary input tensor for PyTorch model from dict.")
+                elif isinstance(tensor_input, torch.Tensor):
+                     model_input = tensor_input
+                else:
+                     raise TypeError(f"Unsupported input type for direct PyTorch inference: {type(tensor_input)}")
+                
+                # Add batch dimension if missing
+                if model_input.ndim == 3 and effective_task in ["image-classification", "object-detection"]:
+                     model_input = model_input.unsqueeze(0)
+                elif model_input.ndim == 1 and effective_task in ["audio-classification"]:
+                     model_input = model_input.unsqueeze(0)
+                
+                device = getattr(self, 'device', 'cpu')
+                model_input = model_input.to(device)
+                self.model.to(device)
+                self.model.eval()
+                
+                LOG.debug(f"Running PyTorch model.forward with input shape: {model_input.shape}")
+                with torch.no_grad():
+                    outputs = self.model(model_input)
+                LOG.debug("PyTorch model.forward completed.")
+                # Add task-specific post-processing for PyTorch models here
+                return outputs 
+
+            elif self.model_provider.lower() == "tensorflow":
+                # TensorFlow model expects specific tensor inputs
+                LOG.warning("Direct TensorFlow inference requires model-specific input handling.")
+                # Example: Assume model takes a single tensor input
+                if isinstance(tensor_input, dict):
+                     input_key = next((k for k in ['pixel_values', 'input_values', 'input_ids'] if k in tensor_input), None)
+                     if input_key:
+                          model_input = tensor_input[input_key]
+                     else:
+                          raise ValueError("Could not determine primary input tensor for TF model from dict.")
+                elif tf.is_tensor(tensor_input):
+                     model_input = tensor_input
+                else:
+                     raise TypeError(f"Unsupported input type for direct TF inference: {type(tensor_input)}")
+                
+                # Add batch dimension if missing (TF often expects batch)
+                if len(model_input.shape) == 3 and effective_task in ["image-classification", "object-detection"]:
+                     model_input = tf.expand_dims(model_input, axis=0)
+                elif len(model_input.shape) == 1 and effective_task in ["audio-classification"]:
+                     model_input = tf.expand_dims(model_input, axis=0)
+
+                LOG.debug(f"Running TF model.predict/call with input shape: {model_input.shape}")
+                outputs = self.model(model_input) # Or self.model.predict(model_input)
+                LOG.debug("TF model.predict/call completed.")
+                # Add task-specific post-processing for TF models here
+                return outputs
+
+            else:
+                LOG.error(f"Inference logic not implemented for provider: {self.model_provider}")
+                raise NotImplementedError(f"Inference not implemented for provider {self.model_provider}")
 
         except Exception as e:
-            LOG.error(f"Inference failed: {str(e)}")
-            raise RuntimeError(f"Inference error: {str(e)}") from e
-
-
-    def _load_image(self, input_data):
-        if isinstance(input_data, str):
-            return Image.open(input_data).convert("RGB")
-        return input_data
-
-    def _load_audio(self, input_data):
-        if isinstance(input_data, str):
-            waveform, sample_rate = torchaudio.load(input_data)
-            return waveform.numpy()
-        return input_data
+            LOG.error(f"Inference failed for task '{effective_task}': {e}", exc_info=True)
+            # Consider raising a more specific exception or returning an error status
+            raise RuntimeError(f"Inference error during task '{effective_task}': {str(e)}") from e
     
     def upload_directory_to_azure(self, local_path, blob_prefix=""):
         LOG.info(f'Attempting to upload path: {local_path} to Azure with prefix: {blob_prefix}')

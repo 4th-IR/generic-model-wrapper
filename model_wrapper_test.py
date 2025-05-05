@@ -20,12 +20,14 @@ def test_model_loading():
 
 
 def test_inference():
-    model = models_dict['model_11']
+    model = models_dict['model_3']
     model_inference(model)
 
 if __name__ == '__main__':
-    LOG.info('starting model loading')
-    test_model_loading()
+    #LOG.info('starting model loading')
+    #test_model_loading()
 
-    #LOG.info('Starting inference test')
-    #test_inference()
+    LOG.info('Starting inference test')
+    test_inference()
+
+    pass 

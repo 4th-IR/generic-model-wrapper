@@ -30,4 +30,13 @@ def fetch_model(model_id: str)  -> dict:
     Args:
         model_id (str): the model identifier (usually the name)
     """
-    pass
+    try:
+        data = re.get(base_url, data={
+            "model_id": model_id
+        })
+
+        if data.status_code == 200:
+            return data.json()
+
+    except Exception as e:
+        print(e)

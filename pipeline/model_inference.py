@@ -11,14 +11,14 @@ def model_inference(model_details):
 
     model_name = model_details['model_name']
     model_provider = model_details['model_provider']
-    model_category = model_details['task']
+    model_task = model_details['task']
     model_task = model_details['task']
 
     LOG.info(f'Task for model: {model_task}')
 
-    input_data = model_details['sample_input']
+    input_data = "assets/images/animal_pictures/cat2.jpg"
 
-    model_wrapper = ModelWrapper(model_provider, model_name, model_category)
+    model_wrapper = ModelWrapper(model_provider, model_name, model_task)
 
     model_wrapper.load_model() #ensure it loads from Azure 
 

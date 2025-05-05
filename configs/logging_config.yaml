@@ -6,14 +6,19 @@ formatters:
 handlers:
   console:
     class: logging.StreamHandler
+    level: INFO # Keep console less verbose
     formatter: simple
     stream: ext://sys.stdout
 
+  # This file handler appends all logs (level DEBUG and above from root)
+  # to model.log. The 'simple' formatter includes the datetime.
   file:
     class: logging.FileHandler
+    level: DEBUG # Log everything to the file
     formatter: simple
     filename: model.log
-    mode: a 
+    mode: 'a' # Append mode
+    encoding: utf8
 
 root:
   level: DEBUG

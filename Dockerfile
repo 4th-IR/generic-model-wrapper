@@ -16,4 +16,4 @@ COPY --from=builder /install /usr/local
 
 COPY . .
 
-CMD ["python", "model_wrapper_test.py"]
+CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]

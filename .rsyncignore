@@ -1,0 +1,5 @@
+/env
+/envv
+/temp_models 
+logs.txt 
+*.log 
