@@ -57,6 +57,8 @@ from transformers import (
     AutoModelForZeroShotObjectDetection,
     AutoModelWithLMHead
 )
+from transformers import BlipProcessor, BlipForConditionalGeneration, GitVisionModel,  Blip2Processor, Blip2ForConditionalGeneration
+
 import torchaudio
 from torchvision.transforms import transforms
 from configs.hf_task_mapping import task_automodel_mapping
@@ -90,7 +92,8 @@ class ModelWrapper:
         self.saved_path = "models_saved"
         self.model_save_path = None 
         self.image_processor = None
-        self.processor = None
+        self.multimodal_processor = None
+        self.audio_processor = None
 
         #os.makedirs(self.saved_path, exist_ok=True)
 
@@ -161,42 +164,18 @@ class ModelWrapper:
         provider = self.model_provider.lower()
         if provider == "huggingface":
             # For Hugging Face, typically from_pretrained expects a directory.
-            # If your temporary file is a compressed archive, consider extracting it.
-            automodel_class_name = task_automodel_mapping.get(self.task)
-            if not automodel_class_name and hasattr(transformers, automodel_class_name):
-                raise ValueError(f"{self.task} not mapped to any automodel class")
-            
-            automodel_class = getattr(transformers, automodel_class_name)
-            self.model = automodel_class.from_pretrained(self.model_name)
-            self.model.save_pretrained(temp_model_path)
-
-            # Try AutoTokenizer
             try:
-                self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-                self.tokenizer.save_pretrained(temp_model_path)
-                self.pipeline = pipeline(task=self.task, model=self.model, tokenizer=self.tokenizer)
-            except Exception as e:
-                print(f"Skipping AutoTokenizer: {e}")
-                self.pipeline = None
-                
-                # Try AutoProcessor (for multimodal models)
-            try:
-                self.processor = AutoProcessor.from_pretrained(self.model_name)
-                self.processor.save_pretrained(temp_model_path)
-                self.pipeline = pipeline(task=self.task, model=self.model, processor=self.processor)
-            except Exception as e:
-                print(f"Skipping AutoProcessor: {e}")
-                self.pipeline = None
+                # self.model = AutoModelForCausalLM.from_pretrained(temp_model_path)
+                # self.tokenizer = AutoTokenizer.from_pretrained(temp_model_path)
+                self.processor = Blip2Processor.from_pretrained(temp_model_path)
+                self.model = Blip2ForConditionalGeneration.from_pretrained(temp_model_path)
+                # self.processor = AutoProcessor.from_pretrained(self.model_name)
+                # self.model = GitVisionModel.from_pretrained(self.model_name)
+                self.pipeline = pipeline(self.task, model=self.model, tokenizer=self.processor)
 
-            # Try AutoImageProcessor (for vision models)
-            try:
-                self.image_processor = AutoImageProcessor.from_pretrained(self.model_name)
-                self.image_processor.save_pretrained(temp_model_path)
-                self.pipeline = pipeline(task=self.task, model=self.model, image_processor=self.image_processor)
             except Exception as e:
-                print(f"Skipping AutoImageProcessor: {e}")
-                self.pipeline = None
-
+                LOG.error(f"Failed to load Hugging Face model: {e}")
+                return False
 
         elif provider == "pytorch":
             try:
@@ -261,37 +240,53 @@ class ModelWrapper:
                         save_path = os.path.join(temp_dir, self.model_name)
                         self.model_save_path = save_path
 
-                        automodel_class_name = task_automodel_mapping.get(self.task)
-                        if not automodel_class_name and hasattr(transformers, automodel_class_name):
-                            raise ValueError(f"{self.task} not mapped to any automodel class")
+                        # self.tokenizer = AutoTokenizer.from_pretrained(self.model_name, trust_remote_code=True, torch_dtype=torch.float16)
+                        # self.model = AutoModelForCausalLM.from_pretrained(self.model_name,trust_remote_code=True, torch_dtype=torch.float16)  
+                        # self.tokenizer.save_pretrained(save_path)  
+                        # self.model.save_pretrained(save_path)   
+
+                        self.processor = Blip2Processor.from_pretrained(self.model_name)
+                        self.model = Blip2ForConditionalGeneration.from_pretrained(self.model_name)
+                        self.processor.save_pretrained(save_path)  
+                        self.model.save_pretrained(save_path) 
+
+                        # self.processor = AutoProcessor.from_pretrained(self.model_name)
+                        # self.model = GitVisionModel.from_pretrained(self.model_name)
+                        # self.processor.save_pretrained(save_path)  
+                        # self.model.save_pretrained(save_path) 
+            
+
+                    #     automodel_class_name = task_automodel_mapping.get(self.task)
+                    #     if automodel_class_name is not None and hasattr(transformers, automodel_class_name):
+                    #         raise ValueError(f"{self.task} not mapped to any automodel class")
                         
-                        automodel_class = getattr(transformers, automodel_class_name)
-                        self.model = automodel_class.from_pretrained(self.model_name)
-                        self.model.save_pretrained(save_path)
+                    #     automodel_class = getattr(transformers, automodel_class_name)
+                    #     self.model = automodel_class.from_pretrained(self.model_name)
+                    #     self.model.save_pretrained(save_path)
 
-                        # Try AutoTokenizer
-                        try:
-                            self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-                            self.tokenizer.save_pretrained(save_path)
-                        except Exception as e:
-                            print(f"Skipping AutoTokenizer: {e}")
-                            self.tokenizer = None
+                    #     # Try AutoTokenizer
+                    #     try:
+                    #         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+                    #         self.tokenizer.save_pretrained(save_path)
+                    #     except Exception as e:
+                    #         print(f"Skipping AutoTokenizer: {e}")
+                    #         self.tokenizer = None
 
-                            # Try AutoProcessor (for multimodal models)
-                        try:
-                            self.processor = AutoProcessor.from_pretrained(self.model_name)
-                            self.processor.save_pretrained(save_path)
-                        except Exception as e:
-                            print(f"Skipping AutoProcessor: {e}")
-                            self.processor = None
+                    #         # Try AutoProcessor (for multimodal models)
+                    #     try:
+                    #         self.processor = AutoProcessor.from_pretrained(self.model_name)
+                    #         self.processor.save_pretrained(save_path)
+                    #     except Exception as e:
+                    #         print(f"Skipping AutoProcessor: {e}")
+                    #         self.processor = None
 
-                            # Try AutoImageProcessor (for vision models)
-                        try:
-                            self.image_processor = AutoImageProcessor.from_pretrained(self.model_name)
-                            self.image_processor.save_pretrained(save_path)
-                        except Exception as e:
-                            print(f"Skipping AutoImageProcessor: {e}")
-                            self.image_processor = None
+                    #         # Try AutoImageProcessor (for vision models)
+                    #     try:
+                    #         self.image_processor = AutoImageProcessor.from_pretrained(self.model_name)
+                    #         self.image_processor.save_pretrained(save_path)
+                    #     except Exception as e:
+                    #         print(f"Skipping AutoImageProcessor: {e}")
+                    #         self.image_processor = None
                         
                     elif self.model_provider == "pytorch":
                         LOG.info(f"Loading PyTorch model from {self.model_name}")
@@ -335,13 +330,57 @@ class ModelWrapper:
                 if task in ["automatic-speech-recognition", "audio-classification"]:
                     if isinstance(input_data, (str, bytes, np.ndarray)):
                         return self.pipeline(input_data, task=task, **kwargs)
-                return self.pipeline(input_data, **kwargs)
+                # return self.pipeline(input_data, **kwargs)
             
             # Hugging Face Direct Execution
-            if self.model_provider == "huggingface" and self.model:
-                LOG.info(f"Direct HF {task} inference")
+            # if self.model_provider == "huggingface" and self.model:
+            #     LOG.info(f"Direct HF {task} inference")
                 
-                # Audio Processing
+                from PIL import image
+                import requests
+                if self.model_category == "multimodal":
+                    try:
+                        img_url = None
+                        text = None
+
+                        for item in input_data:
+                            if 'image' in item:
+                                img_url = item['image']
+                            elif 'text' in item:
+                                text = item['text']
+
+                        if not img_url or not text:
+                            raise ValueError("Both image and text must be present in the sample_input")
+                        
+                        # raw_image = Image.open(requests.get(img_url, stream=True).raw).convert('RGB')
+                        raw_image = Image.open(img_url).convert('RGB')
+
+
+                        # conditional image captioning
+                        
+                        inputs = self.processor(raw_image, text, return_tensors="pt")
+
+                        out = self.model.generate(**inputs)
+                        print(self.processor.decode(out[0], skip_special_tokens=True))
+
+                    except Exception as e:
+                        print("Couldn't inference", e)
+                    # >>> a photography of a woman and her dog
+
+                    
+                    # inference for QWEN
+                    # query = self.tokenizer.from_list_format(input_data)
+                    # inputs = self.tokenizer(query, return_tensors='pt')
+                    # inputs = inputs.to(self.model.device)
+                    # pred = self.model.generate(**inputs)
+                    # response = self.tokenizer.decode(pred.cpu()[0], skip_special_tokens=False)
+                    # print(response)
+                    # image = self.tokenizer.draw_bbox_on_latest_picture(response)
+                    # if image:
+                    #     image.save('2.jpg')
+                    # else:
+                    #     print("no box")
+
                 if task in ["audio-classification", "automatic-speech-recognition"]:
                     audio = self._load_audio(input_data)
                     inputs = self.feature_extractor(
@@ -517,11 +556,3 @@ class ModelWrapper:
                 with open(local_path, "rb") as data:
                     blob_client.upload_blob(data, overwrite=True)
 
-if __name__ == "__main__":
-
-    model_wrapper = ModelWrapper(model_name="MIT/ast-finetuned-audioset-10-10-0.4593", 
-                                provider="huggingface", 
-                                pipeline_type="audio-classification", 
-                                model_category="audio")
-    
-    model_wrapper.load_model()

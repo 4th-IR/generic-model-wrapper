@@ -9,56 +9,54 @@ import tensorflow as tf
 models_dict = {
     "model_1": {
         "model_provider": "huggingface",
-        "model_category": "vision",
-        "model_name": "google/vit-base-patch16-224",
-        "task": "image-classification",
-        "sample_input": "assets/images/animal_pictures/cat2.jpg",  # Supported via image_processor
-        "framework_specific": {
-            "image_processor": "AutoImageProcessor",
-            "requires_feature_extractor": False
-        }},
+        "model_category": "multimodal",
+        "model_name": "Qwen/Qwen-VL",
+        "task": "text-generation",
+        "sample_input": [
+                        {'image': 'https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen-VL/assets/demo.jpeg'},
+                        {'text': 'Generate the caption in English with grounding:'},
+                    ],  
+
+    },
     "model_2": {
         "model_provider": "huggingface",
-        "model_category": "vision",
-        "model_name": "nvidia/mit-b0",
-        "task": "object-detection",
-        "sample_input": "assets/images/animal_pictures/dog1.jpg",  # Handled by image_processor
-        "framework_specific": {
-            "image_processor": "DetrImageProcessor"
-        }
+        "model_category": "multimodal",
+        "model_name": "Salesforce/blip-image-captioning-base",
+        "task": "image-recognition",
+        "sample_input": [
+                        {'image': 'https://storage.googleapis.com/sfr-vision-language-research/BLIP/demo.jpg'},
+                        {'text': 'a photography of'},
+                    ],
     },
-    "model_3": {
+     "model_3": {
         "model_provider": "huggingface",
-        "model_category": "text",
-        "model_name": "gpt2",
-        "task": "text-generation",
-        "sample_input": "The future of AI is",  # Handled by tokenizer+generate()
-        "framework_specific": {
-            "tokenizer": "AutoTokenizer"
-        }
+        "model_category": "multimodal",
+        "model_name": "Salesforce/blip-image-captioning-base",
+        "task": "image-recognition",
+        "sample_input": [
+                        {'image': '/home/model-wrapper/tests/assets/images/animal_pictures/dog2.jpg'},
+                        {'text': 'a photography of'},
+                    ],
     },
     "model_4": {
         "model_provider": "huggingface",
-        "model_category": "audio",
-        "model_name": "facebook/wav2vec2-base-960h",
-        "task": "automatic-speech-recognition",
-        "sample_input": "assets/audios/audio1.wav",  # Handled by _load_audio()
-        "framework_specific": {
-            "feature_extractor": "Wav2Vec2FeatureExtractor"
-        }
+        "model_category": "multimodal",
+        "model_name": "microsoft/git-base",
+        "task": "image-recognition",
+        "sample_input": [
+                        {'image': '/home/model-wrapper/tests/assets/images/animal_pictures/cat1.jpg'},
+                        {'text': 'describe the picture'},
+                    ],
     },
     "model_5": {
-        "model_provider": "pytorch",
-        "model_category": "vision",
-        "model_name": "resnet50",
-        "task": "image-classification",
-        "sample_input": torch.rand(1, 3, 224, 224),  # Handled by tensor reshaping
-        "framework_specific": {
-            "normalization": {
-                "mean": [0.485, 0.456, 0.406],
-                "std": [0.229, 0.224, 0.225]
-            }
-        }
+        "model_provider": "huggingface",
+        "model_category": "multimodal",
+        "model_name": "Salesforce/blip2-opt-2.7b",
+        "task": "image-recognition",
+        "sample_input": [
+                        {'image': '/home/model-wrapper/tests/assets/images/animal_pictures/cat1.jpg'},
+                        {'text': 'How many cats are in the picture?'}
+        ],
     },
     "model_6": {
         "model_provider": "pytorch",
