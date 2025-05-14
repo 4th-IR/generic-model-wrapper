@@ -16,7 +16,7 @@ def list_blob_folders_and_files():
         if len(parts) > 1:
             folder = parts[0]
             folder_map.setdefault(folder, []).append(blob.name)
-        else:g
+        else:
             folder_map.setdefault("<root>", []).append(blob.name)
 
     for folder, files in folder_map.items():
