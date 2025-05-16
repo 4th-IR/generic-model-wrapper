@@ -3,7 +3,6 @@
 
 #external 
 import os
-import keras 
 import torch
 import time
 import tempfile
@@ -15,19 +14,9 @@ import tensorflow as tf
 from fastapi import HTTPException
 from huggingface_hub import login
 from azure.storage.blob import BlobServiceClient
-from transformers import (
-    AutoConfig,
-    AutoTokenizer,
-    AutoProcessor,
-    AutoImageProcessor,
-    AutoModel,
-    pipeline,
-)
 import torchaudio
 from torchvision.transforms import transforms
-from configs.hf_task_mapping import task_automodel_mapping
-from transformers import BlipProcessor, BlipForConditionalGeneration
-
+import shutil
 
 
 
@@ -35,31 +24,21 @@ from transformers import BlipProcessor, BlipForConditionalGeneration
 from utils.logger import get_logger
 from utils.env_manager import AZURE_BLOB_URI, AZURE_CONNECTION_STRING, AZURE_CONTAINER_NAME, AZURE_STORAGE_ACCOUNT
 from utils.resource_manager import timer
-from utils.torch_route import from_torch
-from utils.tensorflow_route import from_tensorflow
-
-# HGF_TOKEN = os.environ.get("HUGGINGFACE_TOKEN")
-# login(HGF_TOKEN)
-
 
 
 LOG = get_logger('model')
 
-
 class ModelWrapper:
-    def __init__(self, provider, model_name, pipeline_type, model_category):
+    def __init__(self, provider, model_name, task):
         self.model_provider = provider
         self.model_name = model_name
-        self.task = pipeline_type
-        self.model_category = model_category
+        self.task = task
         self.model = None
         self.tokenizer = None
         self.pipeline = None
-        self.saved_path = "models_saved"
         self.model_save_path = None 
         self.processor = None
 
-        #os.makedirs(self.saved_path, exist_ok=True)
 
         # Azure storage setup        
         if not AZURE_CONNECTION_STRING:
@@ -71,11 +50,34 @@ class ModelWrapper:
         self.container_client = self.blob_service_client.get_container_client(AZURE_CONTAINER_NAME)
         self.azure_config = True  # Enable Azure model loading
 
-   
+        self.safe_model_name = self.model_name.replace("/", "_")
+
+
+    def upload_directory_to_azure(self, local_dir, blob_prefix=""):
+        """
+        Uploads a local directory to Azure Blob Storage.
+        Ensures that blob_prefix is safe by replacing '/' with '_'.
+        """
+        # Sanitize the blob prefix if needed
+        safe_blob_prefix = blob_prefix.replace("/", "_") if blob_prefix else ""
+
+        for root, _, files in os.walk(local_dir):
+            for file in files:
+                local_path = os.path.join(root, file)
+                blob_name = os.path.relpath(local_path, local_dir)
+                
+                if safe_blob_prefix:
+                    blob_name = f"{safe_blob_prefix}/{blob_name}"
+                
+                blob_client = self.container_client.get_blob_client(blob_name)
+                with open(local_path, "rb") as data:
+                    blob_client.upload_blob(data, overwrite=True)
+
+
     def save_to_azure(self): 
         """Saves the model directory/files to Azure Blob Storage under a folder named after the model."""
         print("<---SAVING TO AZURE--->")
-        safe_model_name = self.model_name.replace("/", "_")
+        
         
         LOG.info(f"Attempting to save model '{self.model_name}' to Azure container '{AZURE_CONTAINER_NAME}'.")
 
@@ -90,18 +92,18 @@ class ModelWrapper:
             # Pass the safe model name as the blob prefix
             self.upload_directory_to_azure(
                 local_dir=self.model_save_path,
-                blob_prefix=safe_model_name
+                blob_prefix=self.safe_model_name
             )
 
-            LOG.info(f"Successfully saved '{self.model_name}' to Azure Blob Storage in container '{AZURE_CONTAINER_NAME}' under folder '{safe_model_name}'.")
+            LOG.info(f"Successfully saved '{self.model_name}' to Azure Blob Storage in container '{AZURE_CONTAINER_NAME}' under folder '{self.safe_model_name}'.")
         except Exception as e:
             LOG.error(f'Failed to save model {self.model_name} to Azure: {e}', exc_info=True)
             raise RuntimeError(f'Model saving to Azure failed: {e}')
 
-        LOG.info(f"{self.model_name} saved to Azure Blob Storage under folder '{safe_model_name}'")
+        LOG.info(f"{self.model_name} saved to Azure Blob Storage under folder '{self.safe_model_name}'")
 
 
-    #@timer
+    @timer
     def load_from_azure(self):
         print("<---LOADING MODEL--->")
         
@@ -109,13 +111,11 @@ class ModelWrapper:
             LOG.warning("Azure configuration is disabled.")
             return False
 
-        # Use the safe model name (matching how it was saved)
-        safe_model_name = self.model_name.replace("/", "_")
 
-        # Check for blobs in the safe_model_name folder
-        blob_list = list(self.container_client.list_blobs(name_starts_with=f"{safe_model_name}/"))
+        # Check for blobs in the self.safe_model_name folder
+        blob_list = list(self.container_client.list_blobs(name_starts_with=f"{self.safe_model_name}/"))
         if not blob_list:
-            LOG.warning(f"No blobs found for model '{self.model_name}' under folder '{safe_model_name}/'")
+            LOG.warning(f"No blobs found for model '{self.model_name}' under folder '{self.safe_model_name}/'")
             print("Model blob folder does not exist")
             return False
 
@@ -128,7 +128,7 @@ class ModelWrapper:
             blob_client = self.container_client.get_blob_client(blob)
 
             # Get relative path within the model folder
-            relative_path = os.path.relpath(blob.name, start=f"{safe_model_name}/")
+            relative_path = os.path.relpath(blob.name, start=f"{self.safe_model_name}/")
             local_path = os.path.join(temp_model_path, relative_path)
             os.makedirs(os.path.dirname(local_path), exist_ok=True)
 
@@ -142,79 +142,20 @@ class ModelWrapper:
         # Load the model based on the specified provider.
         provider = self.model_provider.lower()
         if provider == "huggingface":
-            # For Hugging Face, typically from_pretrained expects a directory.
-            # try:
-            #     config = AutoConfig.from_pretrained(self.model_name)
-            # except Exception as e:
-            #     raise RuntimeError(f"Could not load config for {self.model_name}: {e}")
+            if self.model_name in ['deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B']:
+                from transformers import AutoModelForCausalLM, AutoTokenizer
+                self.model = AutoModelForCausalLM.from_pretrained(temp_model_path)
+                self.tokenizer = AutoTokenizer.from_pretrained(temp_model_path) 
 
-            # # Step 2: Infer correct AutoModel class from config
-            # try:
-            #     self.model = AutoModel.from_config(config)
-            #     model_class = self.model.__class__
-            # except Exception as e:
-            #     raise RuntimeError(f"Could not infer model class: {e}")
+            if self.model_name in ["openai/whisper-large"]:
+                from transformers import WhisperProcessor, WhisperForConditionalGeneration
+                self.processor = WhisperProcessor.from_pretrained(temp_model_path)
+                self.model = WhisperForConditionalGeneration.from_pretrained(temp_model_path) 
 
-            # # Instantiate model
-            # try:
-            #     self.model = model_class.from_pretrained(self.model_name)
-            #     self.model.save_pretrained(temp_model_path)
-            #     print(f"Model saved to {temp_model_path}")
-            # except Exception as e:
-            #     raise RuntimeError(f"Could not load model weights: {e}")
-
-            # # Try saving tokenizer (if available)
-            # try:
-            #     self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-            #     self.tokenizer.save_pretrained(temp_model_path)
-            #     print("Tokenizer saved.")
-            # except Exception:
-            #     print("No tokenizer found.")
-            #     self.tokenizer = None
-
-            # # Try saving processor (for audio/vision/multimodal models)
-            #     for processor_cls in [AutoProcessor, AutoImageProcessor]:
-            #         try:
-            #             processor = processor_cls.from_pretrained(self.model_name)
-            #             processor.save_pretrained(temp_model_path)
-            #             print(f"{processor_cls.__name__} saved.")
-            #         except Exception:
-            #             processor = None
-            #             continue
-                
-            #     if self.tokenizer:
-            #         self.pipeline = pipeline(self.task, model=self.model, tokenizer=self.tokenizer)
-            #     if self.processor:
-            #         self.pipeline = pipeline(self.task, model=self.model, processor=self.processor)
-
-            self.processor = BlipProcessor.from_pretrained(temp_model_path)
-            self.model = BlipForConditionalGeneration.from_pretrained(temp_model_path)   
-            self.pipeline = pipeline(self.task, model=self.model, processor=self.processor)
-
-        elif provider == "pytorch":
-            try:
-                # Try loading as a TorchScript model.
-                self.model = torch.jit.load(temp_model_path, map_location="cpu")
-                self.model.eval()
-            except RuntimeError as e:
-                print(f"torch.jit.load() failed: {e}. Trying torch.load() instead...")
-                try:
-                    # Fallback: load as a full PyTorch model.
-                    self.model = torch.load(temp_model_path, map_location="cpu")
-                    self.model.eval()
-                except Exception as e2:
-                    LOG.error(f"Failed to load PyTorch model: {e2}")
-                    return False
-
-        elif provider == "tensorflow":
-            try:
-                # TensorFlow's load_model expects the SavedModel format. 
-                # Make sure your temporary file is a valid SavedModel.
-                self.model = tf.keras.models.load_model(temp_model_path)
-                print("TensorFlow model successfully loaded.")
-            except Exception as e:
-                LOG.error(f"Failed to load TensorFlow model: {e}")
-                return False
+            if self.model_name in ['Salesforce/blip2-opt-2.7b']:
+                from transformers import Blip2Processor, Blip2ForConditionalGeneration
+                self.processor = Blip2Processor.from_pretrained(temp_model_path)
+                self.model = Blip2ForConditionalGeneration.from_pretrained(temp_model_path)
 
         else:
             LOG.warning(f"Unsupported model provider: {self.model_provider}")
@@ -245,56 +186,30 @@ class ModelWrapper:
                     if self.model_provider == "huggingface":
                         LOG.info(f"Loading Hugging Face model: {self.model_name}")
                         temp_dir = tempfile.gettempdir()
-                        save_path = os.path.join(temp_dir, self.model_name)
+                        save_path = os.path.join(temp_dir, self.safe_model_name)
                         self.model_save_path = save_path
 
-                        # Step 1: Load config
-                        try:
-                            config = AutoConfig.from_pretrained(self.model_name)
-                        except Exception as e:
-                            raise RuntimeError(f"Could not load config for {self.model_name}: {e}")
+                        if self.model_name in ['deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B']:
+                            from transformers import AutoModelForCausalLM, AutoTokenizer
+                            self.model = AutoModelForCausalLM.from_pretrained(self.model_name)
+                            self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+                            self.tokenizer.save_pretrained(save_path)  
+                            self.model.save_pretrained(save_path)     
 
-                        # Step 2: Infer correct AutoModel class from config
-                        try:
-                            model = AutoModel.from_config(config)
-                            model_class = model.__class__
-                        except Exception as e:
-                            raise RuntimeError(f"Could not infer model class: {e}")
+                        if self.model_name in ["openai/whisper-large"]:
+                            from transformers import WhisperProcessor, WhisperForConditionalGeneration
+                            self.processor = WhisperProcessor.from_pretrained(self.model_name)
+                            self.model = WhisperForConditionalGeneration.from_pretrained(self.model_name)
+                            self.model.config.forced_decoder_ids = None
+                            self.processor.save_pretrained(save_path)  
+                            self.model.save_pretrained(save_path)
 
-                        # Instantiate model
-                        try:
-                            model = model_class.from_pretrained(self.model_name)
-                            model.save_pretrained(save_path)
-                            print(f"Model saved to {save_path}")
-                        except Exception as e:
-                            raise RuntimeError(f"Could not load model weights: {e}")
-
-                        # Try saving tokenizer (if available)
-                        try:
-                            tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-                            tokenizer.save_pretrained(save_path)
-                            print("Tokenizer saved.")
-                        except Exception:
-                            print("No tokenizer found.")
-
-                        # Try saving processor (for audio/vision/multimodal models)
-                        for processor_cls in [AutoProcessor, AutoImageProcessor]:
-                            try:
-                                processor = processor_cls.from_pretrained(self.model_name)
-                                processor.save_pretrained(save_path)
-                                print(f"{processor_cls.__name__} saved.")
-                            except Exception:
-                                continue
-  
-                    elif self.model_provider == "pytorch":
-                        LOG.info(f"Loading PyTorch model from {self.model_name}")
-                        print(f"Loading PyTorch model from {self.model_name}")
-                        self.model_save_path = from_torch(self.model_name) 
-
-                    elif self.model_provider == "tensorflow":
-                        LOG.info(f"Loading TensorFlow model from {self.model_name}")
-                        print(f"Loading TensorFlow model from {self.model_name}")
-                        self.model_save_path = from_tensorflow(self.model_name)
+                        if self.model_name in ['Salesforce/blip2-opt-2.7b']:
+                            from transformers import Blip2Processor, Blip2ForConditionalGeneration
+                            self.processor = Blip2Processor.from_pretrained(self.model_name)
+                            self.model = Blip2ForConditionalGeneration.from_pretrained(self.model_name)
+                            self.processor.save_pretrained(save_path)  
+                            self.model.save_pretrained(save_path)
 
                     else:
                         LOG.error(f"Unknown model provider: {self.model_provider}")
@@ -306,6 +221,10 @@ class ModelWrapper:
                         LOG.info("Saving model from Provider to Azure...")
                         self.save_to_azure()
 
+                    if os.path.exists(save_path):
+                        shutil.rmtree(save_path)
+                        LOG.info(f"Deleted temporary directory: {save_path}")
+
         except Exception as e:
             LOG.error(f"Error loading model: {e}", exc_info=True)
             raise HTTPException(status_code=500, detail=f"Model loading failed: {str(e)}")
@@ -313,260 +232,64 @@ class ModelWrapper:
 
     @timer
     def run_inference(self, input_data: Any, task: str = None, **kwargs: Any):
-        """Runs inference with enhanced multi-modal support"""
+        """Runs inference with enhanced multimodal support"""
         try:
-            # Common preprocessing for all frameworks
-            def _convert_to_tensor(data):
-                if isinstance(data, np.ndarray):
-                    return torch.from_numpy(data) if self.provider == "pytorch" else tf.convert_to_tensor(data)
-                return data
-
-            # Hugging Face Pipeline First (now with audio support)
-            if self.pipeline:
-                LOG.info(f"Using HF pipeline for {task or 'auto'} task")
-                # Handle audio inputs specifically
-                if task in ["automatic-speech-recognition", "audio-classification"]:
-                    if isinstance(input_data, (str, bytes, np.ndarray)):
-                        return self.pipeline(input_data, task=task, **kwargs)
-                # return self.pipeline(input_data, **kwargs)
-            
-            # Hugging Face Direct Execution
-            if self.model_provider == "huggingface" and self.model:
+       
+            if self.model_provider == "huggingface":
                 LOG.info(f"Direct HF {task} inference")
-                
-                from PIL import image
-                import requests
-                if self.model_category == "multimodal":
-                    try:
-                        img_path = None
-                        text = None
+                img = None
+                txt = None
+                aud = None
+                for item in input_data:
+                    if 'image' in item:
+                        img = item['image']
+                    elif 'text' in item:
+                        txt = item['text']
+                    elif 'audio' in item:
+                        aud = item['audio']         
 
-                        for item in input_data:
-                            if 'image' in item:
-                                img_path = item['image']
-                            elif 'text' in item:
-                                text = item['text']
+                # Inferencing script for whisper
+                if self.model_name in ["openai/whisper-large"]:
+                    waveform, sample_rate = torchaudio.load(aud)
 
-                        if not img_path or not text:
-                            raise ValueError("Both image and text must be present in the sample_input")
-                        
-                        raw_image = Image.open(img_path).convert('RGB')
-                        
-                        inputs = self.processor(raw_image, text, return_tensors="pt")
+                    # Resample if needed
+                    if sample_rate != 16000:
+                        resampler = torchaudio.transforms.Resample(orig_freq=sample_rate, new_freq=16000)
+                        waveform = resampler(waveform)
+                        sample_rate = 16000
 
-                        out = self.model.generate(**inputs)
-                        decoded_output = self.processor.decode(out[0], skip_special_tokens=True)
-                        print(f"[INFO] Decoded Output: {decoded_output}")
-                        return decoded_output 
+                    # Whisper expects mono-channel
+                    waveform = waveform.mean(dim=0)
 
-                    except Exception as e:
-                        print("Couldn't inference", e)
-                    # >>> a photography of a woman and her dog
+                    inputs = self.processor(waveform, sampling_rate=sample_rate, return_tensors="pt")
 
+                    with torch.no_grad():
+                        generated_ids = self.model.generate(inputs["input_features"])
+                        model_output = self.processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
                     
-                    # inference for QWEN
-                    # query = self.tokenizer.from_list_format(input_data)
-                    # inputs = self.tokenizer(query, return_tensors='pt')
-                    # inputs = inputs.to(self.model.device)
-                    # pred = self.model.generate(**inputs)
-                    # response = self.tokenizer.decode(pred.cpu()[0], skip_special_tokens=False)
-                    # print(response)
-                    # image = self.tokenizer.draw_bbox_on_latest_picture(response)
-                    # if image:
-                    #     image.save('2.jpg')
-                    # else:
-                    #     print("no box")
+                    
+                if self.model_name in ['deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B']:
+                    
+                    inputs = self.tokenizer(txt, return_tensors="pt")
 
-                if task in ["audio-classification", "automatic-speech-recognition"]:
-                    audio = self._load_audio(input_data)
-                    inputs = self.feature_extractor(
-                        audio, 
-                        sampling_rate=16000, 
-                        return_tensors="pt" if self.device == "cpu" else "tf"
-                    )
-                    outputs = self.model(**inputs)
-                    return self._postprocess_audio(outputs, task)
+                    with torch.no_grad():
+                        output = self.model.generate(**inputs, max_length=100)
 
-                # Text Generation & Seq2Seq
-                if self.task in ["text-generation", "text2text-generation"]:
-                   
-                    inputs = self.tokenizer(input_data, return_tensors="pt").to(model.device)
+                    model_output = self.tokenizer.decode(output[0], skip_special_tokens=True)
+                    
 
-                    # Generate output
-                    output =self.__module__odel.generate(
-                        **inputs,
-                        max_new_tokens=150,
-                        do_sample=True,
-                        temperature=0.7,
-                        top_k=50,
-                        top_p=0.95
-                    )
+                if self.model_name in ['Salesforce/blip2-opt-2.7b']:
+                    image = Image.open(img).convert("RGB")
+                    inputs = self.processor(images=image, text=txt, return_tensors="pt")
 
-                    # Decode and print result
-                    generated_text = self.tokenizer.decode(output[0], skip_special_tokens=True)
-                    return generated_text
+                    with torch.no_grad():
+                        generated_ids = self.model.generate(**inputs)
+                        model_output = self.processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
 
-                # Object Detection & Segmentation
-                if task in ["object-detection", "image-segmentation"]:
-                    image = self._load_image(input_data)
-                    inputs = self.image_processor(images=image, return_tensors="pt" if self.device == "cpu" else "tf")
-                    outputs = self.model(**inputs)
-                    return self.image_processor.post_process_object_detection(
-                        outputs, 
-                        threshold=kwargs.get("threshold", 0.9)
-                    ) if task == "object-detection" else \
-                    self.image_processor.post_process_semantic_segmentation(outputs)
-
-                # Sequence Classification Fallback
-                if isinstance(input_data, str):
-                    inputs = self.tokenizer(input_data, return_tensors="pt" if self.device == "cpu" else "tf")
-                    return self.model(**inputs).logits
-
-            # PyTorch Specific Processing
-            if self.model_provider == "pytorch" and isinstance(self.model, torch.nn.Module):
-                # Audio Processing
-                # if task == "audio-classification":
-                #     waveform = _convert_to_tensor(input_data).float()
-                #     mel_spec = torchaudio.transforms.MelSpectrogram()(waveform)
-                #     return self.model(mel_spec.unsqueeze(0))
-                if self.model_category=="audio":
-                    try:
-                        torchaudio.set_audio_backend("soundfile")
-                        print("== audio model inferencing beginning ==")
-                        # Load the pre-trained ConvTasNet model
-                        # bundle = f"{torchaudio.pipelines}.{model_name}"
-                        model = torch.load(f"{self.model_save_path}/{self.model_name}.pt", weights_only=False)
-                        model.eval()
-
-                        # Load the audio file
-                        
-                        waveform, sample_rate = torchaudio.load(input_data)
-
-                        # Resample if the audio sample rate doesn't match the model's expected sample rate
-                        expected_sampling_rate = 16000
-                        if sample_rate != expected_sampling_rate:
-                            resampler = torchaudio.transforms.Resample(orig_freq=sample_rate, new_freq=expected_sampling_rate)
-                            waveform = resampler(waveform)
-                            sample_rate = expected_sampling_rate
-
-                        # Ensure the waveform is mono
-                        if waveform.shape[0] > 1:
-                            waveform = torch.mean(waveform, dim=0, keepdim=True)
-
-                        waveform = waveform.unsqueeze(0) 
-
-                        # Perform source separation
-                        with torch.no_grad():
-                            separated_sources = model(waveform)
-                        print("Separated sources shape:", separated_sources.shape)
-                    except Exception as e:
-                        print("Error inferencing torch audio model", e)
-                
-                # Object Detection
-                # if task == "object-detection":
-                #     from torchvision import transforms
-                #     preprocess = transforms.Compose([
-                #         transforms.Resize(800),
-                #         transforms.ToTensor(),
-                #         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-                #     ])
-                #     img_tensor = preprocess(input_data).unsqueeze(0)
-                #     with torch.no_grad():
-                #         outputs = self.model(img_tensor)
-                #     return [{k: v.cpu() for k, v in t.items()} for t in outputs]
-                if self.model_category=="vision":
-                    try:
-                        model = torch.load(f"{self.model_save_path}/{self.model_name}.pt", weights_only=False)
-                        model.eval()
-
-                        preprocess = transforms.Compose([
-                            transforms.Resize(256),
-                            transforms.CenterCrop(224),
-                            transforms.ToTensor(),
-                            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-                        ])
-
-                        # Load the image and apply the preprocessing pipeline.
-                         # Replace with the actual image path
-                        input_image = Image.open(input_data).convert("RGB")
-                        input_tensor = preprocess(input_image)
-                        input_batch = input_tensor.unsqueeze(0)
-
-                        # Move to GPU if available
-                        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-                        model.to(device)
-                        input_batch = input_batch.to(device)
-
-                        # Perform inference.
-                        with torch.no_grad():
-                            output = model(input_batch)
-
-                        # Apply softmax to convert logits to probabilities.
-                        probabilities = torch.nn.functional.softmax(output[0], dim=0)
-                        predicted_prob, predicted_class = torch.max(probabilities, dim=0)
-
-                        print(f"Predicted class: {predicted_class.item()}, Probability: {predicted_prob.item():.4f}")
-
-                        print("== Vision model inferencing successful ==")
-                        # print(F"{TOTAL_TIME_TAKEN} minutes in total")
-
-                    except Exception as e:
-                        print("Error during torch vision model inferencing", e)
-
-            # TensorFlow Specific Processing  
-            if self.model_provider == "tensorflow" and isinstance(self.model, tf.keras.Model):
-                # Audio Processing
-                if task == "audio-classification":
-                    spec = tf.signal.stft(_convert_to_tensor(input_data), frame_length=255, frame_step=128)
-                    spec = tf.abs(spec)[..., tf.newaxis]
-                    return self.model.predict(spec[tf.newaxis, ...])
-                
-                # Image Segmentation
-                if task == "image-segmentation":
-                    img = tf.image.resize(input_data, (256, 256))
-                    img = tf.cast(img, tf.float32) / 255.0
-                    return self.model.predict(img[tf.newaxis, ...])[0]
-
-            # Common Postprocessing
-            def _postprocess_audio(outputs, task):
-                if task == "audio-classification":
-                    return torch.nn.functional.softmax(outputs.logits, dim=-1)
-                return outputs.logits  # For speech recognition
+                return model_output
 
         except Exception as e:
             LOG.error(f"Inference failed: {str(e)}")
             raise RuntimeError(f"Inference error: {str(e)}") from e
 
-
-    def _load_image(self, input_data):
-        if isinstance(input_data, str):
-            return Image.open(input_data).convert("RGB")
-        return input_data
-
-    def _load_audio(self, input_data):
-        if isinstance(input_data, str):
-            waveform, sample_rate = torchaudio.load(input_data)
-            return waveform.numpy()
-        return input_data
     
-    def upload_directory_to_azure(self, local_dir, blob_prefix=""):
-        """
-        Uploads a local directory to Azure Blob Storage.
-        Ensures that blob_prefix is safe by replacing '/' with '_'.
-        """
-        # Sanitize the blob prefix if needed
-        safe_blob_prefix = blob_prefix.replace("/", "_") if blob_prefix else ""
-
-        for root, _, files in os.walk(local_dir):
-            for file in files:
-                local_path = os.path.join(root, file)
-                blob_name = os.path.relpath(local_path, local_dir)
-                
-                if safe_blob_prefix:
-                    blob_name = f"{safe_blob_prefix}/{blob_name}"
-                
-                blob_client = self.container_client.get_blob_client(blob_name)
-                with open(local_path, "rb") as data:
-                    blob_client.upload_blob(data, overwrite=True)
-
-
