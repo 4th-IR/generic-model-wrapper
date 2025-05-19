@@ -13,3 +13,11 @@ models_saved/
 models/
 pyproject.toml
 model.log
+pipeline/
+configs/
+test3.py
+test4.py
+test5.py
+tests.py
+test2.py
+metrics.ipynb

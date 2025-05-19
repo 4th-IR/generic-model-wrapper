@@ -24,15 +24,16 @@ import shutil
 from utils.logger import get_logger
 from utils.env_manager import AZURE_BLOB_URI, AZURE_CONNECTION_STRING, AZURE_CONTAINER_NAME, AZURE_STORAGE_ACCOUNT
 from utils.resource_manager import timer
+from utils.huggingface_route import download_from_huggingface
 
 
 LOG = get_logger('model')
 
 class ModelWrapper:
     def __init__(self, provider, model_name, task):
-        self.model_provider = provider
-        self.model_name = model_name
-        self.task = task
+        self.model_provider = provider.lower() if provider else None
+        self.model_name = model_name.lower() if model_name else None
+        self.task = task.lower() if task else None
         self.model = None
         self.tokenizer = None
         self.pipeline = None
@@ -49,9 +50,12 @@ class ModelWrapper:
         self.blob_service_client = BlobServiceClient.from_connection_string(AZURE_CONNECTION_STRING)
         self.container_client = self.blob_service_client.get_container_client(AZURE_CONTAINER_NAME)
         self.azure_config = True  # Enable Azure model loading
-
+        
+        # model name to ensure proper dir creation
         self.safe_model_name = self.model_name.replace("/", "_")
-
+        # temp files to store the model loaded for inferencing
+        self.temp_model_inference_path = tempfile.mkdtemp()
+        
 
     def upload_directory_to_azure(self, local_dir, blob_prefix=""):
         """
@@ -76,8 +80,6 @@ class ModelWrapper:
 
     def save_to_azure(self): 
         """Saves the model directory/files to Azure Blob Storage under a folder named after the model."""
-        print("<---SAVING TO AZURE--->")
-        
         
         LOG.info(f"Attempting to save model '{self.model_name}' to Azure container '{AZURE_CONTAINER_NAME}'.")
 
@@ -103,14 +105,7 @@ class ModelWrapper:
         LOG.info(f"{self.model_name} saved to Azure Blob Storage under folder '{self.safe_model_name}'")
 
 
-    @timer
     def load_from_azure(self):
-        print("<---LOADING MODEL--->")
-        
-        if not self.azure_config:
-            LOG.warning("Azure configuration is disabled.")
-            return False
-
 
         # Check for blobs in the self.safe_model_name folder
         blob_list = list(self.container_client.list_blobs(name_starts_with=f"{self.safe_model_name}/"))
@@ -119,17 +114,13 @@ class ModelWrapper:
             print("Model blob folder does not exist")
             return False
 
-        # Create a temporary directory to save the model files
-        temp_model_path = tempfile.mkdtemp()
-        LOG.info(f"Created temporary directory for model download: {temp_model_path}")
-
         # Download each file under the model folder
         for blob in blob_list:
             blob_client = self.container_client.get_blob_client(blob)
 
             # Get relative path within the model folder
             relative_path = os.path.relpath(blob.name, start=f"{self.safe_model_name}/")
-            local_path = os.path.join(temp_model_path, relative_path)
+            local_path = os.path.join(self.temp_model_inference_path, relative_path)
             os.makedirs(os.path.dirname(local_path), exist_ok=True)
 
             with open(local_path, "wb") as file:
@@ -137,40 +128,16 @@ class ModelWrapper:
                 file.write(download_stream.readall())
                 LOG.info(f"Downloaded: {blob.name} -> {local_path}")
 
-        LOG.info(f"{self.model_name} downloaded from Azure to: {temp_model_path}")
-    
-        # Load the model based on the specified provider.
-        provider = self.model_provider.lower()
-        if provider == "huggingface":
-            if self.model_name in ['deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B']:
-                from transformers import AutoModelForCausalLM, AutoTokenizer
-                self.model = AutoModelForCausalLM.from_pretrained(temp_model_path)
-                self.tokenizer = AutoTokenizer.from_pretrained(temp_model_path) 
-
-            if self.model_name in ["openai/whisper-large"]:
-                from transformers import WhisperProcessor, WhisperForConditionalGeneration
-                self.processor = WhisperProcessor.from_pretrained(temp_model_path)
-                self.model = WhisperForConditionalGeneration.from_pretrained(temp_model_path) 
-
-            if self.model_name in ['Salesforce/blip2-opt-2.7b']:
-                from transformers import Blip2Processor, Blip2ForConditionalGeneration
-                self.processor = Blip2Processor.from_pretrained(temp_model_path)
-                self.model = Blip2ForConditionalGeneration.from_pretrained(temp_model_path)
-
-        else:
-            LOG.warning(f"Unsupported model provider: {self.model_provider}")
-            return False
-
+        LOG.info(f"{self.model_name} downloaded from Azure to: {self.temp_model_inference_path}")
         LOG.info("Model successfully loaded from Azure and initialized for inference.")
         return True
 
-    @timer
+    
     def load_model(self):
 
         """Loads models from Azure Storage if available; otherwise, downloads from a repository."""
 
-        try:
-            
+        try:      
             if self.azure_config:
                 LOG.info("Checking Azure Storage for model...")
                 print("Checking Azure Storage for model...")
@@ -178,38 +145,25 @@ class ModelWrapper:
                 if self.load_from_azure():
                     LOG.info(f"Loaded model from Azure Storage: {self.model_name}")
                     print(f"Loaded model from Azure Storage: {self.model_name}")
-                    return
                 
                 else:
                     LOG.info(f"Downloading model from {self.model_provider}...")
 
                     if self.model_provider == "huggingface":
                         LOG.info(f"Loading Hugging Face model: {self.model_name}")
-                        temp_dir = tempfile.gettempdir()
-                        save_path = os.path.join(temp_dir, self.safe_model_name)
+                        temp_download_dir = tempfile.gettempdir()
+                        save_path = os.path.join(temp_download_dir, self.safe_model_name)
                         self.model_save_path = save_path
 
-                        if self.model_name in ['deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B']:
-                            from transformers import AutoModelForCausalLM, AutoTokenizer
-                            self.model = AutoModelForCausalLM.from_pretrained(self.model_name)
-                            self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-                            self.tokenizer.save_pretrained(save_path)  
-                            self.model.save_pretrained(save_path)     
+                        download_from_huggingface(model_name=self.model_name, model_path=save_path)
+                        
+                        if self.azure_config:
+                            LOG.info("Saving model from Provider to Azure...")
+                            self.save_to_azure()
 
-                        if self.model_name in ["openai/whisper-large"]:
-                            from transformers import WhisperProcessor, WhisperForConditionalGeneration
-                            self.processor = WhisperProcessor.from_pretrained(self.model_name)
-                            self.model = WhisperForConditionalGeneration.from_pretrained(self.model_name)
-                            self.model.config.forced_decoder_ids = None
-                            self.processor.save_pretrained(save_path)  
-                            self.model.save_pretrained(save_path)
-
-                        if self.model_name in ['Salesforce/blip2-opt-2.7b']:
-                            from transformers import Blip2Processor, Blip2ForConditionalGeneration
-                            self.processor = Blip2Processor.from_pretrained(self.model_name)
-                            self.model = Blip2ForConditionalGeneration.from_pretrained(self.model_name)
-                            self.processor.save_pretrained(save_path)  
-                            self.model.save_pretrained(save_path)
+                        if os.path.exists(save_path):
+                            shutil.rmtree(save_path)
+                            LOG.info(f"Deleted temporary directory: {save_path}")
 
                     else:
                         LOG.error(f"Unknown model provider: {self.model_provider}")
@@ -217,29 +171,19 @@ class ModelWrapper:
 
                     LOG.info("Model loaded successfully.")
 
-                    if self.azure_config:
-                        LOG.info("Saving model from Provider to Azure...")
-                        self.save_to_azure()
-
-                    if os.path.exists(save_path):
-                        shutil.rmtree(save_path)
-                        LOG.info(f"Deleted temporary directory: {save_path}")
-
         except Exception as e:
             LOG.error(f"Error loading model: {e}", exc_info=True)
             raise HTTPException(status_code=500, detail=f"Model loading failed: {str(e)}")
         
-
-    @timer
+    
     def run_inference(self, input_data: Any, task: str = None, **kwargs: Any):
         """Runs inference with enhanced multimodal support"""
         try:
        
             if self.model_provider == "huggingface":
                 LOG.info(f"Direct HF {task} inference")
-                img = None
-                txt = None
-                aud = None
+                img = txt = aud = None
+                
                 for item in input_data:
                     if 'image' in item:
                         img = item['image']
@@ -249,7 +193,13 @@ class ModelWrapper:
                         aud = item['audio']         
 
                 # Inferencing script for whisper
-                if self.model_name in ["openai/whisper-large"]:
+                if self.model_name == "openai/whisper-large":
+                    # load the model
+                    from transformers import WhisperProcessor, WhisperForConditionalGeneration
+                    self.processor = WhisperProcessor.from_pretrained(self.temp_model_inference_path)
+                    self.model = WhisperForConditionalGeneration.from_pretrained(self.temp_model_inference_path) 
+                    self.model.config.forced_decoder_ids = None
+
                     waveform, sample_rate = torchaudio.load(aud)
 
                     # Resample if needed
@@ -261,14 +211,19 @@ class ModelWrapper:
                     # Whisper expects mono-channel
                     waveform = waveform.mean(dim=0)
 
-                    inputs = self.processor(waveform, sampling_rate=sample_rate, return_tensors="pt")
+                    inputs = self.processor(waveform, sampling_rate=sample_rate, return_tensors="pt", return_attention_mask=True)
 
                     with torch.no_grad():
-                        generated_ids = self.model.generate(inputs["input_features"])
+                        generated_ids = self.model.generate(inputs["input_features"],
+                                                            attention_mask=inputs["attention_mask"],
+                                                            forced_decoder_ids=None,
+                                                            max_length=100)
                         model_output = self.processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
-                    
-                    
-                if self.model_name in ['deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B']:
+                            
+                if self.model_name == 'deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B':
+                    from transformers import AutoModelForCausalLM, AutoTokenizer
+                    self.model = AutoModelForCausalLM.from_pretrained(self.temp_model_inference_path)
+                    self.tokenizer = AutoTokenizer.from_pretrained(self.temp_model_inference_path)
                     
                     inputs = self.tokenizer(txt, return_tensors="pt")
 
@@ -277,8 +232,11 @@ class ModelWrapper:
 
                     model_output = self.tokenizer.decode(output[0], skip_special_tokens=True)
                     
+                if self.model_name == 'Salesforce/blip2-opt-2.7b':
+                    from transformers import Blip2Processor, Blip2ForConditionalGeneration
+                    self.processor = Blip2Processor.from_pretrained(self.temp_model_inference_path)
+                    self.model = Blip2ForConditionalGeneration.from_pretrained(self.temp_model_inference_path)
 
-                if self.model_name in ['Salesforce/blip2-opt-2.7b']:
                     image = Image.open(img).convert("RGB")
                     inputs = self.processor(images=image, text=txt, return_tensors="pt")
 
@@ -286,10 +244,70 @@ class ModelWrapper:
                         generated_ids = self.model.generate(**inputs)
                         model_output = self.processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
 
-                return model_output
+                if self.model_name == "Salesforce/blip-image-captioning-base":
+                    from transformers import BlipProcessor, BlipForConditionalGeneration
+                    self.processor = BlipProcessor.from_pretrained(self.temp_model_inference_path)
+                    self.model = BlipForConditionalGeneration.from_pretrained(self.temp_model_inference_path)
+                    image = Image.open(img).convert('RGB')
+
+                    # conditional image captioning
+                    text = txt
+                    inputs = self.processor(image, text, return_tensors="pt")
+
+                    out = self.model.generate(**inputs)
+                    model_output = self.processor.decode(out[0], skip_special_tokens=True)
+
+                if self.model_name == 'microsoft/git-base':
+                    from transformers import AutoModelForCausalLM, AutoProcessor
+                    self.model = AutoModelForCausalLM.from_pretrained(self.model_name)
+                    self.processor = AutoProcessor.from_pretrained(self.model_name)
+
+                    image = Image.open(img).convert('RGB')
+
+                    pixel_values = self.processor(images=image, return_tensors="pt").pixel_values
+                    generated_ids = self.model.generate(pixel_values=pixel_values, max_new_tokens=50)
+                    model_output = self.processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
+                    
+                if self.model_name == 'gpt2':
+                    
+                    from transformers import GPT2LMHeadModel, GPT2Tokenizer
+                    self.tokenizer = GPT2Tokenizer.from_pretrained(self.temp_model_inference_path)
+                    self.model = GPT2LMHeadModel.from_pretrained(self.temp_model_inference_path)
+
+                    prompt = txt
+
+                    # Ensure the tokenizer has a pad token
+                    if self.tokenizer.pad_token is None:
+                        self.tokenizer.pad_token = self.tokenizer.eos_token
+                        self.model.config.pad_token_id = self.tokenizer.pad_token_id
+
+                    # Tokenize input and get attention mask
+                    inputs = self.tokenizer(prompt, return_tensors="pt", padding=True)
+                    input_ids = inputs["input_ids"]
+                    attention_mask = inputs["attention_mask"]
+
+                    # Generate text from the prompt
+                    with torch.no_grad():
+                        output = self.model.generate(
+                            input_ids=input_ids,
+                            attention_mask=attention_mask,        
+                            max_length=100,                       
+                            num_return_sequences=1,
+                            no_repeat_ngram_size=2,
+                            do_sample=True,
+                            temperature=0.9,
+                            top_k=50,
+                            top_p=0.95,
+                            pad_token_id=self.tokenizer.pad_token_id  
+                        )
+
+                    # Decode and print the generated text
+                    model_output = self.tokenizer.decode(output[0], skip_special_tokens=True)
+                    print(model_output)
+
+            return model_output
 
         except Exception as e:
             LOG.error(f"Inference failed: {str(e)}")
             raise RuntimeError(f"Inference error: {str(e)}") from e
-
-    
+   
