@@ -32,7 +32,7 @@ LOG = get_logger('model')
 class ModelWrapper:
     def __init__(self, provider, model_name, task):
         self.model_provider = provider.lower() if provider else None
-        self.model_name = model_name.lower() if model_name else None
+        self.model_name = model_name
         self.task = task.lower() if task else None
         self.model = None
         self.tokenizer = None
@@ -194,43 +194,29 @@ class ModelWrapper:
 
                 # Inferencing script for whisper
                 if self.model_name == "openai/whisper-large":
-                    # load the model
                     from transformers import WhisperProcessor, WhisperForConditionalGeneration
                     self.processor = WhisperProcessor.from_pretrained(self.temp_model_inference_path)
                     self.model = WhisperForConditionalGeneration.from_pretrained(self.temp_model_inference_path) 
-                    self.model.config.forced_decoder_ids = None
-
                     waveform, sample_rate = torchaudio.load(aud)
 
-                    # Resample if needed
                     if sample_rate != 16000:
                         resampler = torchaudio.transforms.Resample(orig_freq=sample_rate, new_freq=16000)
                         waveform = resampler(waveform)
                         sample_rate = 16000
 
-                    # Whisper expects mono-channel
-                    waveform = waveform.mean(dim=0)
+                    waveform = waveform.mean(dim=0)  
 
-                    inputs = self.processor(waveform, sampling_rate=sample_rate, return_tensors="pt", return_attention_mask=True)
-
-                    with torch.no_grad():
-                        generated_ids = self.model.generate(inputs["input_features"],
-                                                            attention_mask=inputs["attention_mask"],
-                                                            forced_decoder_ids=None,
-                                                            max_length=100)
-                        model_output = self.processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
-                            
-                if self.model_name == 'deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B':
-                    from transformers import AutoModelForCausalLM, AutoTokenizer
-                    self.model = AutoModelForCausalLM.from_pretrained(self.temp_model_inference_path)
-                    self.tokenizer = AutoTokenizer.from_pretrained(self.temp_model_inference_path)
-                    
-                    inputs = self.tokenizer(txt, return_tensors="pt")
+                    inputs = self.processor(waveform, sampling_rate=sample_rate, return_tensors="pt")
 
                     with torch.no_grad():
-                        output = self.model.generate(**inputs, max_length=100)
+                        generated_ids = self.model.generate(
+                            inputs["input_features"], 
+                            attention_mask=inputs.get("attention_mask"),
+                            max_new_tokens=200
+                        ) 
 
-                    model_output = self.tokenizer.decode(output[0], skip_special_tokens=True)
+                    model_output = self.processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
+
                     
                 if self.model_name == 'Salesforce/blip2-opt-2.7b':
                     from transformers import Blip2Processor, Blip2ForConditionalGeneration
@@ -310,4 +296,22 @@ class ModelWrapper:
         except Exception as e:
             LOG.error(f"Inference failed: {str(e)}")
             raise RuntimeError(f"Inference error: {str(e)}") from e
-   
+
+if __name__ == "__main__":
+    model_name = "openai/whisper-large"
+    provider = "huggingface"
+    task = "transcription"
+
+    # Instantiate the wrapper
+    model_wrapper = ModelWrapper(provider=provider, model_name=model_name, task=task)
+
+    # Load the model
+    model_wrapper.load_model()
+
+    # Run inference with input as a list of dictionaries
+    output = model_wrapper.run_inference(input_data=[
+                                                     {'audio': '/home/model-wrapper/tests/assets/audios/audio3.mp3'},
+                                                     ])
+
+
+    print(output)
