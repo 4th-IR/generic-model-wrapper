@@ -4,9 +4,10 @@ from pydantic import BaseModel, ValidationError
 from typing import Optional, List
 import tempfile, os, shutil
 from model.main import ModelWrapper
+import time
 
 
-# modules
+# # modules
 from utils.process_inputs import process_images, process_audio, TextInput
 
 app = FastAPI(
@@ -70,8 +71,8 @@ async def inference_model(
             tmp_img_path = process_images(image)
         
             input_data.append({"image": tmp_img_path})
-            print("Validated image path:", tmp_img_path)
-            print("Input data going into inference:", input_data)
+            # print("Validated image path:", tmp_img_path)
+            # print("Input data going into inference:", input_data)
         
         except ValidationError as e:
             raise HTTPException(status_code=400, detail=str(e))
@@ -104,3 +105,4 @@ async def inference_model(
                     os.unlink(path)
 
     return {"results": output}
+

@@ -9,7 +9,9 @@ def download_from_huggingface(model_name: str, model_path):
             model = AutoModelForCausalLM.from_pretrained(model_name)
             tokenizer = AutoTokenizer.from_pretrained(model_name)
             tokenizer.save_pretrained(model_path)  
-            model.save_pretrained(model_path)   
+            model.save_pretrained(model_path)  
+
+            return model, tokenizer
 
         if model_name in ['microsoft/git-base']:
             from transformers import AutoModelForCausalLM, AutoProcessor
@@ -18,6 +20,8 @@ def download_from_huggingface(model_name: str, model_path):
             processor.save_pretrained(model_path)  
             model.save_pretrained(model_path) 
 
+            return model, processor
+
         if model_name in ["openai/whisper-large"]:
             from transformers import WhisperProcessor, WhisperForConditionalGeneration
             processor = WhisperProcessor.from_pretrained(model_name)
@@ -25,12 +29,16 @@ def download_from_huggingface(model_name: str, model_path):
             processor.save_pretrained(model_path)  
             model.save_pretrained(model_path)
 
+            return model, processor
+
         if model_name in ['Salesforce/blip2-opt-2.7b']:
             from transformers import Blip2Processor, Blip2ForConditionalGeneration
-            processor = Blip2Processor.from_pretrained(model_name, cache_dir=model_path)
-            model = Blip2ForConditionalGeneration.from_pretrained(model_name, cache_dir=model_path)
+            processor = Blip2Processor.from_pretrained(model_name)
+            model = Blip2ForConditionalGeneration.from_pretrained(model_name)
             processor.save_pretrained(model_path)  
             model.save_pretrained(model_path)
+            
+            return model, processor
 
         if model_name in ['Salesforce/blip-image-captioning-base']:
             from transformers import BlipProcessor, BlipForConditionalGeneration
@@ -39,6 +47,8 @@ def download_from_huggingface(model_name: str, model_path):
             processor.save_pretrained(model_path)  
             model.save_pretrained(model_path)
 
+            return model, processor
+
         if model_name in ["gpt2"]:
             from transformers import GPT2LMHeadModel, GPT2Tokenizer
             tokenizer = GPT2Tokenizer.from_pretrained(model_name)
@@ -46,6 +56,7 @@ def download_from_huggingface(model_name: str, model_path):
             tokenizer.save_pretrained(model_path)  
             model.save_pretrained(model_path) 
 
+            return model, tokenizer
+
     except Exception as e:
         print(f"Error downloading {model_name}: {e}")
-

@@ -245,15 +245,36 @@ class ModelWrapper:
 
                 if self.model_name == 'microsoft/git-base':
                     from transformers import AutoModelForCausalLM, AutoProcessor
-                    self.model = AutoModelForCausalLM.from_pretrained(self.model_name)
-                    self.processor = AutoProcessor.from_pretrained(self.model_name)
+                    self.model = AutoModelForCausalLM.from_pretrained(self.temp_model_inference_path)
+                    self.processor = AutoProcessor.from_pretrained(self.temp_model_inference_path)
 
                     image = Image.open(img).convert('RGB')
 
                     pixel_values = self.processor(images=image, return_tensors="pt").pixel_values
                     generated_ids = self.model.generate(pixel_values=pixel_values, max_new_tokens=50)
                     model_output = self.processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
-                    
+
+                if self.model_name == 'deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B':  
+
+                    from transformers import AutoModelForCausalLM, AutoTokenizer
+                    self.model = AutoModelForCausalLM.from_pretrained(self.temp_model_inference_path)
+                    self.tokenizer = AutoTokenizer.from_pretrained(self.temp_model_inference_path)  
+                    prompt = txt
+                    inputs = self.tokenizer(prompt, return_tensors="pt")
+
+                    # Generate output
+                    with torch.no_grad():
+                        outputs = self.model.generate(
+                            **inputs,
+                            max_new_tokens=100,
+                            do_sample=True,
+                            temperature=0.7,
+                            pad_token_id=self.tokenizer.eos_token_id
+                        )
+
+                    # Decode and return result
+                    model_output = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+
                 if self.model_name == 'gpt2':
                     
                     from transformers import GPT2LMHeadModel, GPT2Tokenizer
@@ -298,10 +319,9 @@ class ModelWrapper:
             raise RuntimeError(f"Inference error: {str(e)}") from e
 
 if __name__ == "__main__":
-    model_name = "openai/whisper-large"
+    model_name = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
     provider = "huggingface"
-    task = "transcription"
-
+    task = "text-generation"
     # Instantiate the wrapper
     model_wrapper = ModelWrapper(provider=provider, model_name=model_name, task=task)
 
@@ -310,7 +330,7 @@ if __name__ == "__main__":
 
     # Run inference with input as a list of dictionaries
     output = model_wrapper.run_inference(input_data=[
-                                                     {'audio': '/home/model-wrapper/tests/assets/audios/audio3.mp3'},
+                                                     {'text': 'Did Oj simpson do it?'},
                                                      ])
 
 
