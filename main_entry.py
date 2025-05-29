@@ -1,14 +1,11 @@
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ValidationError
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 import tempfile, os, shutil
 from model.main import ModelWrapper
 import time
-
-
-# # modules
-from utils.process_inputs import process_images, process_audio, TextInput
+from utils.process_inputs import TextInput, process_audio, process_images
 
 app = FastAPI(
     title="Generic Model Wrapper API",
@@ -20,7 +17,7 @@ app = FastAPI(
 def health_check():
     return {"status": "ok"}
 
-@app.post("/load_model")
+@app.post("/save_model")
 async def load_model(
     provider: str = Form(..., description="Model provider, e.g., 'huggingface'"),
     model_name: str = Form(..., description="Full model identifier, e.g., 'openai/whisper-large'"),
@@ -42,67 +39,60 @@ async def load_model(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Model load or inference error: {e}")
 
-
-@app.post("/infer")
+@app.post("/load_inference")
 async def inference_model(
     request: Request,
     text: Optional[str] = Form(None),
     image: Optional[UploadFile] = File(None),
     audio: Optional[UploadFile] = File(None),
 ):
-    # Load wrapper object
     model_wrapper = request.app.state.model_wrapper
+    content: Dict[str, Any] = {}
 
-    input_data: List[dict] = []
+    print(content)
+    # Text
     if text:
         try:
-            validated = TextInput(text=text)  
-            input_data.append({"text": validated.text})
-
-            # print("Validated text input:", validated.text)
-            # print("Input data going into inference:", input_data)
-
+            validated = TextInput(text=text)
+            content["text"] = validated.text
+            print(validated.text)
         except ValidationError as e:
             raise HTTPException(status_code=400, detail=str(e))
         
+
     # Image
     if image:
         try:
             tmp_img_path = process_images(image)
-        
-            input_data.append({"image": tmp_img_path})
-            # print("Validated image path:", tmp_img_path)
-            # print("Input data going into inference:", input_data)
-        
-        except ValidationError as e:
-            raise HTTPException(status_code=400, detail=str(e))
+            content["image"] = tmp_img_path
+            print(tmp_img_path)
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Image error: {str(e)}")
+
     # Audio
     if audio:
         try:
             tmp_aud_path = process_audio(audio)
-            
-            input_data.append({"audio": tmp_aud_path})
-            print("Validated audio path:", tmp_aud_path)
-            print("Input data going into inference:", input_data)
-
-        except HTTPException as e:
-            raise e
+            content["audio"] = tmp_aud_path
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Unexpected audio processing error: {str(e)}")
+            raise HTTPException(status_code=400, detail=f"Audio error: {str(e)}")
 
-            
-    if not input_data:
+    if not content:
         raise HTTPException(status_code=422, detail="At least one of text, image, or audio must be provided.")
 
+    # Properly formatted messages list
+    messages = [{"role": "user", "content": content}]
 
     try:
-        output = model_wrapper.run_inference(input_data=input_data, task=model_wrapper.task)
+        model_output = model_wrapper.run_inference(messages=messages, task=model_wrapper.task)
     finally:
-        # 4) Clean up temp files
-        for item in input_data:
-            for path in item.values():
-                if os.path.exists(path):
-                    os.unlink(path)
+        # Clean up temp files if they were created
+        for key in ("image", "audio"):
+            path = content.get(key)
+            if path and os.path.exists(path):
+                os.unlink(path)
 
-    return {"results": output}
+    print(model_output)
+    return JSONResponse(content=model_output)
+
 

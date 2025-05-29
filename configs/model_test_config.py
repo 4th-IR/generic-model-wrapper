@@ -26,6 +26,7 @@ models_dict = {
         "sample_input": [
                         {'image': 'https://storage.googleapis.com/sfr-vision-language-research/BLIP/demo.jpg'},
                         {'text': 'a photography of'},
+                        {'audio': 'a photography of'},
                     ],
     },
      "model_3": {

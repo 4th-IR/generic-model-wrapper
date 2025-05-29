@@ -14,9 +14,9 @@ def download_from_huggingface(model_name: str, model_path):
             return model, tokenizer
 
         if model_name in ['microsoft/git-base']:
-            from transformers import AutoModelForCausalLM, AutoProcessor
-            model = AutoModelForCausalLM.from_pretrained(model_name)
-            processor = AutoProcessor.from_pretrained(model_name)
+            from transformers import GitProcessor, GitForCausalLM
+            model = GitForCausalLM.from_pretrained(model_name)
+            processor = GitProcessor.from_pretrained(model_name)
             processor.save_pretrained(model_path)  
             model.save_pretrained(model_path) 
 
@@ -36,7 +36,7 @@ def download_from_huggingface(model_name: str, model_path):
             processor = Blip2Processor.from_pretrained(model_name)
             model = Blip2ForConditionalGeneration.from_pretrained(model_name)
             processor.save_pretrained(model_path)  
-            model.save_pretrained(model_path)
+            model.save_pretrained(model_path)  
             
             return model, processor
 

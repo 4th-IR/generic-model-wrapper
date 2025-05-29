@@ -52,7 +52,7 @@ class ModelWrapper:
         self.azure_config = True  # Enable Azure model loading
         
         # model name to ensure proper dir creation
-        self.safe_model_name = self.model_name.replace("/", "_")
+        self.safe_model_name = self.model_name.replace("/", "__")
         # temp files to store the model loaded for inferencing
         self.temp_model_inference_path = tempfile.mkdtemp()
         
@@ -63,7 +63,7 @@ class ModelWrapper:
         Ensures that blob_prefix is safe by replacing '/' with '_'.
         """
         # Sanitize the blob prefix if needed
-        safe_blob_prefix = blob_prefix.replace("/", "_") if blob_prefix else ""
+        safe_blob_prefix = blob_prefix.replace("/", "__") if blob_prefix else ""
 
         for root, _, files in os.walk(local_dir):
             for file in files:
@@ -176,22 +176,34 @@ class ModelWrapper:
             raise HTTPException(status_code=500, detail=f"Model loading failed: {str(e)}")
         
     
-    def run_inference(self, input_data: Any, task: str = None, **kwargs: Any):
+    def run_inference(self, messages, task: str = None, **kwargs: Any):
         """Runs inference with enhanced multimodal support"""
+
         try:
-       
+            
             if self.model_provider == "huggingface":
                 LOG.info(f"Direct HF {task} inference")
-                img = txt = aud = None
-                
-                for item in input_data:
-                    if 'image' in item:
-                        img = item['image']
-                    elif 'text' in item:
-                        txt = item['text']
-                    elif 'audio' in item:
-                        aud = item['audio']         
+                      
+                def parse_messages(messages):
+                    img = txt = aud = None
 
+                    for message in messages:
+                        if message['role'] != 'user':
+                            continue
+                        content = message['content']
+
+                        if isinstance(content, dict):
+                            img = content.get('image', img)
+                            txt = content.get('text', txt)
+                            aud = content.get('audio', aud)
+                        # elif isinstance(content, str):
+                        #     txt = content
+                        print('image', img)
+                        print('text', txt)
+                        print('audio', aud)
+                    return img, txt, aud
+                
+                img, txt, aud = parse_messages(messages)
                 # Inferencing script for whisper
                 if self.model_name == "openai/whisper-large":
                     from transformers import WhisperProcessor, WhisperForConditionalGeneration
@@ -216,8 +228,7 @@ class ModelWrapper:
                         ) 
 
                     model_output = self.processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
-
-                    
+      
                 if self.model_name == 'Salesforce/blip2-opt-2.7b':
                     from transformers import Blip2Processor, Blip2ForConditionalGeneration
                     self.processor = Blip2Processor.from_pretrained(self.temp_model_inference_path)
@@ -244,9 +255,9 @@ class ModelWrapper:
                     model_output = self.processor.decode(out[0], skip_special_tokens=True)
 
                 if self.model_name == 'microsoft/git-base':
-                    from transformers import AutoModelForCausalLM, AutoProcessor
-                    self.model = AutoModelForCausalLM.from_pretrained(self.temp_model_inference_path)
-                    self.processor = AutoProcessor.from_pretrained(self.temp_model_inference_path)
+                    from transformers import GitProcessor, GitForCausalLM
+                    self.model = GitForCausalLM.from_pretrained(self.temp_model_inference_path)
+                    self.processor = GitProcessor.from_pretrained(self.temp_model_inference_path)
 
                     image = Image.open(img).convert('RGB')
 
@@ -255,7 +266,6 @@ class ModelWrapper:
                     model_output = self.processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
 
                 if self.model_name == 'deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B':  
-
                     from transformers import AutoModelForCausalLM, AutoTokenizer
                     self.model = AutoModelForCausalLM.from_pretrained(self.temp_model_inference_path)
                     self.tokenizer = AutoTokenizer.from_pretrained(self.temp_model_inference_path)  
@@ -276,7 +286,6 @@ class ModelWrapper:
                     model_output = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
 
                 if self.model_name == 'gpt2':
-                    
                     from transformers import GPT2LMHeadModel, GPT2Tokenizer
                     self.tokenizer = GPT2Tokenizer.from_pretrained(self.temp_model_inference_path)
                     self.model = GPT2LMHeadModel.from_pretrained(self.temp_model_inference_path)
@@ -310,18 +319,22 @@ class ModelWrapper:
 
                     # Decode and print the generated text
                     model_output = self.tokenizer.decode(output[0], skip_special_tokens=True)
-                    print(model_output)
+                    
+            messages.append({
+                            "role": "assistant",
+                            "content": model_output
+                        })
 
-            return model_output
+            return messages
 
         except Exception as e:
             LOG.error(f"Inference failed: {str(e)}")
             raise RuntimeError(f"Inference error: {str(e)}") from e
 
 if __name__ == "__main__":
-    model_name = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
+    model_name = 'microsoft/git-base'
     provider = "huggingface"
-    task = "text-generation"
+    task = "vqa"
     # Instantiate the wrapper
     model_wrapper = ModelWrapper(provider=provider, model_name=model_name, task=task)
 
@@ -329,9 +342,18 @@ if __name__ == "__main__":
     model_wrapper.load_model()
 
     # Run inference with input as a list of dictionaries
-    output = model_wrapper.run_inference(input_data=[
-                                                     {'text': 'Did Oj simpson do it?'},
-                                                     ])
-
+    output = model_wrapper.run_inference(messages = [
+        {
+            "role": "user",
+            "content": {
+                "text": "What is this image showing?",
+                "image": "/home/model-wrapper/tests/assets/images/animal_pictures/dog1.jpg",
+                # "audio": "/home/model-wrapper/tests/assets/audios/audio3.mp3"
+            }
+        }
+    ]
+    )
 
     print(output)
+    print(f'{ "*" * 5 }')
+    print(output[-1])
