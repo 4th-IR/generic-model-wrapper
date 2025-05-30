@@ -1,4 +1,6 @@
+from enum import Enum
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request
+from transformers import pipelines
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ValidationError
 from typing import Optional, List, Dict, Any
@@ -12,6 +14,31 @@ app = FastAPI(
     description="Endpoints to load and inference models with audio/image/text inputs",
     version="1.0.01"
 )
+
+class TaskType(str, Enum):
+    automatic_speech_recognition = "automatic_speech_recognition"
+    image_captioning = "image_captioning"
+    text_generation = "text_generation"
+    text_to_speech = "text_to_speech"
+    speech_to_text = "speech_to_text"
+    audio_classification = "audio_classification"
+    image_classification = "image_classification"
+
+class Role(str, Enum):
+    user = "user"
+    assistant = "assistant"
+    system = "system"
+class ContentType(str, Enum):
+    image = "image"
+    audio = "audio"
+class MediaType(BaseModel):
+    type: ContentType
+    url: str
+class Message(BaseModel):
+    role: Role | None = None
+    content: str| MediaType 
+class UserRequest(BaseModel):
+    messages: list[Message]
 
 @app.get("/health")
 def health_check():
@@ -96,3 +123,22 @@ async def inference_model(
     return JSONResponse(content=model_output)
 
 
+@app.post("/pipeline/inference")
+async def new_inference(
+    request: Request,
+    task: TaskType,
+    user_request: UserRequest
+):
+    model = request.app.state.model_wrapper
+    pipe = pipelines.pipeline(
+    task=task.value,
+    model=model
+    )
+
+    prompt = pipe.tokenizer.apply_chat_template(user_request.messages, tokenize=False, add_generation_prompt=True)
+    outputs = pipe(prompt, max_new_tokens=256, do_sample=True, temperature=0.7, top_k=50, top_p=0.95)
+
+    return outputs
+
+
+    
