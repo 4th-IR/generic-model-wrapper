@@ -19,26 +19,23 @@ from torchvision.transforms import transforms
 import shutil
 
 
-
 #internal 
 from utils.logger import get_logger
 from utils.env_manager import AZURE_BLOB_URI, AZURE_CONNECTION_STRING, AZURE_CONTAINER_NAME, AZURE_STORAGE_ACCOUNT
-from utils.resource_manager import timer
 from utils.huggingface_route import download_from_huggingface
+from utils.tensorflow_route import download_from_tensorflow
+from utils.torch_route import download_from_torch
 
 
 LOG = get_logger('model')
 
 class ModelWrapper:
+
     def __init__(self, provider, model_name, task):
-        self.model_provider = provider.lower() if provider else None
+        self.model_provider = provider
         self.model_name = model_name
-        self.task = task.lower() if task else None
-        self.model = None
-        self.tokenizer = None
-        self.pipeline = None
+        self.task = task
         self.model_save_path = None 
-        self.processor = None
 
 
         # Azure storage setup        
@@ -52,7 +49,7 @@ class ModelWrapper:
         self.azure_config = True  # Enable Azure model loading
         
         # model name to ensure proper dir creation
-        self.safe_model_name = self.model_name.replace("/", "__")
+        self.safe_model_name = self.model_name.replace("/", "_")
         # temp files to store the model loaded for inferencing
         self.temp_model_inference_path = tempfile.mkdtemp()
         
@@ -63,7 +60,7 @@ class ModelWrapper:
         Ensures that blob_prefix is safe by replacing '/' with '_'.
         """
         # Sanitize the blob prefix if needed
-        safe_blob_prefix = blob_prefix.replace("/", "__") if blob_prefix else ""
+        safe_blob_prefix = blob_prefix.replace("/", "_") if blob_prefix else ""
 
         for root, _, files in os.walk(local_dir):
             for file in files:
@@ -132,8 +129,9 @@ class ModelWrapper:
         LOG.info("Model successfully loaded from Azure and initialized for inference.")
         return True
 
-    
-    def load_model(self):
+    # Function to save models
+    # Checks blob before checking original repo
+    def save_model(self):
 
         """Loads models from Azure Storage if available; otherwise, downloads from a repository."""
 
@@ -148,22 +146,32 @@ class ModelWrapper:
                 
                 else:
                     LOG.info(f"Downloading model from {self.model_provider}...")
+                    temp_download_dir = tempfile.gettempdir()
+                    save_path = os.path.join(temp_download_dir, self.safe_model_name)
+                    self.model_save_path = save_path
 
                     if self.model_provider == "huggingface":
                         LOG.info(f"Loading Hugging Face model: {self.model_name}")
-                        temp_download_dir = tempfile.gettempdir()
-                        save_path = os.path.join(temp_download_dir, self.safe_model_name)
-                        self.model_save_path = save_path
+                        download_from_huggingface(model_name=self.model_name, task=self.task, model_path=save_path)
+                    
+                    # make some changes
+                    elif self.model_provider == "pytorch":
+                        LOG.info(f"Loading PyTorch model from {self.model_name}")
+                        print(f"Loading PyTorch model from {self.model_name}")
+                        self.model_save_path = download_from_torch(self.model_name) 
 
-                        download_from_huggingface(model_name=self.model_name, model_path=save_path)
+                    elif self.model_provider == "tensorflow":
+                        LOG.info(f"Loading TensorFlow model from {self.model_name}")
+                        print(f"Loading TensorFlow model from {self.model_name}")
+                        self.model_save_path = download_from_tensorflow(self.model_name)
                         
-                        if self.azure_config:
-                            LOG.info("Saving model from Provider to Azure...")
-                            self.save_to_azure()
+                    if self.azure_config:
+                        LOG.info("Saving model from Provider to Azure...")
+                        self.save_to_azure()
 
-                        if os.path.exists(save_path):
-                            shutil.rmtree(save_path)
-                            LOG.info(f"Deleted temporary directory: {save_path}")
+                    if os.path.exists(save_path):
+                        shutil.rmtree(save_path)
+                        LOG.info(f"Deleted temporary directory: {save_path}")
 
                     else:
                         LOG.error(f"Unknown model provider: {self.model_provider}")
@@ -176,184 +184,68 @@ class ModelWrapper:
             raise HTTPException(status_code=500, detail=f"Model loading failed: {str(e)}")
         
     
-    def run_inference(self, messages, task: str = None, **kwargs: Any):
-        """Runs inference with enhanced multimodal support"""
-
-        try:
-            
-            if self.model_provider == "huggingface":
-                LOG.info(f"Direct HF {task} inference")
-                      
-                def parse_messages(messages):
-                    img = txt = aud = None
-
-                    for message in messages:
-                        if message['role'] != 'user':
-                            continue
-                        content = message['content']
-
-                        if isinstance(content, dict):
-                            img = content.get('image', img)
-                            txt = content.get('text', txt)
-                            aud = content.get('audio', aud)
-                        # elif isinstance(content, str):
-                        #     txt = content
-                        print('image', img)
-                        print('text', txt)
-                        print('audio', aud)
-                    return img, txt, aud
-                
-                img, txt, aud = parse_messages(messages)
-                # Inferencing script for whisper
-                if self.model_name == "openai/whisper-large":
-                    from transformers import WhisperProcessor, WhisperForConditionalGeneration
-                    self.processor = WhisperProcessor.from_pretrained(self.temp_model_inference_path)
-                    self.model = WhisperForConditionalGeneration.from_pretrained(self.temp_model_inference_path) 
-                    waveform, sample_rate = torchaudio.load(aud)
-
-                    if sample_rate != 16000:
-                        resampler = torchaudio.transforms.Resample(orig_freq=sample_rate, new_freq=16000)
-                        waveform = resampler(waveform)
-                        sample_rate = 16000
-
-                    waveform = waveform.mean(dim=0)  
-
-                    inputs = self.processor(waveform, sampling_rate=sample_rate, return_tensors="pt")
-
-                    with torch.no_grad():
-                        generated_ids = self.model.generate(
-                            inputs["input_features"], 
-                            attention_mask=inputs.get("attention_mask"),
-                            max_new_tokens=200
-                        ) 
-
-                    model_output = self.processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
-      
-                if self.model_name == 'Salesforce/blip2-opt-2.7b':
-                    from transformers import Blip2Processor, Blip2ForConditionalGeneration
-                    self.processor = Blip2Processor.from_pretrained(self.temp_model_inference_path)
-                    self.model = Blip2ForConditionalGeneration.from_pretrained(self.temp_model_inference_path)
-
-                    image = Image.open(img).convert("RGB")
-                    inputs = self.processor(images=image, text=txt, return_tensors="pt")
-
-                    with torch.no_grad():
-                        generated_ids = self.model.generate(**inputs)
-                        model_output = self.processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
-
-                if self.model_name == "Salesforce/blip-image-captioning-base":
-                    from transformers import BlipProcessor, BlipForConditionalGeneration
-                    self.processor = BlipProcessor.from_pretrained(self.temp_model_inference_path)
-                    self.model = BlipForConditionalGeneration.from_pretrained(self.temp_model_inference_path)
-                    image = Image.open(img).convert('RGB')
-
-                    # conditional image captioning
-                    text = txt
-                    inputs = self.processor(image, text, return_tensors="pt")
-
-                    out = self.model.generate(**inputs)
-                    model_output = self.processor.decode(out[0], skip_special_tokens=True)
-
-                if self.model_name == 'microsoft/git-base':
-                    from transformers import GitProcessor, GitForCausalLM
-                    self.model = GitForCausalLM.from_pretrained(self.temp_model_inference_path)
-                    self.processor = GitProcessor.from_pretrained(self.temp_model_inference_path)
-
-                    image = Image.open(img).convert('RGB')
-
-                    pixel_values = self.processor(images=image, return_tensors="pt").pixel_values
-                    generated_ids = self.model.generate(pixel_values=pixel_values, max_new_tokens=50)
-                    model_output = self.processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
-
-                if self.model_name == 'deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B':  
-                    from transformers import AutoModelForCausalLM, AutoTokenizer
-                    self.model = AutoModelForCausalLM.from_pretrained(self.temp_model_inference_path)
-                    self.tokenizer = AutoTokenizer.from_pretrained(self.temp_model_inference_path)  
-                    prompt = txt
-                    inputs = self.tokenizer(prompt, return_tensors="pt")
-
-                    # Generate output
-                    with torch.no_grad():
-                        outputs = self.model.generate(
-                            **inputs,
-                            max_new_tokens=100,
-                            do_sample=True,
-                            temperature=0.7,
-                            pad_token_id=self.tokenizer.eos_token_id
-                        )
-
-                    # Decode and return result
-                    model_output = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
-
-                if self.model_name == 'gpt2':
-                    from transformers import GPT2LMHeadModel, GPT2Tokenizer
-                    self.tokenizer = GPT2Tokenizer.from_pretrained(self.temp_model_inference_path)
-                    self.model = GPT2LMHeadModel.from_pretrained(self.temp_model_inference_path)
-
-                    prompt = txt
-
-                    # Ensure the tokenizer has a pad token
-                    if self.tokenizer.pad_token is None:
-                        self.tokenizer.pad_token = self.tokenizer.eos_token
-                        self.model.config.pad_token_id = self.tokenizer.pad_token_id
-
-                    # Tokenize input and get attention mask
-                    inputs = self.tokenizer(prompt, return_tensors="pt", padding=True)
-                    input_ids = inputs["input_ids"]
-                    attention_mask = inputs["attention_mask"]
-
-                    # Generate text from the prompt
-                    with torch.no_grad():
-                        output = self.model.generate(
-                            input_ids=input_ids,
-                            attention_mask=attention_mask,        
-                            max_length=100,                       
-                            num_return_sequences=1,
-                            no_repeat_ngram_size=2,
-                            do_sample=True,
-                            temperature=0.9,
-                            top_k=50,
-                            top_p=0.95,
-                            pad_token_id=self.tokenizer.pad_token_id  
-                        )
-
-                    # Decode and print the generated text
-                    model_output = self.tokenizer.decode(output[0], skip_special_tokens=True)
-                    
-            messages.append({
-                            "role": "assistant",
-                            "content": model_output
-                        })
-
-            return messages
-
-        except Exception as e:
-            LOG.error(f"Inference failed: {str(e)}")
-            raise RuntimeError(f"Inference error: {str(e)}") from e
-
+   
 if __name__ == "__main__":
-    model_name = 'microsoft/git-base'
-    provider = "huggingface"
-    task = "vqa"
-    # Instantiate the wrapper
-    model_wrapper = ModelWrapper(provider=provider, model_name=model_name, task=task)
+    
+    import pandas as pd
+    import openpyxl
+    import psutil
+    
+    models_dict = {
 
-    # Load the model
-    model_wrapper.load_model()
+  
+    # "model_3": {"model_provider": "huggingface","task": "text-generation", "model_name": "mistralai/Mistral-7B-Instruct-v0.3"},
+    "model_4": {"model_provider": "huggingface","task": "text-generation", "model_name": "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B"},
+    
+    }
+    excel_file = 'model_saving_metrics.xlsx'
 
-    # Run inference with input as a list of dictionaries
-    output = model_wrapper.run_inference(messages = [
-        {
-            "role": "user",
-            "content": {
-                "text": "What is this image showing?",
-                "image": "/home/model-wrapper/tests/assets/images/animal_pictures/dog1.jpg",
-                # "audio": "/home/model-wrapper/tests/assets/audios/audio3.mp3"
-            }
-        }
-    ]
-    )
+    model_inference_metrics = []
 
-    print(output)
-    print(f'{ "*" * 5 }')
-    print(output[-1])
+    for model in models_dict.values():
+
+        model_name = model["model_name"]
+        model_provider = model["model_provider"]
+        model_task = model["task"]
+
+
+        start_inference_time = time.time()
+        process = psutil.Process(os.getpid())
+
+        mem_before = process.memory_info().rss / (1024 ** 2)
+
+        model_wrapper = ModelWrapper(model_provider, model_name, model_task)
+        model_wrapper.save_model()
+
+        end_download_time = time.time()
+        print("/nDownload completed")
+        
+
+        mem_after = process.memory_info().rss / (1024 ** 2)
+
+        mem_used = mem_after - mem_before
+
+
+        TOTAL_TIME_TAKEN = round((end_download_time - start_inference_time)/60, 2)
+        model_data = {'model_name': model_name,
+                        'model_provider': model_provider,
+                        "model_task": model_task,
+                        "total_time_taken(mins)": TOTAL_TIME_TAKEN,
+                        "memory_used": mem_used}
+                                
+        model_inference_metrics.append(model_data)
+        print("/n Metrics obtained", model_inference_metrics)
+
+    df = pd.DataFrame(model_inference_metrics)
+
+    if os.path.exists(excel_file):
+        existing_df = pd.read_excel(excel_file)
+        updated_df = pd.concat([existing_df, df], ignore_index=True)
+    else:
+        updated_df = df
+
+    updated_df.to_excel(excel_file, index=False)
+
+    print(f"Saved {len(df)} model entries to {excel_file}")
+
+    
