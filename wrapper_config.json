@@ -1,5 +1,0 @@
-{
-  "model_identifier": "Intel/dpt-large",
-  "task": "depth-estimation",
-  "provider": "huggingface"
-}
