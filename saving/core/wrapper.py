@@ -81,10 +81,10 @@ class ModelWrapper:
             safe_model_name = model_identifier.replace("/", "_")
             safe_blob_prefix = safe_model_name
 
-            for root, _, files in os.walk(self.model_save_path):
+            for root, _, files in os.walk(model_save_path):
                 for file in files:
                     local_path = os.path.join(root, file)
-                    blob_name = os.path.relpath(local_path, self.model_save_path)
+                    blob_name = os.path.relpath(local_path, model_save_path)
 
                     if safe_blob_prefix:
                         blob_name = f"{safe_blob_prefix}/{blob_name}"

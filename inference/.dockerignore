@@ -1,6 +1,9 @@
 __pycache__
-env 
-envv 
-.env 
-logs.txt 
-model.log 
+env
+envv
+.env
+.venv
+logs.txt
+model.log
+test/
+logs/

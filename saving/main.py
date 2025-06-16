@@ -6,8 +6,8 @@ from core.wrapper import wrapper
 
 
 app = FastAPI(
-    title="Generic Model Wrapper API",
-    description="Endpoints to load and inference models with audio/image/text inputs",
+    title="Generic Model Wrapper Saving API",
+    description="Endpoints to save models to blob storage",
     version="1.0.01",
 )
 
