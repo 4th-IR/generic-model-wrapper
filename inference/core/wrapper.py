@@ -18,19 +18,20 @@ class ModelWrapper:
 
     def __init__(self):
 
-        if os.path.exists("./wrapper_config.json"):
-            with open("./wrapper_config.json") as f:
-                content = f.read()
-                wrapper_config = json.loads(content)
+        # if os.path.exists("./wrapper_config.json"):
+        #     with open("./wrapper_config.json") as f:
+        #         content = f.read()
+        #         wrapper_config = json.loads(content)
 
-                self.model_provider = wrapper_config.get("provider", None)
-                self.model_identifier = wrapper_config.get("model_identifier", None)
-                self.task = wrapper_config.get("task", None)
-                self.model_save_path = "models/" + self.model_identifier
-        else:
-            self.model_provider = settings.PROVIDER
-            self.model_identifier = settings.MODEL_IDENTIFIER
-            self.task = settings.TASK
+        #         self.model_provider = wrapper_config.get("provider", None)
+        #         self.model_identifier = wrapper_config.get("model_identifier", None)
+        #         self.task = wrapper_config.get("task", None)
+        #         self.model_save_path = "models/" + self.model_identifier
+        # else:
+        self.model_provider = settings.PROVIDER
+        self.model_identifier = settings.MODEL_IDENTIFIER
+        self.task = settings.TASK
+        self.model_save_path = "models/" + self.model_identifier
 
         # Azure storage setup
         if not settings.AZURE_STORAGE_CONNECTION_STRING:
@@ -56,7 +57,7 @@ class ModelWrapper:
 
         self.load_from_storage()
 
-    def load_from_storage(self):
+    def load_from_storage(self, force_redownload=False):
         """Loads models from Azure Storage if available"""
 
         try:
@@ -88,6 +89,12 @@ class ModelWrapper:
                             blob.name, start=f"{self.safe_model_name}/"
                         )
                         local_path = os.path.join(self.model_save_path, relative_path)
+
+                        # Skip download if file already exists unless using force
+                        if os.path.exists(local_path) and not force_redownload:
+                            LOG.info(f"Skipping (already exists): {local_path}")
+                            continue
+
                         os.makedirs(os.path.dirname(local_path), exist_ok=True)
 
                         with open(local_path, "wb") as file:

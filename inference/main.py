@@ -15,7 +15,7 @@ from core.process_inputs import load_audio, load_image
 
 
 app = FastAPI(
-    title="Generic Model Wrapper API",
+    title="Generic Model Wrapper Inference API",
     description="Endpoints to load and inference models with audio/image/text inputs",
     version="1.0.01",
 )
@@ -27,8 +27,8 @@ def health_check():
 
 
 @app.post("/load_model")
-def load_model():
-    result = wrapper.load_from_storage()
+def load_model(force_redownload: bool = False):
+    result = wrapper.load_from_storage(force_redownload)
     return f"Model was {'' if result else 'not'} loaded successfully."
 
 
