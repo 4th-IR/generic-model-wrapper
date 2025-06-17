@@ -15,3 +15,4 @@ model.log
 pipeline/
 configs/
 logs/
+**/*.env

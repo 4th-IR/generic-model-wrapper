@@ -31,7 +31,7 @@ class ModelWrapper:
         self.model_provider = settings.PROVIDER
         self.model_identifier = settings.MODEL_IDENTIFIER
         self.task = settings.TASK
-        self.model_save_path = "models/" + self.model_identifier
+        self.model_save_path = "./models/" + self.model_identifier
 
         # Azure storage setup
         if not settings.AZURE_STORAGE_CONNECTION_STRING:

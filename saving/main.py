@@ -73,7 +73,9 @@ async def save_model(
     try:
         result = wrapper.load_from_provider(provider, model_identifier, task, kwargs)
 
-        message = ""
+        message = (
+            f"Model '{model_identifier}' not downloaded from {provider} successfully."
+        )
 
         if result:
             wrapper.save_to_storage(model_identifier)

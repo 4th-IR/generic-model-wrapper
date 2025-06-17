@@ -1,11 +1,8 @@
 """A Generic Model Wrapper Class to Standardize Framework Agnostic Model Loading and Inference"""
 
-import json
-
 import os
 
 from azure.storage.blob import BlobServiceClient
-from fastapi import HTTPException
 
 from core.huggingface_route import download_from_huggingface
 from core.config import settings
@@ -52,7 +49,7 @@ class ModelWrapper:
             model_downloaded = download_from_huggingface(
                 model_identifier,
                 task,
-                "models/" + model_identifier,
+                "./models/" + model_identifier,
                 kwargs,
             )
 
@@ -63,7 +60,7 @@ class ModelWrapper:
     def save_to_storage(self, model_identifier):
         """Saves the model directory/files to Azure Blob Storage under a folder named after the model."""
 
-        model_save_path = "models/" + model_identifier
+        model_save_path = "./models/" + model_identifier
 
         LOG.info(
             f"Attempting to save model '{model_identifier}' to Azure container '{settings.AZURE_CONTAINER_NAME}'."
