@@ -27,9 +27,9 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ secrets.GENERICMODELWRAPPER_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.GENERICMODELWRAPPER_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.GENERICMODELWRAPPER_AZURE_SUBSCRIPTION_ID }}
 
       - name: Build and Push image to Azure Container Registry (auto-managed by Azure)
         uses: azure/container-apps-deploy-action@v1
