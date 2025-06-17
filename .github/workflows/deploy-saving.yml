@@ -1,4 +1,4 @@
-name: Build and Deploy Saving App to Azure Container App
+name: Deploy Saving Service to Azure Container Apps
 
 on:
   push:
@@ -6,36 +6,34 @@ on:
       - main
     paths:
       - 'saving/**'
-      - '.github/workflows/deploy-saving-app.yml'
 
-env:
-  AZURE_CONTAINERAPP_NAME: model-wrapper-saving       
-  AZURE_RESOURCE_GROUP: quest-ai
-  AZURE_CONTAINERAPP_ENV: model-wrapper-env     
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    permissions:
+    permissions: 
       id-token: write
       contents: read
 
     steps:
-      - name: Checkout repository
+      - name: Checkout source
         uses: actions/checkout@v3
 
-      - name: Azure Login
+      - name: Azure Login (OIDC)
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.GENERICMODELWRAPPER_AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.GENERICMODELWRAPPER_AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.GENERICMODELWRAPPER_AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ secrets.MODELWRAPPERSAVING_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.MODELWRAPPERSAVING_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.MODELWRAPPERSAVING_AZURE_SUBSCRIPTION_ID }}
 
-      - name: Build and Push image to Azure Container Registry (auto-managed by Azure)
-        uses: azure/container-apps-deploy-action@v1
+      - name: Build and push image to ACR, then deploy to Azure Container App
+        uses: azure/container-apps-deploy-action@v2
         with:
-          resourceGroup: ${{ env.AZURE_RESOURCE_GROUP }}
-          containerAppName: ${{ env.AZURE_CONTAINERAPP_NAME }}
-          imageToBuild: myregistry.azurecr.io/saving:${{ github.sha }}
-          dockerfilePath: ./saving/Dockerfile
-          sourceDirectory: ./saving
+          appSourcePath: ${{ github.workspace }}/saving
+          registryUrl: questregistry.azurecr.io
+          registryUsername: ${{ secrets.MODELWRAPPERSAVING_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.MODELWRAPPERSAVING_REGISTRY_PASSWORD }}
+          containerAppName: model-wrapper-saving
+          resourceGroup: quest-ai
+          imageToBuild: questregistry.azurecr.io/model-wrapper-saving:${{ github.sha }}
