@@ -1,0 +1,41 @@
+name: Build and Deploy Saving App to Azure Container App
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'saving/**'
+      - '.github/workflows/deploy-saving-app.yml'
+
+env:
+  AZURE_CONTAINERAPP_NAME: model-wrapper-saving       
+  AZURE_RESOURCE_GROUP: quest-ai
+  AZURE_CONTAINERAPP_ENV: model-wrapper-env     
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build and Push image to Azure Container Registry (auto-managed by Azure)
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          resourceGroup: ${{ env.AZURE_RESOURCE_GROUP }}
+          containerAppName: ${{ env.AZURE_CONTAINERAPP_NAME }}
+          imageToBuild: myregistry.azurecr.io/saving:${{ github.sha }}
+          dockerfilePath: ./saving/Dockerfile
+          sourceDirectory: ./saving
