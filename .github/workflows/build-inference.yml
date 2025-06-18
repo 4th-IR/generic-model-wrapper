@@ -1,0 +1,37 @@
+name: Build and Push Inference Image to ACR
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Inference/**'
+
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.MODELWRAPPERSAVING_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.MODELWRAPPERSAVING_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.MODELWRAPPERSAVING_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Log in to Inference ACR
+        run: echo "${{ secrets.MODELWRAPPERINFERENCE_REGISTRY_PASSWORD }}" | docker login inferenceregistry.azurecr.io -u ${{ secrets.MODELWRAPPERINFERENCE_REGISTRY_USERNAME }} --password-stdin
+
+      - name: Build Inference Docker image
+        run: docker build -t inferenceregistry.azurecr.io/model-wrapper-inference:${{ github.sha }} ./Inference
+
+      - name: Push Inference image to ACR
+        run: docker push inferenceregistry.azurecr.io/model-wrapper-inference:${{ github.sha }}
