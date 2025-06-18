@@ -28,7 +28,7 @@ jobs:
           subscription-id: ${{ secrets.MODELWRAPPERSAVING_AZURE_SUBSCRIPTION_ID }}
 
       - name: Log in to Inference ACR
-        run: echo "${{ secrets.MODELWRAPPERINFERENCE_REGISTRY_PASSWORD }}" | docker login inferenceregistry.azurecr.io -u ${{ secrets.MODELWRAPPERINFERENCE_REGISTRY_USERNAME }} --password-stdin
+        run: echo "${{ secrets.MODELWRAPPERSAVING_REGISTRY_PASSWORD }}" | docker login inferenceregistry.azurecr.io -u ${{ secrets.MODELWRAPPERSAVING_REGISTRY_USERNAME }} --password-stdin
 
       - name: Build Inference Docker image
         run: docker build -t inferenceregistry.azurecr.io/model-wrapper-inference:${{ github.sha }} ./Inference
