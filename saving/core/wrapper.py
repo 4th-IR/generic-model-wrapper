@@ -42,6 +42,7 @@ class ModelWrapper:
         model_identifier=None,
         task=None,
         kwargs=None,
+        model_save_path=None,
     ):
         """
         Loads model from provider
@@ -51,7 +52,7 @@ class ModelWrapper:
             model_downloaded = download_from_huggingface(
                 model_identifier,
                 task,
-                self.models_base_dir + model_identifier.replace("/", "_"),
+                model_save_path,
                 kwargs,
             )
 
@@ -59,10 +60,8 @@ class ModelWrapper:
 
         return False
 
-    def save_to_storage(self, model_identifier):
+    def save_to_storage(self, model_identifier, model_save_path):
         """Saves the model directory/files to Azure Blob Storage under a folder named after the model."""
-
-        model_save_path = self.models_base_dir + model_identifier.replace("/", "_")
 
         logs.info(
             f"Attempting to save model '{model_identifier}' to Azure container '{settings.AZURE_CONTAINER_NAME}'."
@@ -106,16 +105,16 @@ class ModelWrapper:
             f"{model_identifier} saved to Azure Blob Storage under folder '{safe_model_name}'"
         )
 
-    def clear_model_folder(self, model_safe_name):
-        if os.path.exists(self.models_base_dir):
+    # def clear_model_folder(self, model_safe_name):
+    #     if os.path.exists(self.models_base_dir):
 
-            model_path = os.path.join(self.models_base_dir, model_safe_name)
+    #         model_path = os.path.join(self.models_base_dir, model_safe_name)
 
-            if os.path.isdir(model_path):
-                shutil.rmtree(model_path)
-                logs.info(f"Deleted model directory: {model_path}")
-            else:
-                logs.info(f"No such model directory: {model_path}")
+    #         if os.path.isdir(model_path):
+    #             shutil.rmtree(model_path)
+    #             logs.info(f"Deleted model directory: {model_path}")
+    #         else:
+    #             logs.info(f"No such model directory: {model_path}")
 
 
 wrapper = ModelWrapper()
