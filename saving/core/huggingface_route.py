@@ -15,7 +15,7 @@ def download_from_huggingface(
             filtered_input_dict = {k: v for k, v in input_dict.items() if v is not None}
 
             # Load pipeline
-            pipe = pipeline(**filtered_input_dict, cache_dir=tmpdir)
+            pipe = pipeline(**filtered_input_dict, model_kwargs={"cache_dir": tmpdir})
 
             # Save model
             pipe.save_pretrained(model_path)
