@@ -34,4 +34,4 @@ jobs:
         run: docker build -t questregistry.azurecr.io/model-wrapper-inference:${{ github.sha }} ./Inference
 
       - name: Push Inference image to ACR
-        run: docker push questregistry.azurecr.iomodel-wrapper-inference:${{ github.sha }}
+        run: docker push questregistry.azurecr.io/model-wrapper-inference:${{ github.sha }}
