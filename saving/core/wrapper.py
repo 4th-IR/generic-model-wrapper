@@ -109,15 +109,16 @@ class ModelWrapper:
         )
 
     def clear_models_folder(self):
-        for filename in os.listdir(self.models_base_dir):
-            file_path = os.path.join(self.models_base_dir, filename)
-            try:
-                if os.path.isfile(file_path) or os.path.islink(file_path):
-                    os.unlink(file_path)  # Remove file or symlink
-                elif os.path.isdir(file_path):
-                    shutil.rmtree(file_path)  # Remove directory
-            except Exception as e:
-                print(f"Failed to delete {file_path}. Reason: {e}")
+        if os.path.exists(self.models_base_dir):
+            for filename in os.listdir(self.models_base_dir):
+                file_path = os.path.join(self.models_base_dir, filename)
+                try:
+                    if os.path.isfile(file_path) or os.path.islink(file_path):
+                        os.unlink(file_path)  # Remove file or symlink
+                    elif os.path.isdir(file_path):
+                        shutil.rmtree(file_path)  # Remove directory
+                except Exception as e:
+                    print(f"Failed to delete {file_path}. Reason: {e}")
 
 
 wrapper = ModelWrapper()
