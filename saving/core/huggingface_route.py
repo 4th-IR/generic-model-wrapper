@@ -9,7 +9,7 @@ def download_from_huggingface(
 ):
 
     try:
-        with tempfile.TemporaryDirectory as tmpdir:
+        with tempfile.TemporaryDirectory() as tmpdir:
             input_dict = {"task": task, "model": model_name, "kwargs": kwargs}
 
             filtered_input_dict = {k: v for k, v in input_dict.items() if v is not None}

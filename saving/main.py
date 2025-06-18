@@ -78,7 +78,7 @@ async def save_model(
     Save model to storage
     """
     try:
-        with tempfile.TemporaryDirectory as tmpdir:
+        with tempfile.TemporaryDirectory() as tmpdir:
 
             result = wrapper.load_from_provider(
                 provider,
