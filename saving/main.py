@@ -89,6 +89,8 @@ async def save_model(
             # Return message first (pretend to notify user)
             message = f"Model '{model_identifier}' {'' if result else 'not'} saved to storage successfully from {provider}."
 
+            wrapper.clear_model_folder(model_identifier.replace("/", "_"))
+
         return {"message": message}
 
     except Exception as e:
