@@ -12,10 +12,11 @@ from transformers import AutoModel, AutoProcessor, AutoFeatureExtractor
 
 from core.wrapper import wrapper
 from core.process_inputs import load_audio, load_image
+from core.config import settings
 
 
 app = FastAPI(
-    title="Generic Model Wrapper Inference API",
+    title=f"Generic Model Wrapper Inference API - {settings.MODEL_IDENTIFIER} for {settings.TASK}",
     description="Endpoints to load and inference models with audio/image/text inputs",
     version="1.0.01",
 )

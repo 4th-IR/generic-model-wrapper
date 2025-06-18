@@ -1,6 +1,7 @@
 """A Generic Model Wrapper Class to Standardize Framework Agnostic Model Loading and Inference"""
 
 import os
+import shutil
 
 from azure.storage.blob import BlobServiceClient
 
@@ -33,6 +34,7 @@ class ModelWrapper:
             settings.AZURE_CONTAINER_NAME
         )
         self.azure_config = True  # Enable Azure model loading
+        self.models_base_dir = "./models/"
 
     def load_from_provider(
         self,
@@ -45,11 +47,13 @@ class ModelWrapper:
         Loads model from provider
         """
 
+        self.clear_models_folder()
+
         if model_provider == "huggingface":
             model_downloaded = download_from_huggingface(
                 model_identifier,
                 task,
-                "./models/" + model_identifier,
+                self.models_base_dir + model_identifier,
                 kwargs,
             )
 
@@ -60,7 +64,7 @@ class ModelWrapper:
     def save_to_storage(self, model_identifier):
         """Saves the model directory/files to Azure Blob Storage under a folder named after the model."""
 
-        model_save_path = "./models/" + model_identifier
+        model_save_path = self.models_base_dir + model_identifier
 
         LOG.info(
             f"Attempting to save model '{model_identifier}' to Azure container '{settings.AZURE_CONTAINER_NAME}'."
@@ -103,6 +107,17 @@ class ModelWrapper:
         LOG.info(
             f"{model_identifier} saved to Azure Blob Storage under folder '{safe_model_name}'"
         )
+
+    def clear_models_folder(self):
+        for filename in os.listdir(self.models_base_dir):
+            file_path = os.path.join(self.models_base_dir, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)  # Remove file or symlink
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)  # Remove directory
+            except Exception as e:
+                print(f"Failed to delete {file_path}. Reason: {e}")
 
 
 wrapper = ModelWrapper()
