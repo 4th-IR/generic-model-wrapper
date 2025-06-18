@@ -2,7 +2,7 @@ import io
 from typing import Literal, Optional
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, RedirectResponse
 
 import torch
 import numpy as np
@@ -12,13 +12,19 @@ from transformers import AutoModel, AutoProcessor, AutoFeatureExtractor
 
 from core.wrapper import wrapper
 from core.process_inputs import load_audio, load_image
+from core.config import settings
 
 
 app = FastAPI(
-    title="Generic Model Wrapper Inference API",
+    title=f"Generic Model Wrapper Inference API - {settings.MODEL_IDENTIFIER} for {settings.TASK}",
     description="Endpoints to load and inference models with audio/image/text inputs",
     version="1.0.01",
 )
+
+
+@app.get("/", include_in_schema=False)
+def home():
+    return RedirectResponse("/docs")
 
 
 @app.get("/health")

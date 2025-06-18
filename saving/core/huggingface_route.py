@@ -7,8 +7,12 @@ def download_from_huggingface(
 ):
 
     try:
+        input_dict = {"task": task, "model": model_name, "kwargs": kwargs}
+
+        filtered_input_dict = {k: v for k, v in input_dict.items() if v is not None}
+
         # Load pipeline
-        pipe = pipeline(task=task, model=model_name, kwargs=kwargs)
+        pipe = pipeline(**filtered_input_dict)
 
         # Save model
         pipe.save_pretrained(model_path)
@@ -24,5 +28,6 @@ def download_from_huggingface(
             print("No tokenizer or processor found to save.")
 
         return True
-    except:
+    except Exception as e:
+        print(str(e))
         return False

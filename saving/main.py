@@ -1,6 +1,7 @@
 from typing import Literal, Optional, Dict
 
 from fastapi import FastAPI, Body, HTTPException
+from fastapi.responses import RedirectResponse
 
 from core.wrapper import wrapper
 
@@ -10,6 +11,11 @@ app = FastAPI(
     description="Endpoints to save models to blob storage",
     version="1.0.01",
 )
+
+
+@app.get("/", include_in_schema=False)
+def home():
+    return RedirectResponse("/docs")
 
 
 @app.get("/health")
@@ -73,7 +79,9 @@ async def save_model(
     try:
         result = wrapper.load_from_provider(provider, model_identifier, task, kwargs)
 
-        message = ""
+        message = (
+            f"Model '{model_identifier}' not downloaded from {provider} successfully."
+        )
 
         if result:
             wrapper.save_to_storage(model_identifier)
