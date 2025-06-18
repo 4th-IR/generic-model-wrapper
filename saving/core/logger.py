@@ -1,12 +1,9 @@
 """A standard logger"""
 
-# external
 import logging
 import logging.config
 import os
 from logging.handlers import TimedRotatingFileHandler
-
-from dotenv import load_dotenv
 
 
 def configure_logging():
