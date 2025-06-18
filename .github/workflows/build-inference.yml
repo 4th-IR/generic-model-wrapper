@@ -30,9 +30,11 @@ jobs:
       - name: Build and push inference image to ACR (no deploy)
         uses: azure/container-apps-deploy-action@v2
         with:
-          appSourcePath: ${{ github.workspace }}/Inference
+          appSourcePath: ${{ github.workspace }}/inference
+          dockerfilePath: Dockerfile
           registryUrl: questregistry.azurecr.io
           registryUsername: ${{ secrets.MODELWRAPPERSAVING_REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.MODELWRAPPERSAVING_REGISTRY_PASSWORD }}
           resourceGroup: quest-ai
           imageToBuild: questregistry.azurecr.io/model-wrapper-inference:${{ github.sha }}
+          tags: latest
