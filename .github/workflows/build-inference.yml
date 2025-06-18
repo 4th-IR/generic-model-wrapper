@@ -1,4 +1,4 @@
-name: Build and Push Inference Image to ACR
+name: Build and Push Inference Image to ACR (No Deploy)
 
 on:
   push:
@@ -27,11 +27,12 @@ jobs:
           tenant-id: ${{ secrets.MODELWRAPPERSAVING_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.MODELWRAPPERSAVING_AZURE_SUBSCRIPTION_ID }}
 
-      - name: Log in to Inference ACR
-        run: echo "${{ secrets.MODELWRAPPERSAVING_REGISTRY_PASSWORD }}" | docker login questregistry.azurecr.io -u ${{ secrets.MODELWRAPPERSAVING_REGISTRY_USERNAME }} --password-stdin
-
-      - name: Build Inference Docker image
-        run: docker build -t questregistry.azurecr.io/model-wrapper-inference:${{ github.sha }} ./
-
-      - name: Push Inference image to ACR
-        run: docker push questregistry.azurecr.io/model-wrapper-inference:${{ github.sha }}
+      - name: Build and push inference image to ACR (no deploy)
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }}/Inference
+          registryUrl: questregistry.azurecr.io
+          registryUsername: ${{ secrets.MODELWRAPPERSAVING_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.MODELWRAPPERSAVING_REGISTRY_PASSWORD }}
+          resourceGroup: quest-ai
+          imageToBuild: questregistry.azurecr.io/model-wrapper-inference:${{ github.sha }}
