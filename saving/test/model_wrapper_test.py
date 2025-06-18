@@ -16,7 +16,7 @@ from pipeline.model_loading_pipeline import load_model
 from pipeline.model_inference import model_inference
 from core.logger import get_logger
 
-LOG = get_logger("test")
+logs = get_logger("test")
 
 
 def test_model_loading():
@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
     mem_before = process.memory_info().rss / (1024**2)
 
-    LOG.info("process is starting...")
+    logs.info("process is starting...")
 
     load_status = None
     inference_status = None
@@ -47,24 +47,24 @@ if __name__ == "__main__":
     inference_error = None
 
     try:
-        LOG.info("starting model loading")
+        logs.info("starting model loading")
         test_model_loading()
-        LOG.info("loaded model successfully")
+        logs.info("loaded model successfully")
         load_status = 1
 
     except Exception as e:
-        LOG.error(f"\n\n\t Error encountered: {e}", exc_info=True)
+        logs.error(f"\n\n\t Error encountered: {e}", exc_info=True)
         load_status = 0
         load_error = str(e)
 
     try:
-        LOG.info("starting inference test")
+        logs.info("starting inference test")
         test_inference()
-        LOG.info("loaded model successfully")
+        logs.info("loaded model successfully")
         inference_status = 1
 
     except Exception as e:
-        LOG.error(f"\n\n\t Error encountered: {e}", exc_info=True)
+        logs.error(f"\n\n\t Error encountered: {e}", exc_info=True)
         inference_status = 0
         inference_error = str(e)
 
