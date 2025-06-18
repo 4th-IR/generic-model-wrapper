@@ -31,7 +31,7 @@ jobs:
         run: echo "${{ secrets.MODELWRAPPERSAVING_REGISTRY_PASSWORD }}" | docker login questregistry.azurecr.io -u ${{ secrets.MODELWRAPPERSAVING_REGISTRY_USERNAME }} --password-stdin
 
       - name: Build Inference Docker image
-        run: docker build -t questregistry.azurecr.io/model-wrapper-inference:${{ github.sha }} ./Inference
+        run: docker build -t questregistry.azurecr.io/model-wrapper-inference:${{ github.sha }} 
 
       - name: Push Inference image to ACR
         run: docker push questregistry.azurecr.io/model-wrapper-inference:${{ github.sha }}
