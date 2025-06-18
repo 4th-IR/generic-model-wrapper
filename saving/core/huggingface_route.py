@@ -1,3 +1,5 @@
+import tempfile
+
 from typing import Dict
 from transformers import pipeline
 
@@ -7,25 +9,26 @@ def download_from_huggingface(
 ):
 
     try:
-        input_dict = {"task": task, "model": model_name, "kwargs": kwargs}
+        with tempfile.TemporaryDirectory as tmpdir:
+            input_dict = {"task": task, "model": model_name, "kwargs": kwargs}
 
-        filtered_input_dict = {k: v for k, v in input_dict.items() if v is not None}
+            filtered_input_dict = {k: v for k, v in input_dict.items() if v is not None}
 
-        # Load pipeline
-        pipe = pipeline(**filtered_input_dict)
+            # Load pipeline
+            pipe = pipeline(**filtered_input_dict, cache_dir=tmpdir)
 
-        # Save model
-        pipe.save_pretrained(model_path)
+            # Save model
+            pipe.save_pretrained(model_path)
 
-        # Try saving tokenizer or processor
-        if hasattr(pipe, "tokenizer") and pipe.tokenizer is not None:
-            pipe.tokenizer.save_pretrained(model_path)
-            print("Tokenizer saved.")
-        elif hasattr(pipe, "processor") and pipe.processor is not None:
-            pipe.processor.save_pretrained(model_path)
-            print("Processor saved.")
-        else:
-            print("No tokenizer or processor found to save.")
+            # Try saving tokenizer or processor
+            if hasattr(pipe, "tokenizer") and pipe.tokenizer is not None:
+                pipe.tokenizer.save_pretrained(model_path)
+                print("Tokenizer saved.")
+            elif hasattr(pipe, "processor") and pipe.processor is not None:
+                pipe.processor.save_pretrained(model_path)
+                print("Processor saved.")
+            else:
+                print("No tokenizer or processor found to save.")
 
         return True
     except Exception as e:

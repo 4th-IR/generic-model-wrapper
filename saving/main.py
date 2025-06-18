@@ -1,3 +1,4 @@
+import tempfile
 from typing import Literal, Optional, Dict
 
 from fastapi import FastAPI, Body, HTTPException
@@ -77,21 +78,27 @@ async def save_model(
     Save model to storage
     """
     try:
-        result = wrapper.load_from_provider(provider, model_identifier, task, kwargs)
+        with tempfile.TemporaryDirectory as tmpdir:
 
-        message = (
-            f"Model '{model_identifier}' not downloaded from {provider} successfully."
-        )
+            result = wrapper.load_from_provider(
+                provider,
+                model_identifier,
+                task,
+                kwargs,
+                tmpdir,
+            )
 
-        if result:
-            wrapper.save_to_storage(model_identifier)
+            message = f"Model '{model_identifier}' not downloaded from {provider} successfully."
 
-            # Return message first (pretend to notify user)
-            message = f"Model '{model_identifier}' {'' if result else 'not'} saved to storage successfully from {provider}."
+            if result:
+                wrapper.save_to_storage(model_identifier, tmpdir)
 
-            wrapper.clear_model_folder(model_identifier.replace("/", "_"))
+                # Return message first (pretend to notify user)
+                message = f"Model '{model_identifier}' {'' if result else 'not'} saved to storage successfully from {provider}."
 
-        return {"message": message}
+                # wrapper.clear_model_folder(model_identifier.replace("/", "_"))
+
+            return {"message": message}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Model load error: {e}")

@@ -11,7 +11,7 @@ from core.config import settings
 
 from logging import getLogger
 
-LOG = getLogger("model")
+logs = getLogger("model")
 
 
 class ModelWrapper:
@@ -62,7 +62,7 @@ class ModelWrapper:
 
         try:
             if self.azure_config:
-                LOG.info("Checking Azure Storage for model...")
+                logs.info("Checking Azure Storage for model...")
                 print("Checking Azure Storage for model...")
                 model_loaded = None
 
@@ -72,7 +72,7 @@ class ModelWrapper:
                     )
                 )
                 if not blob_list:
-                    LOG.warning(
+                    logs.warning(
                         f"No blobs found for model '{self.model_identifier}' under folder '{self.safe_model_name}/'"
                     )
                     print("Model blob folder does not exist")
@@ -92,7 +92,7 @@ class ModelWrapper:
 
                         # Skip download if file already exists unless using force
                         if os.path.exists(local_path) and not force_redownload:
-                            LOG.info(f"Skipping (already exists): {local_path}")
+                            logs.info(f"Skipping (already exists): {local_path}")
                             continue
 
                         os.makedirs(os.path.dirname(local_path), exist_ok=True)
@@ -100,25 +100,25 @@ class ModelWrapper:
                         with open(local_path, "wb") as file:
                             download_stream = blob_client.download_blob()
                             file.write(download_stream.readall())
-                            LOG.info(f"Downloaded: {blob.name} -> {local_path}")
+                            logs.info(f"Downloaded: {blob.name} -> {local_path}")
 
-                    LOG.info(
+                    logs.info(
                         f"{self.model_identifier} downloaded from Azure to: {self.model_save_path}"
                     )
-                    LOG.info(
+                    logs.info(
                         "Model successfully loaded from Azure and initialized for inference."
                     )
                     model_loaded = True
 
                 if model_loaded:
-                    LOG.info(
+                    logs.info(
                         f"Loaded model from Azure Storage: {self.model_identifier}"
                     )
                     print(f"Loaded model from Azure Storage: {self.model_identifier}")
                 return model_loaded
 
         except Exception as e:
-            LOG.error(f"Error loading model: {e}", exc_info=True)
+            logs.error(f"Error loading model: {e}", exc_info=True)
             raise HTTPException(
                 status_code=500, detail=f"Model loading failed: {str(e)}"
             )
