@@ -3,6 +3,10 @@ import tempfile
 from typing import Dict
 from transformers import pipeline
 
+from logging import getLogger
+
+logs = getLogger("huggingface_route")
+
 
 def download_from_huggingface(
     model_name: str, task: str, model_path: str, kwargs: Dict[str, str]
@@ -32,5 +36,5 @@ def download_from_huggingface(
 
         return True
     except Exception as e:
-        print(str(e))
+        logs.error(e, exc_info=True)
         return False

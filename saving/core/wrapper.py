@@ -2,10 +2,12 @@
 
 import os
 import shutil
+import subprocess
 
+import spacy
 from azure.storage.blob import BlobServiceClient
 
-from core.huggingface_route import download_from_huggingface
+from core import huggingface_route, spacy_route
 from core.config import settings
 
 from logging import getLogger
@@ -48,17 +50,23 @@ class ModelWrapper:
         Loads model from provider
         """
 
+        model_downloaded = False
+
         if model_provider == "huggingface":
-            model_downloaded = download_from_huggingface(
+            model_downloaded = huggingface_route.download_from_huggingface(
                 model_identifier,
                 task,
                 model_save_path,
                 kwargs,
             )
 
-            return model_downloaded
+        elif model_provider == "spacy":
+            model_downloaded = spacy_route.download_from_spacy(
+                model_identifier,
+                model_save_path,
+            )
 
-        return False
+        return model_downloaded
 
     def save_to_storage(self, model_identifier, model_save_path):
         """Saves the model directory/files to Azure Blob Storage under a folder named after the model."""
@@ -105,16 +113,34 @@ class ModelWrapper:
             f"{model_identifier} saved to Azure Blob Storage under folder '{safe_model_name}'"
         )
 
-    # def clear_model_folder(self, model_safe_name):
-    #     if os.path.exists(self.models_base_dir):
+    def cleanup(self, cleanup_path: str, provider: str):
 
-    #         model_path = os.path.join(self.models_base_dir, model_safe_name)
+        if provider == "huggingface":
 
-    #         if os.path.isdir(model_path):
-    #             shutil.rmtree(model_path)
-    #             logs.info(f"Deleted model directory: {model_path}")
-    #         else:
-    #             logs.info(f"No such model directory: {model_path}")
+            if os.path.exists(self.models_base_dir):
+
+                model_path = os.path.join(self.models_base_dir, cleanup_path)
+
+                if os.path.isdir(model_path):
+                    shutil.rmtree(model_path)
+                    logs.info(f"Deleted model directory: {model_path}")
+                else:
+                    logs.info(f"No such model directory: {model_path}")
+
+        elif provider == "spacy":
+            model_path = spacy.info(cleanup_path)["source"]
+            if os.path.exists(model_path):
+                subprocess.run(
+                    [
+                        "pip",
+                        "uninstall",
+                        "-y",
+                        cleanup_path,
+                    ]
+                )
+                logs.info(f"Deleted model directory: {model_path}")
+            else:
+                logs.info(f"No such model directory: {model_path}")
 
 
 wrapper = ModelWrapper()
