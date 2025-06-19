@@ -26,8 +26,8 @@ def health_check():
 
 @app.post("/save_model")
 async def save_model(
-    provider: Optional[str] = Body(
-        "huggingface", description="Model provider, e.g., 'huggingface'"
+    provider: str = Body(
+        "huggingface", description="Model provider, e.g., 'huggingface', 'spacy'"
     ),
     task: Optional[
         Literal[
@@ -66,8 +66,9 @@ async def save_model(
             "zero-shot-object-detection",
         ]
     ] = Body(None, description="Task type"),
-    model_identifier: Optional[str] = Body(
-        None, description="Full model identifier, e.g., 'openai/whisper-large'"
+    model_identifier: str = Body(
+        None,
+        description="Full model identifier, e.g., 'openai/whisper-large', 'en_core_web_sm'",
     ),
     kwargs: Optional[Dict[str, str]] = Body(
         None,
@@ -96,7 +97,7 @@ async def save_model(
                 # Return message first (pretend to notify user)
                 message = f"Model '{model_identifier}' {'' if result else 'not'} saved to storage successfully from {provider}."
 
-                # wrapper.clear_model_folder(model_identifier.replace("/", "_"))
+                wrapper.cleanup(model_identifier.replace("/", "_"), provider)
 
             return {"message": message}
 
