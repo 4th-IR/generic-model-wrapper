@@ -3,6 +3,7 @@ from typing import Literal, Optional
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse, RedirectResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 import torch
 import spacy
@@ -20,6 +21,14 @@ app = FastAPI(
     title=f"Generic Model Wrapper Inference API - {settings.MODEL_IDENTIFIER} for {settings.TASK}",
     description="Endpoints to load and inference models with audio/image/text inputs",
     version="1.0.01",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.ALLOWED_ORIGINS.split(","),
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 

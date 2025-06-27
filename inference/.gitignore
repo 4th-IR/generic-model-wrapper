@@ -14,5 +14,7 @@ models/
 model.log
 pipeline/
 configs/
-logs/
-**/*.env
+logs
+/**/*.env
+**/*.bat
+**/*.ps1

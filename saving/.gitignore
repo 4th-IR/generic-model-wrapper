@@ -1,4 +1,7 @@
 .env
+**/*.env
+**/*.bat
+**/*.ps1
 my_venv/
 my_second_venv
 data_manipulation
