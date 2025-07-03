@@ -3,14 +3,24 @@ from typing import Literal, Optional, Dict
 
 from fastapi import FastAPI, Body, HTTPException
 from fastapi.responses import RedirectResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from core.wrapper import wrapper
+from core.config import settings
 
 
 app = FastAPI(
     title="Generic Model Wrapper Saving API",
     description="Endpoints to save models to blob storage",
     version="1.0.01",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.ALLOWED_ORIGINS.split(","),
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 

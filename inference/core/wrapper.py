@@ -5,7 +5,12 @@ import json
 import os
 
 from azure.storage.blob import BlobServiceClient
+
 from fastapi import HTTPException
+
+import spacy
+from transformers.pipelines import PIPELINE_REGISTRY
+from transformers import AutoModel, AutoProcessor, AutoFeatureExtractor
 
 from core.config import settings
 
@@ -17,21 +22,11 @@ logs = getLogger("model")
 class ModelWrapper:
 
     def __init__(self):
-
-        # if os.path.exists("./wrapper_config.json"):
-        #     with open("./wrapper_config.json") as f:
-        #         content = f.read()
-        #         wrapper_config = json.loads(content)
-
-        #         self.model_provider = wrapper_config.get("provider", None)
-        #         self.model_identifier = wrapper_config.get("model_identifier", None)
-        #         self.task = wrapper_config.get("task", None)
-        #         self.model_save_path = "models/" + self.model_identifier
-        # else:
         self.model_provider = settings.PROVIDER
         self.model_identifier = settings.MODEL_IDENTIFIER
         self.task = settings.TASK
         self.model_save_path = "./models/" + self.model_identifier
+        self.model = None
 
         # Azure storage setup
         if not settings.AZURE_STORAGE_CONNECTION_STRING:
@@ -108,7 +103,25 @@ class ModelWrapper:
                     logs.info(
                         "Model successfully loaded from Azure and initialized for inference."
                     )
+
+                if settings.PROVIDER == "huggingface":
+                    task_pipeline_details = PIPELINE_REGISTRY.supported_tasks.get(
+                        settings.TASK, None
+                    ) or PIPELINE_REGISTRY.supported_tasks.get(
+                        PIPELINE_REGISTRY.task_aliases.get(settings.TASK), None
+                    )
+                    if task_pipeline_details:
+                        automodel_class: AutoModel = task_pipeline_details.get("pt")[0]
+                        self.model = automodel_class.from_pretrained(
+                            self.model_save_path
+                        )
+                        self.model.eval()
+                        model_loaded = True
+                elif settings.PROVIDER == "spacy":
+                    self.model = spacy.load(self.model_save_path)
                     model_loaded = True
+
+                model_loaded = True
 
                 if model_loaded:
                     logs.info(
